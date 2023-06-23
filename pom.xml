@@ -64,16 +64,24 @@
 			<optional>true</optional>
 		</dependency>
         
-        <!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <!--
         <dependency>
             <groupId>org.fluentlenium</groupId>
             <artifactId>fluentlenium-junit</artifactId>
             <version>3.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        -->
+        <!--
+        <dependency>
+            <groupId>io.fluentlenium</groupId>
+            <artifactId>fluentlenium-junit-jupiter</artifactId>
+            <version>5.0.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -85,8 +93,9 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>htmlunit-driver</artifactId>
-        </dependency>  
+        </dependency>
         -->
+        
 	</dependencies>
 
 	<build>

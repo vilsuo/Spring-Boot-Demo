@@ -1,6 +1,8 @@
 
 package com.example.demo;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ public class AccountService {
 		boolean usernameExists = accountRepository.existsByUsername(username);
 		if (!usernameExists) {
 			accountRepository.save(
-				new Account(username, passwordEncoder.encode(password))
+				new Account(username, passwordEncoder.encode(password), Role.ADMIN)//Arrays.asList(Role.USER))
 			);
 		}
 		return !usernameExists;

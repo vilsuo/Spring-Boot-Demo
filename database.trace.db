@@ -1,4 +1,4 @@
-2023-06-23 15:59:06 database: wrong user or password; user: "SA"
+2023-06-23 23:43:53 database: wrong user or password; user: "SA"
 org.h2.message.DbException: Wrong user name or password [28000-214]
 	at org.h2.message.DbException.get(DbException.java:223)
 	at org.h2.message.DbException.get(DbException.java:199)
