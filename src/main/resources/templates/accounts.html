@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/security/tags">
+    <head lang="en">
+        <meta charset="UTF-8" />
+        <title>Accounts</title>
+    </head>
+    <body>
+
+        <h2>Accounts</h2>
+        
+        <div sec:authorize="isAuthenticated()">
+            | Logged user: <span sec:authentication="name"></span> |
+            Roles: <span sec:authentication="principal.authorities"></span> |
+            <!--<a th:href="@{/logout}">Sign Out</a>-->
+            
+            <form method="POST" th:action="@{/logout}">
+                <input type="submit" value="Sign out"/>
+            </form>
+        </div>
+        
+        <ol>
+            <li th:each="account : ${accounts}">
+                <span th:text="${account.username}">username</span>
+            </li>
+        </ol>
+
+        <form method="POST" th:action="@{/accounts}">
+            <input type="text" name="username"/>
+            <input type="password" name="password"/>
+            <input type="submit" value="Add new account!"/>
+        </form>
+    </body>
+</html>
