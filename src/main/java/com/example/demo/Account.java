@@ -2,12 +2,10 @@
 package com.example.demo;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,20 +15,26 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @AllArgsConstructor @NoArgsConstructor @Data
 public class Account extends AbstractPersistable<Long>{
 	
+	/*
+	a String field constrained with @NotBlank must be not null, and the trimmed 
+	length must be greater than zero.
+	
+	IF YOU CHANGE VALIDATION OPTIONS HERE, CHANGE ALSO IN THE CLASS AccountDto!
+	*/
+	@NotBlank
+	@Size(min = 1, max = 20)
 	private String username;
+	
+	/*
+	The @NotEmpty annotation makes use of the @NotNull class' isValid() 
+	implementation, and also checks that the size/length of the supplied object 
+	is greater than zero.
+	
+	Length of the actual password is defined in the class AccountDto.
+	*/
+	@NotEmpty
 	private String password;
 	
+	@NotNull()
 	private Role role;
-	/*
-	@ManyToMany
-	@Enumerated(EnumType.STRING)
-	@JoinTable( 
-        name = "accounts_roles", 
-        joinColumns = @JoinColumn(
-			name = "account_id", referencedColumnName = "id"), 
-        inverseJoinColumns = @JoinColumn(
-			name = "role_id", referencedColumnName = "id")
-	) 
-	private List<Role> roles;
-	*/
 }

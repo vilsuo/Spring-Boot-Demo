@@ -13,10 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console; // !
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-//import org.springframework.context.annotation.Profile;
 
 //@Profile("development")
 @Configuration
@@ -74,6 +70,7 @@ public class DevelopmentSecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+	
 	/*
 	// source: https://www.baeldung.com/role-and-privilege-for-spring-security-registration
 	@Bean

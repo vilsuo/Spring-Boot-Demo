@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.springframework.org/security/tags">
     <head lang="en">
-        <meta charset="UTF-8" />
+        <meta charset="UTF-8"/>
         <title>Accounts</title>
     </head>
     <body>
@@ -13,7 +13,6 @@
         <div sec:authorize="isAuthenticated()">
             | Logged user: <span sec:authentication="name"></span> |
             Roles: <span sec:authentication="principal.authorities"></span> |
-            <!--<a th:href="@{/logout}">Sign Out</a>-->
             
             <form method="POST" th:action="@{/logout}">
                 <input type="submit" value="Sign out"/>
@@ -22,14 +21,26 @@
         
         <ol>
             <li th:each="account : ${accounts}">
-                <span th:text="${account.username}">username</span>
+                <a th:href="@{/accounts/{accountId}(accountId=${account.id})}" th:text="${account.username}">username</a>
             </li>
         </ol>
 
-        <form method="POST" th:action="@{/accounts}">
-            <input type="text" name="username"/>
-            <input type="password" name="password"/>
-            <input type="submit" value="Add new account!"/>
+        <form method="POST" th:action="@{/accounts}" th:object="${accountDto}">
+            <table>
+                <tr>
+                    <td>username: </td>
+                    <td><input type="text" th:field="*{username}"/></td>
+                    <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username error message</td>
+                </tr>
+                <tr>
+                    <td>password: </td>
+                    <td><input type="password" th:field="*{password}"/></td>
+                    <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password error message</td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Add new account!"/></td>
+                </tr>
+            </table>
         </form>
     </body>
 </html>
