@@ -1,5 +1,8 @@
-package com.example.demo;
+package com.example.demo.controller;
 
+import com.example.demo.service.repository.AccountRepository;
+import com.example.demo.domain.Message;
+import com.example.demo.service.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

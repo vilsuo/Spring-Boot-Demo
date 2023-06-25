@@ -1,7 +1,7 @@
 
 package com.example.demo.unittest;
 
-import com.example.demo.Role;
+import com.example.demo.domain.Role;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

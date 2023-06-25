@@ -7,9 +7,6 @@
         <title>Accounts</title>
     </head>
     <body>
-
-        <h2>Accounts</h2>
-        
         <div sec:authorize="isAuthenticated()">
             | Logged user: <span sec:authentication="name"></span> |
             Roles: <span sec:authentication="principal.authorities"></span> |
@@ -19,28 +16,11 @@
             </form>
         </div>
         
+        <h2>Accounts</h2>
         <ol>
             <li th:each="account : ${accounts}">
                 <a th:href="@{/accounts/{accountId}(accountId=${account.id})}" th:text="${account.username}">username</a>
             </li>
         </ol>
-
-        <form method="POST" th:action="@{/accounts}" th:object="${accountDto}">
-            <table>
-                <tr>
-                    <td>username: </td>
-                    <td><input type="text" th:field="*{username}"/></td>
-                    <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username error message</td>
-                </tr>
-                <tr>
-                    <td>password: </td>
-                    <td><input type="password" th:field="*{password}"/></td>
-                    <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password error message</td>
-                </tr>
-                <tr>
-                    <td><input type="submit" value="Add new account!"/></td>
-                </tr>
-            </table>
-        </form>
     </body>
 </html>

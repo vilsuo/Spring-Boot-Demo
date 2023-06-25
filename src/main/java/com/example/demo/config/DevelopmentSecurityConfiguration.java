@@ -1,7 +1,7 @@
 
 package com.example.demo.config;
 
-import com.example.demo.Role;
+import com.example.demo.domain.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,7 +37,7 @@ public class DevelopmentSecurityConfiguration {
 		http	
 			// https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html
 			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/accounts").permitAll()
+				.requestMatchers("/", "/accounts", "/register").permitAll()
 				.requestMatchers(HttpMethod.GET, "/messages").hasAuthority(Role.USER.getName())
 				.requestMatchers(HttpMethod.GET, "/admin").hasAuthority(Role.ADMIN.getName())
 				.requestMatchers(toH2Console()).permitAll()

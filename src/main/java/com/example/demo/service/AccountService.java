@@ -1,6 +1,10 @@
 
-package com.example.demo;
+package com.example.demo.service;
 
+import com.example.demo.domain.Account;
+import com.example.demo.domain.AccountDto;
+import com.example.demo.service.repository.AccountRepository;
+import com.example.demo.domain.Role;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;

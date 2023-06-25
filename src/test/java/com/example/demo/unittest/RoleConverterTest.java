@@ -1,8 +1,8 @@
 
 package com.example.demo.unittest;
 
-import com.example.demo.Role;
-import com.example.demo.RoleConverter;
+import com.example.demo.domain.Role;
+import com.example.demo.converter.RoleConverter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;

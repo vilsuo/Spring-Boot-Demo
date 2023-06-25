@@ -1,6 +1,9 @@
 
-package com.example.demo;
+package com.example.demo.service;
 
+import com.example.demo.domain.Account;
+import com.example.demo.domain.Message;
+import com.example.demo.service.repository.MessageRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,7 @@
 
-package com.example.demo;
+package com.example.demo.converter;
 
+import com.example.demo.domain.Role;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

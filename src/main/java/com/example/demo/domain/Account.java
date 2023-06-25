@@ -1,5 +1,5 @@
 
-package com.example.demo;
+package com.example.demo.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;

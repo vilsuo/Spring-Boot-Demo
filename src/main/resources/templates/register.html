@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/security/tags">
+    <head>
+        <title>Register</title>
+        <meta charset="UTF-8"/>
+    </head>
+    <body>
+        <form method="POST" th:action="@{/register}" th:object="${accountDto}">
+            <table>
+                <tr>
+                    <td>username: </td>
+                    <td><input type="text" th:field="*{username}"/></td>
+                    <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username error message</td>
+                </tr>
+                <tr>
+                    <td>password: </td>
+                    <td><input type="password" th:field="*{password}"/></td>
+                    <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password error message</td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Add new account!"/></td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            Already have an account? <a th:href="@{/login}">Login</a>
+        </div>
+    </body>
+</html>

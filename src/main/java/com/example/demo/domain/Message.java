@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.demo.domain;
 
+import com.example.demo.domain.Account;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;

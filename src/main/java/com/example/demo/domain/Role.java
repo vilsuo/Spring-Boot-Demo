@@ -1,5 +1,5 @@
 
-package com.example.demo;
+package com.example.demo.domain;
 
 import java.util.HashMap;
 import java.util.Map;
