@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" 
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/security/tags">
     <head lang="en">
         <meta charset="UTF-8"/>
         <title>Personal account page</title>
@@ -8,6 +9,25 @@
     <body>
         <div>
             Personal page of <span th:text="${account.username}">username</span>
+            <div sec:authorize="isAuthenticated()">
+                <form method="POST" th:action="@{/accounts/{accountId}/follow(accountId=${account.id})}">
+                    <input type="submit" value="Follow"/>
+                </form>
+            </div>
         </div>
+        
+        <h2>Following</h2>
+        <ol>
+            <li th:each="followingAccount : ${following}">
+                <a th:href="@{/accounts/{accountId}(accountId=${followingAccount.id})}" th:text="${followingAccount.username}">username</a>
+            </li>
+        </ol>
+        
+        <h2>Followers</h2>
+        <ol>
+            <li th:each="followedAccount : ${followers}">
+                <a th:href="@{/accounts/{accountId}(accountId=${followedAccount.id})}" th:text="${followedAccount.username}">username</a>
+            </li>
+        </ol>
     </body>
 </html>

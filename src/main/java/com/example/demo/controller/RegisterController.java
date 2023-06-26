@@ -22,11 +22,11 @@ public class RegisterController {
 	private AccountService accountService;
 	
 	@GetMapping("/register")
-	public String home(@ModelAttribute(binding = false) AccountDto accountDto) {
+	public String home(@ModelAttribute AccountDto accountDto) {
 		return "register";
 	}
 	
-	@PostMapping("/register")
+	@PostMapping("/register/create")
 	public String createAccount(
 			@Valid @ModelAttribute AccountDto accountDto,
 			BindingResult bindingResult) {

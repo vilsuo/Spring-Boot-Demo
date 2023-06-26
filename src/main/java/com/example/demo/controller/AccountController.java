@@ -4,8 +4,10 @@ package com.example.demo.controller;
 import com.example.demo.domain.Account;
 import com.example.demo.service.AccountService;
 import jakarta.servlet.http.HttpServletResponse;
+import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,25 +32,28 @@ public class AccountController {
 	public String get(Model model, @PathVariable Long accountId,
 			HttpServletResponse response) {
 		
+		System.out.println("enter get");
 		// error handling https://www.baeldung.com/exception-handling-for-rest-with-spring
 		Account account = accountService.findById(accountId).orElseThrow(
 			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such account id: " + accountId)
 		);
 		
 		model.addAttribute("account", account);
+		model.addAttribute("following", account.getFollowing());
+		System.out.println("exit get");
 		return "account";
 	}
 	
-	@PostMapping("/accounts/{accountId}")
-	public String addMessage(Model model, @PathVariable Long accountId,
-			String content, HttpServletResponse response) {
-		
-		// error handling https://www.baeldung.com/exception-handling-for-rest-with-spring
-		Account account = accountService.findById(accountId).orElseThrow(
-			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such account id: " + accountId)
+	@Secured("USER")
+	@PostMapping("/accounts/{accountId}/follow")
+	public String follow(@PathVariable Long accountId, Principal principal) {
+		System.out.println("enter cont.follow");
+		Account loggedInAccount = accountService.findByUsername(principal.getName()).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tried to follow but account with id='" + accountId + "' was not signed in")
 		);
 		
-		model.addAttribute("account", account);
-		return "account";
+		accountService.follow(loggedInAccount.getId(), accountId);
+		System.out.println("exit cont.follow");
+		return "redirect:/accounts/" + accountId;
 	}
 }

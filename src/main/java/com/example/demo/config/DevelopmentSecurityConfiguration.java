@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console; // !
 import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
 //@Profile("development")
 @Configuration
@@ -37,9 +38,22 @@ public class DevelopmentSecurityConfiguration {
 		http	
 			// https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html
 			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/accounts", "/register").permitAll()
-				.requestMatchers(HttpMethod.GET, "/messages").hasAuthority(Role.USER.getName())
-				.requestMatchers(HttpMethod.GET, "/admin").hasAuthority(Role.ADMIN.getName())
+				.requestMatchers("/", "/accounts").permitAll()
+					
+				// allow anyone to register
+				.requestMatchers("/register", "/register/create").permitAll()
+					
+				// allow anyone to view personal pages
+				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/accounts/[0-9]+")).permitAll()
+					
+				// allow signed in accounts to follow other accounts
+				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/accounts/[0-9]+/follow")).hasAuthority(Role.USER.getName())
+					
+				//.requestMatchers(HttpMethod.POST, "/accounts/ /follow").hasAuthority(Role.USER.getName())
+					
+				// allow admins to view and edit all admin pages
+				.requestMatchers("/admin", "/admin/**").hasAuthority(Role.ADMIN.getName())
+					
 				.requestMatchers(toH2Console()).permitAll()
 				.anyRequest().authenticated()
 			)
