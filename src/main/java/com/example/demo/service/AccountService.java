@@ -5,9 +5,10 @@ import com.example.demo.domain.Account;
 import com.example.demo.domain.AccountDto;
 import com.example.demo.service.repository.AccountRepository;
 import com.example.demo.domain.Role;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,9 +39,8 @@ public class AccountService {
 						username,
 						passwordEncoder.encode(password),
 						Role.USER,
-						new ArrayList<>()
-						//new HashSet<>()
-						//new HashSet<>()
+						new HashSet<>(),
+						new HashSet<>()
 				)
 			);
 		}
@@ -49,19 +49,6 @@ public class AccountService {
 	
 	public boolean create(AccountDto accountDto) {
 		return create(accountDto.getUsername(), accountDto.getPassword());
-	}
-	
-	public void save(Account account) {
-		System.out.println("enter save");
-		Optional<Account> existing = accountRepository.findById(account.getId());
-		if (existing.isPresent()) {
-			System.out.println("is present");
-			account.setFollowing(existing.get().getFollowing());
-		} else {
-			System.out.println("is not present");
-		}
-		accountRepository.save(account);
-		System.out.println("exit save");
 	}
 	
 	public Optional<Account> findById(Long id) {
@@ -77,22 +64,39 @@ public class AccountService {
 	}
 	
 	@Transactional
-	public void follow(Long followerAccountId, Long followedAccounId) {
-		System.out.println("enter serv.follow");
-		Account sourceAccount = findById(followerAccountId).orElseThrow(
-			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such source account id: " + followerAccountId)
+    public void follow(Long userId, Long toFollowId) {
+        Account account = accountRepository.findById(userId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + userId)
 		);
-		Account targetAccount = findById(followedAccounId).orElseThrow(
-			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + followedAccounId)
+        Account accountToFollow = accountRepository.findById(toFollowId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + toFollowId)
 		);
-		
-		sourceAccount.getFollowing().add(targetAccount);
-		//accountRepository.save(sourceAccount);
-		save(sourceAccount);
-		
-		System.out.println("'" + sourceAccount.getUsername() + "' successfully followed '" + targetAccount.getUsername() + "'");
-		System.out.println("exit serv.follow");
-	}
+        account.addFollower(accountToFollow);
+    }
+	
+	@Transactional
+    public void unfollow(Long userId, Long toUnfollowId) {
+		Account account = accountRepository.findById(userId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + userId)
+		);
+        Account accountToUnfollow = accountRepository.findById(toUnfollowId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + toUnfollowId)
+		);
+        account.removeFollower(accountToUnfollow);
+    }
+	
+	@Transactional
+    public Set<Account> getFollowers(Long userId) {
+        return accountRepository.findById(userId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + userId)
+		).getFollowers();
+    }
+    @Transactional
+    public Set<Account> getFollowing(Long userId) {
+        return accountRepository.findById(userId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + userId)
+		).getFollowing();
+    }
 	
 	public List<Account> list() {
 		return accountRepository.findAll();

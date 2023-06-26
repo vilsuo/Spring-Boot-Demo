@@ -3,11 +3,12 @@ package com.example.demo.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -17,23 +18,23 @@ import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
-public class Account extends AbstractPersistable<Long>{
+@EqualsAndHashCode(exclude = {"followers", "following"}, callSuper = false)//(onlyExplicitlyIncluded = true, callSuper = false)
+public class Account extends AbstractPersistable<Long> {
 	
 	/*
-	a String field constrained with @NotBlank must be not null, and the trimmed 
-	length must be greater than zero.
-	
-	IF YOU CHANGE VALIDATION OPTIONS HERE, CHANGE ALSO IN THE CLASS AccountDto!
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@EqualsAndHashCode.Include
+	private Long id;
 	*/
-	@NotBlank
-	@Size(min = 1, max = 20)
+	@NotBlank // must be not null, and the trimmed length must be non-negative
+	@Size(min = 1, max = 20) // IF YOU CHANGE VALIDATION OPTIONS HERE, CHANGE ALSO IN THE CLASS AccountDto!
 	private String username;
 	
 	/*
@@ -49,51 +50,70 @@ public class Account extends AbstractPersistable<Long>{
 	@NotNull()
 	private Role role;
 	
-	//@ManyToMany(fetch = FetchType.LAZY)
-	@ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "relation",
-        joinColumns = @JoinColumn(name = "account_follower_id"),
-        inverseJoinColumns = @JoinColumn(name = "account_following_id")
+	
+	// ACCEPTED ANSWER:
+	// source : 
+	// https://stackoverflow.com/questions/57561294/why-am-i-getting-a-unique-index-or-primary-key-violation
+	// https://stackoverflow.com/questions/1656113/hibernate-recursive-many-to-many-association-with-the-same-entity
+	// personId -> account_from_id
+	// friendId -> account_to_id
+	// maybe change to list?
+	@ManyToMany
+	@JoinTable(name = "followers",
+		joinColumns = @JoinColumn(name = "account_from_id"),
+		inverseJoinColumns = @JoinColumn(name = "account_to_id")
 	)
-    private List<Account> following;
-	/*
-	@OneToMany(mappedBy = "targetAccount", cascade = CascadeType.ALL)
-	@Fetch(FetchMode.SUBSELECT)
-	private Set<AccountRelation> followers;
+	private Set<Account> following;
 
-	@OneToMany(mappedBy = "sourceAccount", cascade = CascadeType.ALL)
-	@Fetch(FetchMode.SUBSELECT)
-	private Set<AccountRelation> following = new HashSet<>();
-	*/
-
-	// TODO (implement similiarly as following/followers)
-	//@ManyToMany(cascade = CascadeType.ALL)
-	//private Set<Account> blockedAccounts = new HashSet<>();
+	@ManyToMany
+	@JoinTable(name = "followers",
+		joinColumns = @JoinColumn(name = "account_to_id"),
+		inverseJoinColumns = @JoinColumn(name = "account_from_id")
+	)
+	private Set<Account> followers;	
+	
+	
+	public void addFollower(Account toFollow) {
+		System.out.println("enter addFollower");
+		
+        following.add(toFollow);
+        //toFollow.getFollowers().add(this);
+		
+		System.out.println("exit addFollower");
+    }
+	
+    public void removeFollower(Account toFollow) {
+		System.out.println("enter removeFollower");
+		
+        following.remove(toFollow);
+        //toFollow.getFollowers().remove(this);
+		
+		System.out.println("exit removeFollower");
+    }
 	
 	/*
-	// TODO
 	
-	 Profiilikuva
-	- Käyttäjä voi määritellä yhden kuva-albumissa olevan kuvan profiilikuvaksi.
+	@ManyToMany//(cascade = CascadeType.ALL, mappedBy = "following")
+    private Set<Account> followers = new HashSet<>();
 	
-	- Profiiliteksti
-	
-	- Seuraajat
-		Käyttäjä voi tarkastella omia seuraajiaan. Seurauksen yhteydessä 
-		näytetään seuraajan nimi sekä seurauksen aloitusaika. Seuraajan voi myös 
-		halutessaan torjua seuraamasta, tällöin seuraus ei näy kummankaan 
-		profiilissa.
-	List<Account> following;
+    @ManyToMany//(cascade = CascadeType.ALL)
+	@JoinTable(name = "followers",
+        joinColumns = {@JoinColumn(name = "account_id")},
+        inverseJoinColumns = {@JoinColumn(name = "follower_id")}
+	)
+    private Set<Account> following = new HashSet<>();
 	
 	
-	- Kuva-albumi
-		Jokaisella käyttäjällä on kuva-albumi. Käyttäjä voi lisätä albumiinsa 
-		kuvia ja myös poistaa niitä. Kunkin käyttäjän kuva-albumi voi sisältää 
-		korkeintaan 10 kuvaa. Jokaiseen kuvaan liittyy myös tekstimuotoinen 
-		kuvaus, joka lisätään kuvaan kuvan lisäyksen yhteydessä.
-	List<Picture> pictures;
+	public void addFollower(Account toFollow) {
+		System.out.println("enter addFollower");
+        following.add(toFollow);
+        toFollow.getFollowers().add(this);
+		System.out.println("exit addFollower");
+    }
 	
-	
-	List<Post> posts;
+    public void removeFollower(Account toFollow) {
+        following.remove(toFollow);
+        toFollow.getFollowers().remove(this);
+    }
 	*/
 }

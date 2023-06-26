@@ -18,14 +18,14 @@
         
         <h2>Following</h2>
         <ol>
-            <li th:each="followingAccount : ${following}">
+            <li th:each="followingAccount : ${account.following}">
                 <a th:href="@{/accounts/{accountId}(accountId=${followingAccount.id})}" th:text="${followingAccount.username}">username</a>
             </li>
         </ol>
         
         <h2>Followers</h2>
         <ol>
-            <li th:each="followedAccount : ${followers}">
+            <li th:each="followedAccount : ${account.followers}">
                 <a th:href="@{/accounts/{accountId}(accountId=${followedAccount.id})}" th:text="${followedAccount.username}">username</a>
             </li>
         </ol>

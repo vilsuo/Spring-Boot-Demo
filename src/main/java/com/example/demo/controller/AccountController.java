@@ -3,6 +3,7 @@ package com.example.demo.controller;
 
 import com.example.demo.domain.Account;
 import com.example.demo.service.AccountService;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,13 @@ public class AccountController {
 	
 	@Autowired
 	private AccountService accountService;
+	
+	@PostConstruct
+	public void helper() {
+		accountService.create("v1", "s");
+		accountService.create("v2", "s");
+		accountService.create("v3", "s");
+	}
 	
 	@GetMapping("/accounts")
 	public String list(Model model) {
@@ -39,7 +47,6 @@ public class AccountController {
 		);
 		
 		model.addAttribute("account", account);
-		model.addAttribute("following", account.getFollowing());
 		System.out.println("exit get");
 		return "account";
 	}
@@ -56,4 +63,19 @@ public class AccountController {
 		System.out.println("exit cont.follow");
 		return "redirect:/accounts/" + accountId;
 	}
+	
+	/*
+	@Secured("USER")
+	@PostMapping("/accounts/{accountId}/unfollow")
+	public String unfollow(@PathVariable Long accountId, Principal principal) {
+		System.out.println("enter cont.unfollow");
+		Account loggedInAccount = accountService.findByUsername(principal.getName()).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tried to unfollow but account with id='" + accountId + "' was not signed in")
+		);
+		
+		accountService.follow(loggedInAccount.getId(), accountId);
+		System.out.println("exit cont.unfollow");
+		return "redirect:/accounts/" + accountId;
+	}
+	*/
 }
