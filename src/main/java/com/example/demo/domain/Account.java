@@ -1,6 +1,7 @@
 
 package com.example.demo.domain;
 
+import com.example.demo.annotation.Username;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.List;
@@ -27,14 +29,8 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @EqualsAndHashCode(exclude = {"followers", "following"}, callSuper = false)//(onlyExplicitlyIncluded = true, callSuper = false)
 public class Account extends AbstractPersistable<Long> {
 	
-	/*
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@EqualsAndHashCode.Include
-	private Long id;
-	*/
-	@NotBlank // must be not null, and the trimmed length must be non-negative
-	@Size(min = 1, max = 20) // IF YOU CHANGE VALIDATION OPTIONS HERE, CHANGE ALSO IN THE CLASS AccountDto!
+	// IF YOU CHANGE VALIDATION OPTIONS HERE, CHANGE ALSO IN THE CLASS AccountDto!
+	@Username
 	private String username;
 	
 	/*
@@ -55,9 +51,6 @@ public class Account extends AbstractPersistable<Long> {
 	// source : 
 	// https://stackoverflow.com/questions/57561294/why-am-i-getting-a-unique-index-or-primary-key-violation
 	// https://stackoverflow.com/questions/1656113/hibernate-recursive-many-to-many-association-with-the-same-entity
-	// personId -> account_from_id
-	// friendId -> account_to_id
-	// maybe change to list?
 	@ManyToMany
 	@JoinTable(name = "followers",
 		joinColumns = @JoinColumn(name = "account_from_id"),
@@ -91,29 +84,4 @@ public class Account extends AbstractPersistable<Long> {
 		System.out.println("exit removeFollower");
     }
 	
-	/*
-	
-	@ManyToMany//(cascade = CascadeType.ALL, mappedBy = "following")
-    private Set<Account> followers = new HashSet<>();
-	
-    @ManyToMany//(cascade = CascadeType.ALL)
-	@JoinTable(name = "followers",
-        joinColumns = {@JoinColumn(name = "account_id")},
-        inverseJoinColumns = {@JoinColumn(name = "follower_id")}
-	)
-    private Set<Account> following = new HashSet<>();
-	
-	
-	public void addFollower(Account toFollow) {
-		System.out.println("enter addFollower");
-        following.add(toFollow);
-        toFollow.getFollowers().add(this);
-		System.out.println("exit addFollower");
-    }
-	
-    public void removeFollower(Account toFollow) {
-        following.remove(toFollow);
-        toFollow.getFollowers().remove(this);
-    }
-	*/
 }

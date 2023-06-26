@@ -1,7 +1,7 @@
 
-package com.example.demo.domain;
+package com.example.demo.datatransfer;
 
-import jakarta.validation.constraints.NotBlank;
+import com.example.demo.annotation.Username;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -17,8 +17,7 @@ the view layer.) We (also) use AccountDto class for form binding.
 @NoArgsConstructor @AllArgsConstructor @Data
 public class AccountDto {
 	
-	@NotBlank
-	@Size(min = 1, max = 20)
+	@Username
 	private String username;
 	
 	@NotEmpty

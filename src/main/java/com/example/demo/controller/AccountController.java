@@ -36,14 +36,14 @@ public class AccountController {
 		return "accounts";
 	}
 	
-	@GetMapping("/accounts/{accountId}")
-	public String get(Model model, @PathVariable Long accountId,
+	@GetMapping("/accounts/{username}")
+	public String get(Model model, @PathVariable String username,
 			HttpServletResponse response) {
 		
 		System.out.println("enter get");
 		// error handling https://www.baeldung.com/exception-handling-for-rest-with-spring
-		Account account = accountService.findById(accountId).orElseThrow(
-			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such account id: " + accountId)
+		Account account = accountService.findByUsername(username).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such account with username '" + username + "'")
 		);
 		
 		model.addAttribute("account", account);
@@ -51,17 +51,24 @@ public class AccountController {
 		return "account";
 	}
 	
+	/*
+	@PreAuthorize("#username == authentication.principal.username")
+	public String (String username) {
+		//...
+	}
+	*/
+	
 	@Secured("USER")
-	@PostMapping("/accounts/{accountId}/follow")
-	public String follow(@PathVariable Long accountId, Principal principal) {
+	@PostMapping("/accounts/{username}/follow")
+	public String follow(@PathVariable("username") String usernameToFollow, Principal principal) {
 		System.out.println("enter cont.follow");
 		Account loggedInAccount = accountService.findByUsername(principal.getName()).orElseThrow(
-			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tried to follow but account with id='" + accountId + "' was not signed in")
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tried to follow but account with username '" + usernameToFollow + "' was not signed in")
 		);
 		
-		accountService.follow(loggedInAccount.getId(), accountId);
+		accountService.follow(loggedInAccount.getUsername(), usernameToFollow);
 		System.out.println("exit cont.follow");
-		return "redirect:/accounts/" + accountId;
+		return "redirect:/accounts/" + usernameToFollow;
 	}
 	
 	/*

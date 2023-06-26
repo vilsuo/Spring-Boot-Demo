@@ -2,6 +2,7 @@
 package com.example.demo.config;
 
 import com.example.demo.domain.Role;
+import com.example.demo.validator.UsernameValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,16 +39,19 @@ public class DevelopmentSecurityConfiguration {
 		http	
 			// https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html
 			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/accounts").permitAll()
 					
-				// allow anyone to register
+				// allow anyone to view 'home-page'
+				.requestMatchers(HttpMethod.GET, "/", "/accounts").permitAll()
+					
+				// allow anyone to register an account
 				.requestMatchers("/register", "/register/create").permitAll()
 					
-				// allow anyone to view personal pages
-				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/accounts/[0-9]+")).permitAll()
-					
+				// allow anyone to view account pages
+				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/accounts/" + UsernameValidator.SIMPLE_USERNAME_PATTERN)).permitAll()
+				
+				// DUBLICATE? IMPLEMENT SECURITY IN METHOD?
 				// allow signed in accounts to follow other accounts
-				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/accounts/[0-9]+/follow")).hasAuthority(Role.USER.getName())
+				//.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/accounts/" + UsernameValidator.SIMPLE_USERNAME_PATTERN + "/follow")).hasAuthority(Role.USER.getName())
 					
 				//.requestMatchers(HttpMethod.POST, "/accounts/ /follow").hasAuthority(Role.USER.getName())
 					

@@ -7,19 +7,12 @@
         <title>Accounts</title>
     </head>
     <body>
-        <div sec:authorize="isAuthenticated()">
-            | Logged user: <span sec:authentication="name"></span> |
-            Roles: <span sec:authentication="principal.authorities"></span> |
-            
-            <form method="POST" th:action="@{/logout}">
-                <input type="submit" value="Sign out"/>
-            </form>
-        </div>
+        <div th:replace="~{fragments/layout :: header}"></div>
         
         <h2>Accounts</h2>
         <ol>
             <li th:each="account : ${accounts}">
-                <a th:href="@{/accounts/{accountId}(accountId=${account.id})}" th:text="${account.username}">username</a>
+                <a th:href="@{/accounts/{username}(username=${account.username})}" th:text="${account.username}">username</a>
             </li>
         </ol>
     </body>

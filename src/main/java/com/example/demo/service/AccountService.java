@@ -2,7 +2,7 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Account;
-import com.example.demo.domain.AccountDto;
+import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.service.repository.AccountRepository;
 import com.example.demo.domain.Role;
 import java.util.HashSet;
@@ -64,6 +64,18 @@ public class AccountService {
 	}
 	
 	@Transactional
+    public void follow(String username, String usernameToFollow) {
+        Account account = findByUsername(username).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + username)
+		);
+        Account accountToFollow = findByUsername(usernameToFollow).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + usernameToFollow)
+		);
+        account.addFollower(accountToFollow);
+    }
+	
+	/*
+	@Transactional
     public void follow(Long userId, Long toFollowId) {
         Account account = accountRepository.findById(userId).orElseThrow(
 			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such target account id: " + userId)
@@ -73,6 +85,7 @@ public class AccountService {
 		);
         account.addFollower(accountToFollow);
     }
+	*/
 	
 	@Transactional
     public void unfollow(Long userId, Long toUnfollowId) {
