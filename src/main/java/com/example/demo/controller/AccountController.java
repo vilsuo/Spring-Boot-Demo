@@ -16,6 +16,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+
+/*
+TODO
+- error page
+- log creation/following/unfollowing...
+- custom (error?) messages
+- method security
+
+*/
 @Controller
 public class AccountController {
 	

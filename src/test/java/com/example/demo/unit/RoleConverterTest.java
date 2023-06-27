@@ -1,5 +1,5 @@
 
-package com.example.demo.unittest;
+package com.example.demo.unit;
 
 import com.example.demo.domain.Role;
 import com.example.demo.converter.RoleConverter;

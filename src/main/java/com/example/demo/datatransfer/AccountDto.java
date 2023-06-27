@@ -1,9 +1,8 @@
 
 package com.example.demo.datatransfer;
 
+import com.example.demo.annotation.Password;
 import com.example.demo.annotation.Username;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,6 @@ public class AccountDto {
 	@Username
 	private String username;
 	
-	@NotEmpty
-	@Size(min = 1, max = 20)
+	@Password
 	private String password;
 }
