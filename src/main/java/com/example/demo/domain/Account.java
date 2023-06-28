@@ -1,7 +1,6 @@
 
 package com.example.demo.domain;
 
-import com.example.demo.annotation.Password;
 import com.example.demo.annotation.Username;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -17,7 +16,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
-@EqualsAndHashCode(exclude = {"followers", "following"}, callSuper = false)//(onlyExplicitlyIncluded = true, callSuper = false)
+@EqualsAndHashCode(exclude = {"followers", "following"}, callSuper = false)
 public class Account extends AbstractPersistable<Long> {
 	
 	@Username
@@ -25,7 +24,7 @@ public class Account extends AbstractPersistable<Long> {
 	
 	private String password;
 	
-	@NotNull()
+	@NotNull
 	private Role role;
 	
 	// source : 
@@ -49,7 +48,7 @@ public class Account extends AbstractPersistable<Long> {
 	public void addFollower(Account toFollow) {
 		System.out.println("enter addFollower");
 		
-        following.add(toFollow);
+        following.add(toFollow); // why this?
         //toFollow.getFollowers().add(this);
 		
 		System.out.println("exit addFollower");
@@ -58,7 +57,7 @@ public class Account extends AbstractPersistable<Long> {
     public void removeFollower(Account toFollow) {
 		System.out.println("enter removeFollower");
 		
-        following.remove(toFollow);
+        following.remove(toFollow); // why this?
         //toFollow.getFollowers().remove(this);
 		
 		System.out.println("exit removeFollower");

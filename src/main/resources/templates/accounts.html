@@ -11,8 +11,8 @@
         
         <h2>Accounts</h2>
         <ol>
-            <li th:each="account : ${accounts}">
-                <a th:href="@{/accounts/{username}(username=${account.username})}" th:text="${account.username}">username</a>
+            <li th:each="accountDto : ${accountDtos}">
+                <a th:href="@{/accounts/{username}(username=${accountDto.username})}" th:text="${accountDto.username}">username</a>
             </li>
         </ol>
     </body>

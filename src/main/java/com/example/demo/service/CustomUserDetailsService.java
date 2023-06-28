@@ -2,7 +2,6 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Account;
-import com.example.demo.service.AccountService;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,9 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountService.findByUsername(username).orElseThrow(
-			() -> new UsernameNotFoundException("No such username: " + username)
-		);
+		Account account = accountService.findByUsername(username);
 
         return new org.springframework.security.core.userdetails.User(
                 account.getUsername(),

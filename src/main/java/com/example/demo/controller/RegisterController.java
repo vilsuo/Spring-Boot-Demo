@@ -1,9 +1,11 @@
 
 package com.example.demo.controller;
 
+import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.service.AccountService;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 /*
 TODO
-- log account creation
+- map account to account dt
 */
 @Controller
 public class RegisterController {
@@ -22,13 +24,13 @@ public class RegisterController {
 	private AccountService accountService;
 	
 	@GetMapping("/register")
-	public String home(@ModelAttribute AccountDto accountDto) {
+	public String home(@ModelAttribute AccountCreationDto accountDto) {
 		return "register";
 	}
 	
 	@PostMapping("/register/create")
 	public String createAccount(
-			@Valid @ModelAttribute AccountDto accountDto,
+			@Valid @ModelAttribute AccountCreationDto accountCreationDto,
 			BindingResult bindingResult) {
 		
 		if (bindingResult.hasErrors()) {
@@ -37,13 +39,23 @@ public class RegisterController {
 			return "register";
 		}
 		
-		String username = accountDto.getUsername().trim();
+		String username = accountCreationDto.getUsername();
 		System.out.println("username: " + username);
 		
 		if (!accountService.existsByUsername(username)) {
-			accountService.create(accountDto);
-			System.out.println("created account '" + username + "'");
-			return "login";
+			Optional<AccountDto> createdAccount
+				= accountService.createUSER(accountCreationDto);
+			
+			if (createdAccount.isPresent()) {
+				System.out.println("Success: Account '" + username + "' was created.");
+				return "login";
+				
+			} else {
+				// never should happen
+				System.out.println("Error: Account '" + username + "' was not created!");
+				bindingResult.rejectValue("username", null, "Error creating account with username '" + username + "'");
+				return "register";
+			}
 			
 		} else {
 			System.out.println("username is taken");

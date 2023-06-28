@@ -10,9 +10,9 @@
         <div th:replace="~{fragments/layout :: header}"></div>
         
         <div>
-            Personal page of <span th:text="${account.username}">username</span>
+            Personal page of <span th:text="${accountDto.username}">username</span>
             <div sec:authorize="isAuthenticated()">
-                <form method="POST" th:action="@{/accounts/{username}/follow(username=${account.username})}">
+                <form method="POST" th:action="@{/accounts/{username}/follow(username=${accountDto.username})}">
                     <input type="submit" value="Follow"/>
                 </form>
             </div>
@@ -20,15 +20,15 @@
         
         <h2>Following</h2>
         <ol>
-            <li th:each="followingAccount : ${account.following}">
-                <a th:href="@{/accounts/{username}(username=${followingAccount.username})}" th:text="${followingAccount.username}">username</a>
+            <li th:each="followingAccountDto : ${following}">
+                <a th:href="@{/accounts/{username}(username=${followingAccountDto.username})}" th:text="${followingAccountDto.username}">username</a>
             </li>
         </ol>
         
         <h2>Followers</h2>
         <ol>
-            <li th:each="followedAccount : ${account.followers}">
-                <a th:href="@{/accounts/{username}(username=${followedAccount.username})}" th:text="${followedAccount.username}">username</a>
+            <li th:each="followedAccountDto : ${followers}">
+                <a th:href="@{/accounts/{username}(username=${followedAccountDto.username})}" th:text="${followedAccountDto.username}">username</a>
             </li>
         </ol>
     </body>

@@ -45,7 +45,7 @@ public class DevelopmentSecurityConfiguration {
 					
 				// allow anyone to register an account
 				.requestMatchers("/register", "/register/create").permitAll()
-					
+				
 				// allow anyone to view account pages
 				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/accounts/" + UsernameValidator.SIMPLE_USERNAME_PATTERN)).permitAll()
 				
@@ -57,7 +57,7 @@ public class DevelopmentSecurityConfiguration {
 					
 				// allow admins to view and edit all admin pages
 				.requestMatchers("/admin", "/admin/**").hasAuthority(Role.ADMIN.getName())
-					
+				
 				.requestMatchers(toH2Console()).permitAll()
 				.anyRequest().authenticated()
 			)

@@ -1,7 +1,7 @@
 
 package com.example.demo.unit;
 
-import com.example.demo.datatransfer.AccountDto;
+import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
 import jakarta.validation.ConstraintViolation;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AccountDtoTest {
+public class AccountCreationDtoTest {
 	
 	private final List<String> VALID_USERNAMES 
 		= Arrays.asList(
@@ -98,8 +98,8 @@ public class AccountDtoTest {
 			String username = INVALID_USERNAMES.get(i);
 			String password = VALID_PASSWORDS.get(i);
 			
-			Set<ConstraintViolation<AccountDto>> violations
-				= validator.validate(new AccountDto(username, password));
+			Set<ConstraintViolation<AccountCreationDto>> violations
+				= validator.validate(new AccountCreationDto(username, password));
 			
 			assertFalse(
 				violations.isEmpty(), 
@@ -116,8 +116,8 @@ public class AccountDtoTest {
 			String username = VALID_USERNAMES.get(i);
 			String password = INVALID_PASSWORDS.get(i);
 			
-			Set<ConstraintViolation<AccountDto>> violations
-				= validator.validate(new AccountDto(username, password));
+			Set<ConstraintViolation<AccountCreationDto>> violations
+				= validator.validate(new AccountCreationDto(username, password));
 			
 			assertFalse(
 				violations.isEmpty(), 
@@ -134,8 +134,8 @@ public class AccountDtoTest {
 			String username = VALID_USERNAMES.get(i);
 			String password = VALID_PASSWORDS.get(i);
 			
-			Set<ConstraintViolation<AccountDto>> violations
-				= validator.validate(new AccountDto(username, password));
+			Set<ConstraintViolation<AccountCreationDto>> violations
+				= validator.validate(new AccountCreationDto(username, password));
 			
 			assertTrue(
 				violations.isEmpty(), 
