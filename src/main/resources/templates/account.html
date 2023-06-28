@@ -12,9 +12,17 @@
         <div>
             Personal page of <span th:text="${accountDto.username}">username</span>
             <div sec:authorize="isAuthenticated()">
-                <form method="POST" th:action="@{/accounts/{username}/follow(username=${accountDto.username})}">
-                    <input type="submit" value="Follow"/>
-                </form>
+                <div th:if="${isfollowing}">
+                    <form method="POST" th:action="@{/accounts/{username}/unfollow(username=${accountDto.username})}">
+                        <input type="submit" value="Unfollow"></input>
+                    </form>
+                </div>
+                
+                <div th:if="${!isfollowing}">
+                    <form method="POST" th:action="@{/accounts/{username}/follow(username=${accountDto.username})}">
+                        <input type="submit" value="Follow"/>
+                    </form>
+                </div>
             </div>
         </div>
         
