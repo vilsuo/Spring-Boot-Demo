@@ -3,7 +3,7 @@
       xmlns="http://www.w3.org/1999/xhtml" 
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.springframework.org/security/tags">
-    <head th:fragment="head(title)">
+    <head th:fragment="head(title)" lang="en">
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title th:text="${title}">Title</title>
@@ -11,21 +11,25 @@
     </head>
     <body>
         <div th:fragment="account-info">
-            <div sec:authorize="isAuthenticated()">
-                <div class="h-form">
-                    <h2>Logged in: <span th:text="${#authentication.name}"></span> </h2>
+            <div sec:authorize="isAuthenticated()" class="main-bar">
+                <div>
+                    <a th:href="@{/}">Home page</a>
+                    <a th:href="@{/accounts/{username}(username=${#authentication.name})}">Account page</a>
+                </div>
+                <div class="container-logout">
+                    <p th:text="${#authentication.name}">Username</p>
                     <form method="POST" th:action="@{/logout}">
                         <input type="submit" value="Sign out"/>
                     </form>
                 </div>
-                <ul>
-                    <li><a th:href="@{/accounts/{username}(username=${#authentication.name})}">Account page</a></li>
-                </ul>
             </div>
 
-            <div sec:authorize="isAnonymous()">
-                <a th:href="@{/login}">Log in</a>
-                <a th:href="@{/register}">Register</a>
+            <div sec:authorize="isAnonymous()"  class="main-bar">
+                <a th:href="@{/}">Home page</a>
+                <div class="container-logout">
+                    <a th:href="@{/login}">Log in</a>
+                    <a th:href="@{/register}">Register</a>
+                </div>
             </div>
         </div>
     </body>

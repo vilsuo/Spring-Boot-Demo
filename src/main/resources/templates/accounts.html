@@ -2,14 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" 
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.springframework.org/security/tags">
-    <head lang="en">
-        <title>Accounts</title>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <head th:replace="~{fragments/layout :: head('Accounts page')}">
+        <title>Accounts page</title>
     </head>
     <body>
-        <a th:href="@{/}">Home page</a>
-        
         <div th:replace="~{fragments/layout :: account-info}"></div>
         
         <h2>Accounts</h2>
