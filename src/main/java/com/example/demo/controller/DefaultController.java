@@ -9,6 +9,6 @@ public class DefaultController {
 	
 	@GetMapping("/")
 	public String home() {
-		return "redirect:/accounts";
+		return "index";
 	}
 }

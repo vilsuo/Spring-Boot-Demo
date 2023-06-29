@@ -2,22 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml" 
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.springframework.org/security/tags">
-    <head lang="en">
+    <head th:replace="~{fragments/layout :: head(title='account')}">
+        <title>Account</title>
         <meta charset="UTF-8"/>
-        <title>Personal account page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
     <body>
-        <div th:replace="~{fragments/layout :: header}"></div>
+        <a th:href="@{/}">Home page</a>
         
-        <div>
-            Personal page of <span th:text="${accountDto.username}">username</span>
+        <div th:replace="~{fragments/layout :: account-info}"></div>
+        
+        <div class="h-form">
+            <h1>Account <span th:text="${accountDto.username}"></span> page</h1>
             <div sec:authorize="isAuthenticated()">
                 <div th:if="${isfollowing}">
                     <form method="POST" th:action="@{/accounts/{username}/unfollow(username=${accountDto.username})}">
                         <input type="submit" value="Unfollow"></input>
                     </form>
                 </div>
-                
+
                 <div th:if="${!isfollowing}">
                     <form method="POST" th:action="@{/accounts/{username}/follow(username=${accountDto.username})}">
                         <input type="submit" value="Follow"/>
@@ -39,5 +42,6 @@
                 <a th:href="@{/accounts/{username}(username=${followedAccountDto.username})}" th:text="${followedAccountDto.username}">username</a>
             </li>
         </ol>
+        
     </body>
 </html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/security/tags">
+    <head th:replace="~{fragments/layout :: head('Home page')}">
+        <title>Home page</title>
+    </head>
+    <body>
+        <h1>Home page</h1>
+        <div th:replace="~{fragments/layout :: account-info}"></div>
+        
+        <div>
+            <h2>Accounts</h2>
+            <ul>
+                <li><a th:href="@{/accounts}">View accounts</a></li>
+            </ul>
+        </div>
+    </body>
+</html>

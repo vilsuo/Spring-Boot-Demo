@@ -1,0 +1,13 @@
+.h-form {
+    border: 1px dotted black;
+    display: flex;
+    align-items: center; /* Vertical align the elements to the center */
+}
+
+.h-form h1, h2 {
+    margin: 0;
+}
+
+.h-form input {
+    margin-left: 10px; /* Push this element to the right */
+}
