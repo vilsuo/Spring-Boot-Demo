@@ -21,4 +21,8 @@ public class AccountCreationDto {
 	
 	@Password
 	private String password;
+	
+	public String toString() {
+		return "AccountCreationDto={username='" + username + "', password='" + password +"'}";
+	}
 }

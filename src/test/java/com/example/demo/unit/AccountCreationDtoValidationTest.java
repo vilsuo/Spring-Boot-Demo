@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AccountCreationDtoTest {
+public class AccountCreationDtoValidationTest {
 	
 	private final List<String> VALID_USERNAMES 
 		= Arrays.asList(
@@ -50,8 +50,8 @@ public class AccountCreationDtoTest {
 			null, "", "waytoolongpasswordsurelythisisalreadytoolongtowriteallthetime"
 		);
 	
-	private UsernameValidator usernameValidator = new UsernameValidator();
-	private PasswordValidator passwordValidator = new PasswordValidator();
+	private final UsernameValidator usernameValidator = new UsernameValidator();
+	private final PasswordValidator passwordValidator = new PasswordValidator();
 	
 	private final Validator validator
 			= Validation.buildDefaultValidatorFactory().getValidator();

@@ -7,8 +7,12 @@ import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.service.repository.AccountRepository;
 import com.example.demo.domain.Role;
 import com.example.demo.error.validation.ResourceNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,11 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/*
-TODO
-- handle NullPointerExceptions better?
-	- make method for throwing?
-*/
 @Service
 public class AccountService {
 	
@@ -31,6 +30,9 @@ public class AccountService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+    private Validator validator;
 	
 	private AccountDto convertToDto(Account account) {
 		if (account == null) {
@@ -77,34 +79,37 @@ public class AccountService {
 	}
 	
 	public Optional<AccountDto> createUSER(AccountCreationDto accountCreationDto) {
-		if (accountCreationDto == null) {
-			throw new NullPointerException("Tried to create an Account from null param='accountCreationDto'.");
-		}
-		
-		return create(accountCreationDto.getUsername(), accountCreationDto.getPassword(), Role.USER);
+		return create(accountCreationDto, Role.USER);
 	}
 	
 	@Secured("ADMIN")
 	public Optional<AccountDto> createADMIN(AccountCreationDto accountCreationDto) {
-		if (accountCreationDto == null) {
-			throw new NullPointerException("Tried to create an Account from null param='accountCreationDto'.");
-		}
-		
-		return create(accountCreationDto.getUsername(), accountCreationDto.getPassword(), Role.ADMIN);
+		return create(accountCreationDto, Role.ADMIN);
 	}
 	
-	// TODO: handle other errors?
+	/*
+	returns an empty optional if account with the given username already exists
+	*/
 	@Transactional
-	private Optional<AccountDto> create(String username, String password, Role role) {
-		if (username == null) {
-			throw new IllegalArgumentException("Tried to create an Account with null param='username'.");
-			
-		} else if (password == null) {
-			throw new IllegalArgumentException("Tried to create an Account with null param='password'.");
-			
-		} else if (role == null) {
-			throw new IllegalArgumentException("Tried to create an Account with null param='role'.");
+	private Optional<AccountDto> create(AccountCreationDto accountCreationDto, Role role) {
+
+		if (accountCreationDto == null) {
+			throw new NullPointerException("Tried to create an Account with null param='accountCreationDto'.");
 		}
+		
+		if (role == null) {
+			throw new NullPointerException("Tried to create an Account with null param='role'.");
+		}
+		
+		Set<ConstraintViolation<AccountCreationDto>> accountCreationDtoViolations
+				= validator.validate(accountCreationDto);
+
+        if (!accountCreationDtoViolations.isEmpty()) {
+			throw new ConstraintViolationException(accountCreationDtoViolations);
+        }
+		
+		String username = accountCreationDto.getUsername();
+		String password = accountCreationDto.getPassword();
 		
 		if (!accountRepository.existsByUsername(username)) {
 			Account createdAccount = accountRepository.save(
@@ -126,7 +131,8 @@ public class AccountService {
         Account fromAccount = findById(fromId);
         Account toAccount = findById(toId);
 		
-        fromAccount.addFollower(toAccount);
+		fromAccount.addFollowing(toAccount);
+		toAccount.addFollower(fromAccount);
     }
 	
 	@Transactional
@@ -134,7 +140,8 @@ public class AccountService {
         Account fromAccount = findById(fromId);
         Account toAccount = findById(toId);
 		
-        fromAccount.removeFollower(toAccount);
+		fromAccount.removeFollowing(toAccount);
+		toAccount.removeFollower(fromAccount);
     }
 	
 	/*
@@ -149,7 +156,7 @@ public class AccountService {
 		}
 		
 		return getFollowers(followedId).stream()
-				.filter(follower -> follower.getId() == followerId)
+				.filter(follower -> Objects.equals(follower.getId(), followerId))
 				.findFirst().isPresent();
 	}
 	

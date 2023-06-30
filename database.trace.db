@@ -277,3 +277,6 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/Ville S
 	at org.h2.mvstore.FileStore.open(FileStore.java:128)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
 	... 64 more
+2023-06-30 23:27:06 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]account_from_id"; expected "ALTER, ANALYZE"; SQL statement:
+account_from_id [42001-214]

@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /*
@@ -30,12 +29,14 @@ public class AccountController {
 	@Autowired
 	private AccountService accountService;
 	
+	/*
 	@PostConstruct
 	public void helper() {
 		accountService.createUSER(new AccountCreationDto("v1", "s"));
 		accountService.createUSER(new AccountCreationDto("v2", "s"));
 		accountService.createUSER(new AccountCreationDto("v3", "s"));
 	}
+	*/
 	
 	@GetMapping("/accounts")
 	public String list(Model model) {
@@ -45,9 +46,7 @@ public class AccountController {
 	}
 	
 	@GetMapping("/accounts/{username}")
-	public String get(Model model, @PathVariable String username, Principal principal) {//,
-			//HttpServletResponse response) {
-		
+	public String get(Model model, @PathVariable String username, Principal principal) {
 		AccountDto accountDto = accountService.findDtoByUsername(username);
 		model.addAttribute("accountDto", accountDto);
 		model.addAttribute("following", accountService.getFollowing(accountDto.getId()));
@@ -64,7 +63,6 @@ public class AccountController {
 	@Secured("USER")
 	@PostMapping("/accounts/{username}/follow")
 	public String follow(@PathVariable("username") String usernameToFollow, Principal principal) {
-		
 		AccountDto loggedInAccount = accountService.findDtoByUsername(principal.getName());
 		AccountDto accountDtoToFollow = accountService.findDtoByUsername(usernameToFollow);
 		
@@ -75,14 +73,13 @@ public class AccountController {
 	
 	@Secured("USER")
 	@PostMapping("/accounts/{username}/unfollow")
-	public String unfollow(@PathVariable("username") String usernameToFollow, Principal principal) {
-		
+	public String unfollow(@PathVariable("username") String usernameToUnfollow, Principal principal) {
 		AccountDto loggedInAccount = accountService.findDtoByUsername(principal.getName());
-		AccountDto accountDtoToFollow = accountService.findDtoByUsername(usernameToFollow);
+		AccountDto accountDtoToUnfollow = accountService.findDtoByUsername(usernameToUnfollow);
 		
-		accountService.unfollow(loggedInAccount.getId(), accountDtoToFollow.getId());
+		accountService.unfollow(loggedInAccount.getId(), accountDtoToUnfollow.getId());
 		
-		return "redirect:/accounts/" + usernameToFollow;
+		return "redirect:/accounts/" + usernameToUnfollow;
 	}
 	
 	/*
