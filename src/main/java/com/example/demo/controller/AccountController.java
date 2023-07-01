@@ -23,7 +23,7 @@ TODO
 - method security
 
 */
-@Controller
+//@Controller
 public class AccountController {
 	
 	@Autowired

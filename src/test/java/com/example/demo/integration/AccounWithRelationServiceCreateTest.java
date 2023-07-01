@@ -2,9 +2,9 @@ package com.example.demo.integration;
 
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
-import com.example.demo.domain.Account;
+import com.example.demo.domain.AccountWithRelation;
 import com.example.demo.error.validation.ResourceNotFoundException;
-import com.example.demo.service.AccountService;
+import com.example.demo.service.AccountWithRelationService;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
 import jakarta.transaction.Transactional;
@@ -25,10 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @Transactional
 @SpringBootTest
-public class AccountServiceCreateTest {
+public class AccounWithRelationServiceCreateTest {
 
 	@Autowired
-	private AccountService accountService;
+	private AccountWithRelationService accountService;
 	
 	private final String validUsername1 = "valid1";
 	private final String validUsername2 = "valid2";
@@ -70,7 +70,7 @@ public class AccountServiceCreateTest {
 	}
 	
 	@Test
-	public void createThrowsOnNullParameters() {
+	public void createThrowsOnNullAndInvalidParameters() {
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountService.createUSER(new AccountCreationDto(invalidUsername, validPassword)),
@@ -189,7 +189,7 @@ public class AccountServiceCreateTest {
 	}
 	
 	@Test
-	public void findByIdTest() {
+	public void findByIdAndDtoIdTest() {
 		assertThrows(
 			NullPointerException.class,
 			() -> accountService.findById(null),
@@ -219,7 +219,11 @@ public class AccountServiceCreateTest {
 				new AccountCreationDto(validUsername1, validPassword)
 			).get();
 		
-		Account accountFound = accountService.findById(accountDto.getId());
+		// populate database with other values
+		accountService.createUSER(new AccountCreationDto(validUsername2, validPassword));
+		accountService.createUSER(new AccountCreationDto(validUsername3, validPassword));
+		
+		AccountWithRelation accountFound = accountService.findById(accountDto.getId());
 		AccountDto accountDtoFound = accountService.findDtoById(accountDto.getId());
 		
 		assertEquals(
@@ -233,7 +237,7 @@ public class AccountServiceCreateTest {
 	}
 	
 	@Test
-	public void findByUsernameTest() {
+	public void findByUsernameAndDtoUsernameAndExistsByUsernameTest() {
 		assertThrows(
 			NullPointerException.class,
 			() -> accountService.findByUsername(null),
@@ -274,12 +278,16 @@ public class AccountServiceCreateTest {
 				new AccountCreationDto(validUsername1, validPassword)
 			).get();
 		
+		// populate database with other values
+		accountService.createUSER(new AccountCreationDto(validUsername2, validPassword));
+		accountService.createUSER(new AccountCreationDto(validUsername3, validPassword));
+		
 		assertTrue(
 			accountService.existsByUsername(validUsername1),
 			"Username can not be found after creation"
 		);
 		
-		Account accountFound = accountService.findByUsername(accountDto.getUsername());
+		AccountWithRelation accountFound = accountService.findByUsername(accountDto.getUsername());
 		AccountDto accountDtoFound = accountService.findDtoByUsername(accountDto.getUsername());
 		
 		assertEquals(
@@ -320,6 +328,5 @@ public class AccountServiceCreateTest {
 			accountService.list().contains(dto2),
 			"After creating a second account, the account list does not contain the second account"
 		);
-		
 	}
 }

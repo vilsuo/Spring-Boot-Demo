@@ -2,13 +2,24 @@
 package com.example.demo.domain;
 
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
-public class Relation {
+@AllArgsConstructor @NoArgsConstructor @Data
+public class Relation extends AbstractPersistable<Long> {
 	
-	@NotNull
-	private Account account;
+	@ManyToOne
+	@JoinColumn(name = "account_source_fk")
+	private AccountWithRelation source;
 	
-	private String status;
+	@ManyToOne
+	@JoinColumn(name = "account_target_fk")
+	private AccountWithRelation target;
+	
+	private Status status;
 }

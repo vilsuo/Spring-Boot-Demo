@@ -7,8 +7,25 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /*
 TODO
+IMPORTANT
+- write tests for AccountWithRelationService
+	- getAccountsRelations
+	- getRelationToAccount
+	- addRelationToAccount
+	- removeRelationFromAccount
+- write tests for RelationService
+	- relationExists
+	- create
+		- does not create if exists?
+	- removeRelation
+		- removes all?
 - login
 	- no stack trace on invalid username
+
+
+NOT SO IMPORTANT
+- create common base for Role and Status
+	- also implement validator for these classes
 */
 @SpringBootApplication
 public class DemoApplication {
