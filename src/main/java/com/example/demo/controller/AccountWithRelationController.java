@@ -46,27 +46,29 @@ public class AccountWithRelationController {
 	
 	@GetMapping("/accounts/{username}")
 	public String get(Model model, @PathVariable String username, Principal principal) {
+		System.out.println("Enter: AccountController.get");
 		AccountDto accountDto = accountService.findDtoByUsername(username);
 		
 		// handle better
 		// 
 		model.addAttribute("accountDto", accountDto);
 		model.addAttribute("accountRelations", accountService.getAccountsRelations(username));
-		model.addAttribute("relationsToAccount", accountService.getRelationToAccount(username));
+		model.addAttribute("relationsToAccount", accountService.getRelationsToAccount(username));
 		
 		if (principal != null) {
-			AccountDto loggedInAccount = accountService.findDtoByUsername(principal.getName());
+			//AccountDto loggedInAccount = accountService.findDtoByUsername(principal.getName());
 			//model.addAttribute("isfollowing", accountService.isFollowing(loggedInAccount.getId(), accountDto.getId()));
 		}
-		
+		System.out.println("Exit: AccountController.get");
 		return "account-with-relation";
 	}
 	
 	@Secured("USER")
 	@PostMapping("/accounts/{username}/friend")
 	public String addFriend(@PathVariable String username, Principal principal) {
+		System.out.println("Enter: AccountController.addFriend");
 		addRelation(principal.getName(), username, Status.FRIEND);
-		
+		System.out.println("Exit: AccountController.addFriend");
 		return "redirect:/accounts/" + username;
 	}
 	
@@ -96,7 +98,9 @@ public class AccountWithRelationController {
 	
 	
 	private void addRelation(String relationSourceUsername, String relationTargetUsername, Status status) {
+		System.out.println("Enter: AccountController.addRelation");
 		accountService.addRelationToAccount(relationSourceUsername, relationTargetUsername, status);
+		System.out.println("Exit: AccountController.addRelation");
 	}
 	
 	private void removeRelation(String relationSourceUsername, String relationTargetUsername, Status status) {

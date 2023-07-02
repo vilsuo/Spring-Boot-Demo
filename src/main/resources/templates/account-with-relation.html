@@ -8,9 +8,12 @@
     <body>
         <div th:replace="~{fragments/layout :: account-info}"></div>
         
-        <div class="h-form">
+        <div th:replace="~{fragments/layout :: account-sidebar(${accountDto.username})}"></div>
+        
+        <div class="main">
             <h1>Account <span th:text="${accountDto.username}"></span> page</h1>
             
+            <!--
             <div sec:authorize="isAuthenticated()">
                 <div>
                     <form method="POST" th:action="@{/accounts/{username}/friend(username=${accountDto.username})}">
@@ -22,43 +25,54 @@
                         <input type="submit" value="Remove Friend"></input>
                     </form>
                 </div>
+                
+                <div>
+                    <form method="POST" th:action="@{/accounts/{username}/block(username=${accountDto.username})}">
+                        <input type="submit" value="Add Block"></input>
+                    </form>
+                </div>
+                <div>
+                    <form method="POST" th:action="@{/accounts/{username}/unblock(username=${accountDto.username})}">
+                        <input type="submit" value="Remove Block"></input>
+                    </form>
+                </div>
             </div>
+            -->
+            <h2>Account relations</h2>
+            <ol>
+                <li th:each="relation : ${accountRelations}">
+                    From 
+                    <a th:href="@{/accounts/{username}(username=${relation.source.username})}"
+                       th:text="${relation.source.username}">
+                        username
+                    </a>
+                    To
+                    <a th:href="@{/accounts/{username}(username=${relation.target.username})}"
+                       th:text="${relation.target.username}">
+                        username
+                    </a>
+                    Status
+                    <span th:text="${relation.status}"></span>
+                </li>
+            </ol>
+
+            <h2>Relations to account</h2>
+            <ol>
+                <li th:each="relation : ${relationsToAccount}">
+                    From 
+                    <a th:href="@{/accounts/{username}(username=${relation.source.username})}"
+                       th:text="${relation.source.username}">
+                        username
+                    </a>
+                    To
+                    <a th:href="@{/accounts/{username}(username=${relation.target.username})}"
+                       th:text="${relation.target.username}">
+                        username
+                    </a>
+                    Status
+                    <span th:text="${relation.status}"></span>
+                </li>
+            </ol>
         </div>
-        
-        <h2>Account relations</h2>
-        <ol>
-            <li th:each="relation : ${accountRelations}">
-                From 
-                <a th:href="@{/accounts/{username}(username=${relation.source.username})}"
-                   th:text="${relation.source.username}">
-                    username
-                </a>
-                To
-                <a th:href="@{/accounts/{username}(username=${relation.target.username})}"
-                   th:text="${relation.target.username}">
-                    username
-                </a>
-                Status
-                <span th:text="${relation.status}"></span>
-            </li>
-        </ol>
-        
-        <h2>Relations to account</h2>
-        <ol>
-            <li th:each="relation : ${relationsToAccount}">
-                From 
-                <a th:href="@{/accounts/{username}(username=${relation.source.username})}"
-                   th:text="${relation.source.username}">
-                    username
-                </a>
-                To
-                <a th:href="@{/accounts/{username}(username=${relation.target.username})}"
-                   th:text="${relation.target.username}">
-                    username
-                </a>
-                Status
-                <span th:text="${relation.status}"></span>
-            </li>
-        </ol>
     </body>
 </html>

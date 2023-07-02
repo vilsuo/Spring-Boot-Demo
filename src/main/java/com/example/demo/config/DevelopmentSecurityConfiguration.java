@@ -40,7 +40,7 @@ public class DevelopmentSecurityConfiguration {
 			// https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html
 			.authorizeHttpRequests((requests) -> requests
 				// https://stackoverflow.com/questions/62531927/spring-security-redirect-to-static-resources-after-authentication
-				.requestMatchers("/js/**", "/css/**").permitAll()
+				.requestMatchers("/js/**", "/css/**", "/images/**").permitAll()
 					
 				// allow anyone to view 'home-page'
 				.requestMatchers(HttpMethod.GET, "/", "/index", "/accounts").permitAll()

@@ -16,11 +16,18 @@ public class RelationService {
 	@Autowired
 	private RelationRepository relationRepository;
 	
+	
 	public boolean relationExists(
-			String sourceUsername, String targetUsername, Status status) {
+			AccountWithRelation source, AccountWithRelation target, Status status) {
 		
+		System.out.println("Enter: RelationService.relationExists");
+		
+		System.out.println("Enter: RelationRepository,findBySourceAndTarget");
+		System.out.println("Exit: RelationRepository,findBySourceAndTarget");
+		
+		System.out.println("Exit: RelationService.relationExists");
 		return !relationRepository
-				.findBySource_UsernameAndTarget_Username(sourceUsername, targetUsername)
+				.findBySourceAndTarget(source, target)
 					.stream()
 					.filter(relation -> relation.getStatus() == status)
 					.toList()
@@ -32,11 +39,15 @@ public class RelationService {
 			AccountWithRelation source, AccountWithRelation target, 
 			Status status) {
 		
+		System.out.println("Enter: RelationService.create");
 		if (status == null) {
-			throw new NullPointerException("Can save a Relation with null Status");
+			throw new NullPointerException("Can not create a Relation with null Status");
 		}
 		
-		if (!relationExists(source.getUsername(), target.getUsername(), status)) {
+		if (!relationExists(source, target, status)) {
+			System.out.println("Enter: RelationRepository.save");
+			System.out.println("Exit: RelationRepository.save");
+			System.out.println("Exit: RelationService.create");
 			return Optional.of(
 				relationRepository.save(new Relation(source, target, status))
 			);
@@ -48,7 +59,7 @@ public class RelationService {
 	// Removes all relations with 'status' from source to target
 	@Transactional
 	public void removeRelation(
-			String sourceAccountUsername, String targetAccountUsername, 
+			AccountWithRelation source, AccountWithRelation target, 
 			Status status) {
 		
 		if (status == null) {
@@ -56,11 +67,9 @@ public class RelationService {
 		}
 		
 		relationRepository.deleteAll(
-			relationRepository.findBySource_UsernameAndTarget_Username(
-					sourceAccountUsername, targetAccountUsername
-			).stream()
-			.filter(relation -> relation.getStatus() == status)
-			.toList()
+			relationRepository.findBySourceAndTarget(source, target).stream()
+					.filter(relation -> relation.getStatus() == status)
+					.toList()
 		);
 	}
 }

@@ -47,6 +47,7 @@ public class AccountWithRelationService {
 		return new AccountDto(account.getId(), account.getUsername());
 	}
 	
+	// only used by findByDto
 	public AccountWithRelation findById(Long id) {
 		if (id == null) {
 			throw new NullPointerException("Tried to find Account by null param='id'.");
@@ -57,19 +58,22 @@ public class AccountWithRelationService {
 		);
 	}
 	
-	/*
-	used by custom user details service
-	*/
+	// used by custom user details service
 	public AccountWithRelation findByUsername(String username) {
+		System.out.println("Enter: AccountService.findByUsername");
 		if (username == null) {
 			throw new NullPointerException("Tried to find AccountWithRelation by null param='username'.");
 		}
 		
+		System.out.println("Enter: AccountRepository.findByUsername");
+		System.out.println("Exit: AccountRepository.findByUsername");
+		System.out.println("Exit: AccountService.findByUsername");
 		return accountRepository.findByUsername(username).orElseThrow(
 			() -> new ResourceNotFoundException("AccountWithRelation", "username", username)
 		);
 	}
 	
+	// only used in testing
 	public AccountDto findDtoById(Long id) {
 		return convertToDto(findById(id));
 	}
@@ -94,7 +98,6 @@ public class AccountWithRelationService {
 	public Optional<AccountDto> createADMIN(AccountCreationDto accountCreationDto) {
 		return create(accountCreationDto, Role.ADMIN);
 	}
-	
 	
 	// returns an empty optional if account with the given username already exists
 	@Transactional
@@ -133,27 +136,40 @@ public class AccountWithRelationService {
 	}
 	
 	public Set<Relation> getAccountsRelations(String username) {
+		System.out.println("Enter AccountService.getAccountsRelations");
+		System.out.println("Exit AccountService.getAccountsRelations");
 		return findByUsername(username).getRelationsTo();
 	}
 	
-	public Set<Relation> getRelationToAccount(String username) {
+	public Set<Relation> getRelationsToAccount(String username) {
+		System.out.println("Enter AccountService.getRelationsToAccount");
+		System.out.println("Exit AccountService.getRelationsToAccount");
 		return findByUsername(username).getRelationsFrom();
 	}
 	
 	@Transactional
     public void addRelationToAccount(String sourceAccountUsername, String targetAccountUsername, Status status) {
+		System.out.println("Enter: AccountService.addRelationToAccount");
 		AccountWithRelation source = findByUsername(sourceAccountUsername);
 		AccountWithRelation target = findByUsername(targetAccountUsername);
+		Optional<Relation> opt = relationService.create(source, target, status);
 		
-		Optional<Relation> optRelation = relationService.create(source, target, status);
-		if (optRelation.isPresent()) {
-			source.addRelation(optRelation.get());
+		if (opt.isPresent()) {
+			// why are these needed? Service Tests does not pass otherwise
+			Relation relation = opt.get();
+			source.getRelationsTo().add(relation);
+			target.getRelationsFrom().add(relation);
 		}
+		
+		System.out.println("Exit: AccountService.addRelationToAccount");
     }
 	
 	@Transactional
 	public void removeRelationFromAccount(String sourceAccountUsername, String targetAccountUsername, Status status) {
-		relationService.removeRelation(sourceAccountUsername, targetAccountUsername, status);
+		AccountWithRelation source = findByUsername(sourceAccountUsername);
+		AccountWithRelation target = findByUsername(targetAccountUsername);
+		
+		relationService.removeRelation(source, target, status);
 	}
 	
 	public List<AccountDto> list() {

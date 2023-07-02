@@ -11,15 +11,16 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+/*
+no getters/setters?
+*/
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
 @EqualsAndHashCode(exclude = {"relationsTo", "relationsFrom"}, callSuper = false)
 public class AccountWithRelation extends AbstractPersistable<Long> {
 	
 	private String username;
-	
 	private String password;
-	
 	private Role role;
 	
 	@OneToMany(mappedBy = "source")
@@ -28,7 +29,7 @@ public class AccountWithRelation extends AbstractPersistable<Long> {
 	@OneToMany(mappedBy = "target")
 	private Set<Relation> relationsFrom = new HashSet<>();
 	
-	
+	/*
 	public void addRelation(Relation relation) {
 		getRelationsTo().add(relation);
 	}
@@ -36,5 +37,5 @@ public class AccountWithRelation extends AbstractPersistable<Long> {
 	public void removeRelation(Relation relation) {
 		getRelationsTo().remove(relation);
 	}
-	
+	*/
 }

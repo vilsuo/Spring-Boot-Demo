@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+/*
+no getters/setters?
+*/
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
 public class Relation extends AbstractPersistable<Long> {

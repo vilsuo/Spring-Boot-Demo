@@ -1,25 +1,65 @@
+a:hover {
+    color: lightblue;
+}
+
 .main-bar {
-    border: 1px dotted black;
+    height: 40px;
+    border: 1px solid black;
     display: flex;
     justify-content: space-between;
     align-items: center; /* Vertical align the elements to the center */
-    padding: 2px;
+    
 }
 
-/*
-.main-bar h1, h2 {
-    margin: 0;
-}
-*/
-
-.main-bar a, input {
+.main-bar a, p {
     margin-left: 10px; /* Push this element to the right */
 }
 
 .container-logout {
-    border: 1px dotted black;
+    height: 40px;
+    border: 1px solid black;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    padding : 0px 15px 0px 15px;
+}
+
+.container-logout input {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.main {
+    margin-top: 10px;
+    margin-left: 162px;
+    padding: 0px 10px;
+    border: 1px solid black;
+}
+
+/* The sidebar menu */
+.sidenav {
+    height: calc(100% - 100px); /* Full-height: remove this if you want "auto" height */
+    width: 130px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.sidenav img {
+    border: 1px solid black;
+    display: block;
+    width: 128px;
+    height: 128px;
+}
+
+.sidenav a {
+    text-decoration: none;
+    display: block;
+}
+
+.sidenav h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
 }

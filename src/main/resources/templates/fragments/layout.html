@@ -17,7 +17,7 @@
                     <a th:href="@{/accounts/{username}(username=${#authentication.name})}">Account page</a>
                 </div>
                 <div class="container-logout">
-                    <p th:text="${#authentication.name}">Username</p>
+                    <p>Logged in: <span th:text="${#authentication.name}">Username</span></p>
                     <form method="POST" th:action="@{/logout}">
                         <input type="submit" value="Sign out"/>
                     </form>
@@ -31,6 +31,26 @@
                     <a th:href="@{/register}">Register</a>
                 </div>
             </div>
+        </div>
+        
+        <div th:fragment="account-sidebar(username)" class="sidenav">
+            <h3 th:text="${username}">Username</h3>
+            <img src="/images/stock-profile-picture.jpg" alt="Profile picture"/>
+            <!--<a href="">Relations</a>-->
+            <div class="sidenav-relation-options" sec:authorize="isAuthenticated()">
+                <fieldset>
+                    <legend>Your relations</legend>
+                    <div>
+                        <form method="POST" th:action="@{/accounts/{username}/friend(username=${accountDto.username})}">
+                            <input type="submit" value="Add Friend"/>
+                        </form>
+                    </div>
+                    <form method="POST" th:action="@{/accounts/{username}/unfriend(username=${accountDto.username})}">
+                        <input type="submit" value="Remove Friend"/>
+                    </form>
+                </fieldset>
+            </div>
+            <a href="">Pictures</a>
         </div>
     </body>
 </html>

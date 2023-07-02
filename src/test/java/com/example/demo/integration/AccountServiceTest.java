@@ -3,7 +3,8 @@ package com.example.demo.integration;
 
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
-import com.example.demo.service.AccountService;
+import com.example.demo.domain.Status;
+import com.example.demo.service.AccountWithRelationService;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
 import jakarta.transaction.Transactional;
@@ -23,7 +24,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /*
 TODO WRITE TESTS FOR METHODS:
 	- getAccountsRelations
-	- getRelationToAccount
+	- getRelationsToAccount
 	- addRelationToAccount
 	- removeRelationFromAccount
 
@@ -34,9 +35,8 @@ TODO WRITE TESTS FOR METHODS:
 @SpringBootTest
 public class AccountServiceTest {
 
-	/*
 	@Autowired
-	private AccountService accountService;
+	private AccountWithRelationService accountService;
 	
 	private final String username1 = "valid1";
 	private final String username2 = "valid2";
@@ -44,16 +44,6 @@ public class AccountServiceTest {
 	private final String username4 = "valid4";
 	
 	private final String password = "placeholder";
-	
-	private AccountDto dto1;
-	private AccountDto dto2;
-	private AccountDto dto3;
-	private AccountDto dto4;
-	
-	private Long id1;
-	private Long id2;
-	private Long id3;
-	private Long id4;
 	
 	@Test
 	public void credentialsTest() {
@@ -69,17 +59,29 @@ public class AccountServiceTest {
 	
 	@BeforeEach
 	public void init() {
-		dto1 = accountService.createUSER(new AccountCreationDto(username1, password)).get();
-		dto2 = accountService.createUSER(new AccountCreationDto(username2, password)).get();
-		dto3 = accountService.createUSER(new AccountCreationDto(username3, password)).get();
-		dto4 = accountService.createUSER(new AccountCreationDto(username4, password)).get();
-		
-		id1 = dto1.getId();
-		id2 = dto2.getId();
-		id3 = dto3.getId();
-		id4 = dto4.getId();
+		accountService.createUSER(new AccountCreationDto(username1, password));
+		accountService.createUSER(new AccountCreationDto(username2, password));
+		accountService.createUSER(new AccountCreationDto(username3, password));
+		accountService.createUSER(new AccountCreationDto(username4, password));
 	}
 	
+	@Test
+	public void addRelationTest() {
+		assertTrue(accountService.getAccountsRelations(username1).isEmpty());
+		assertTrue(accountService.getRelationsToAccount(username1).isEmpty());
+		assertTrue(accountService.getAccountsRelations(username2).isEmpty());
+		assertTrue(accountService.getRelationsToAccount(username2).isEmpty());
+		
+		accountService.addRelationToAccount(username1, username2, Status.FRIEND);
+		
+		assertEquals(1, accountService.getAccountsRelations(username1).size());
+		assertTrue(accountService.getRelationsToAccount(username1).isEmpty());
+		assertTrue(accountService.getAccountsRelations(username2).isEmpty());
+		assertEquals(1, accountService.getRelationsToAccount(username2).size());
+	}
+	
+	
+	/*
 	@Test
 	public void followingDoesNotCauseFollowBackTest() {
 		assertFalse(accountService.isFollowing(id1, id2));
