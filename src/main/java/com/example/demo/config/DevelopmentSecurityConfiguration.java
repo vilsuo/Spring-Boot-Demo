@@ -14,11 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console; // !
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
 //@Profile("development")
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class DevelopmentSecurityConfiguration {
 	
 	@Bean
@@ -50,6 +52,9 @@ public class DevelopmentSecurityConfiguration {
 				
 				// allow anyone to view account pages
 				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/accounts/" + UsernameValidator.SIMPLE_USERNAME_PATTERN)).permitAll()
+					
+				// allow anyone to view account pages
+				.requestMatchers(RegexRequestMatcher.regexMatcher(HttpMethod.GET, "/accounts/" + UsernameValidator.SIMPLE_USERNAME_PATTERN + "/images")).permitAll()
 				
 				// DUBLICATE? IMPLEMENT SECURITY IN METHOD?
 				// allow signed in accounts to follow other accounts

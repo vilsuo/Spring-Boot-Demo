@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.springframework.org/security/tags">
+    <head th:replace="~{fragments/layout :: head('Account page')}">
+        <title>Images</title>
+    </head>
+    <body>
+        <div th:replace="~{fragments/layout :: account-info}"></div>
+        
+        <div th:replace="~{fragments/layout :: account-page-sidebar(${accountDto.username})}"></div>
+        
+        <div class="main">
+            <p>account images : <span th:text="${totalAccountImages}"></span></p>
+
+            <form th:action="@{/accounts/{username}/images/create(username=${accountDto.username})}" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file"/>
+                <input type="submit" value="Send!"/>
+            </form>
+        </div>
+    </body>
+</html>

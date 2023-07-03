@@ -1,7 +1,7 @@
 
 package com.example.demo.service;
 
-import com.example.demo.domain.AccountWithRelation;
+import com.example.demo.domain.Account;
 import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
 import com.example.demo.service.repository.RelationRepository;
@@ -17,15 +17,7 @@ public class RelationService {
 	private RelationRepository relationRepository;
 	
 	
-	public boolean relationExists(
-			AccountWithRelation source, AccountWithRelation target, Status status) {
-		
-		System.out.println("Enter: RelationService.relationExists");
-		
-		System.out.println("Enter: RelationRepository,findBySourceAndTarget");
-		System.out.println("Exit: RelationRepository,findBySourceAndTarget");
-		
-		System.out.println("Exit: RelationService.relationExists");
+	public boolean relationExists(Account source, Account target, Status status) {
 		return !relationRepository
 				.findBySourceAndTarget(source, target)
 					.stream()
@@ -35,19 +27,12 @@ public class RelationService {
 	}
 	
 	@Transactional
-	public Optional<Relation> create(
-			AccountWithRelation source, AccountWithRelation target, 
-			Status status) {
-		
-		System.out.println("Enter: RelationService.create");
+	public Optional<Relation> create(Account source, Account target, Status status) {
 		if (status == null) {
 			throw new NullPointerException("Can not create a Relation with null Status");
 		}
 		
 		if (!relationExists(source, target, status)) {
-			System.out.println("Enter: RelationRepository.save");
-			System.out.println("Exit: RelationRepository.save");
-			System.out.println("Exit: RelationService.create");
 			return Optional.of(
 				relationRepository.save(new Relation(source, target, status))
 			);
@@ -58,10 +43,7 @@ public class RelationService {
 	
 	// Removes all relations with 'status' from source to target
 	@Transactional
-	public void removeRelation(
-			AccountWithRelation source, AccountWithRelation target, 
-			Status status) {
-		
+	public void removeRelation(Account source, Account target, Status status) {
 		if (status == null) {
 			throw new NullPointerException("Can not remove a null Status");
 		}

@@ -33,24 +33,27 @@
             </div>
         </div>
         
-        <div th:fragment="account-sidebar(username)" class="sidenav">
+        <div th:fragment="account-page-sidebar(username)" class="sidenav">
             <h3 th:text="${username}">Username</h3>
             <img src="/images/stock-profile-picture.jpg" alt="Profile picture"/>
-            <!--<a href="">Relations</a>-->
-            <div class="sidenav-relation-options" sec:authorize="isAuthenticated()">
+            <div sec:authorize="isAuthenticated()">
                 <fieldset>
                     <legend>Your relations</legend>
-                    <div>
-                        <form method="POST" th:action="@{/accounts/{username}/friend(username=${accountDto.username})}">
-                            <input type="submit" value="Add Friend"/>
-                        </form>
-                    </div>
-                    <form method="POST" th:action="@{/accounts/{username}/unfriend(username=${accountDto.username})}">
-                        <input type="submit" value="Remove Friend"/>
+                    <form th:if="${!hasFriend}" method="POST" th:action="@{/accounts/{username}/friend(username=${username})}">
+                        <input type="submit" value="Friend" class="button-add"/>
+                    </form>
+                    <form th:unless="${!hasFriend}" method="POST" th:action="@{/accounts/{username}/unfriend(username=${username})}">
+                        <input type="submit" value="Friend" class="button-remove"/>
+                    </form>
+                    <form th:if="${!hasBlock}" method="POST" th:action="@{/accounts/{username}/block(username=${username})}">
+                        <input type="submit" value="Block" class="button-add"/>
+                    </form>
+                    <form th:unless="${!hasBlock}" method="POST" th:action="@{/accounts/{username}/unblock(username=${username})}">
+                        <input type="submit" value="Block" class="button-remove"/>
                     </form>
                 </fieldset>
             </div>
-            <a href="">Pictures</a>
+            <a th:href="@{/accounts/{username}/images(username=${username})}">Images</a>
         </div>
     </body>
 </html>

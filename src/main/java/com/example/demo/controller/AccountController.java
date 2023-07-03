@@ -1,19 +1,15 @@
 
 package com.example.demo.controller;
 
-import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
+import com.example.demo.domain.Status;
 import com.example.demo.service.AccountService;
-import jakarta.annotation.PostConstruct;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
 
 /*
 TODO
@@ -22,70 +18,38 @@ TODO
 - custom (error?) messages
 - method security
 
+- handle account own page
+	- no options to follow/block
+	- can post pictures
 */
-//@Controller
+@Controller
 public class AccountController {
 	
 	@Autowired
 	private AccountService accountService;
 	
-	/*
-	@PostConstruct
-	public void helper() {
-		accountService.createUSER(new AccountCreationDto("v1", "s"));
-		accountService.createUSER(new AccountCreationDto("v2", "s"));
-		accountService.createUSER(new AccountCreationDto("v3", "s"));
-	}
-	*/
-	
 	@GetMapping("/accounts")
 	public String list(Model model) {
-		
 		model.addAttribute("accountDtos", accountService.list());
 		return "accounts";
 	}
 	
 	@GetMapping("/accounts/{username}")
-	public String get(Model model, @PathVariable String username, Principal principal) {
+	public String get(
+			Model model, @PathVariable String username, Principal principal) {
+		
 		AccountDto accountDto = accountService.findDtoByUsername(username);
+		
+		// handle better?
 		model.addAttribute("accountDto", accountDto);
-		model.addAttribute("following", accountService.getFollowing(accountDto.getId()));
-		model.addAttribute("followers", accountService.getFollowers(accountDto.getId()));
+		model.addAttribute("accountRelations", accountService.getAccountsRelations(username));
+		model.addAttribute("relationsToAccount", accountService.getRelationsToAccount(username));
 		
 		if (principal != null) {
-			AccountDto loggedInAccount = accountService.findDtoByUsername(principal.getName());
-			model.addAttribute("isfollowing", accountService.isFollowing(loggedInAccount.getId(), accountDto.getId()));
+			String loggedInUsername = principal.getName();
+			model.addAttribute("hasFriend", accountService.hasRelationStatus(loggedInUsername, username, Status.FRIEND));
+			model.addAttribute("hasBlock", accountService.hasRelationStatus(loggedInUsername, username, Status.BLOCKED));
 		}
-		
 		return "account";
 	}
-	
-	@Secured("USER")
-	@PostMapping("/accounts/{username}/follow")
-	public String follow(@PathVariable("username") String usernameToFollow, Principal principal) {
-		AccountDto loggedInAccount = accountService.findDtoByUsername(principal.getName());
-		AccountDto accountDtoToFollow = accountService.findDtoByUsername(usernameToFollow);
-		
-		accountService.follow(loggedInAccount.getId(), accountDtoToFollow.getId());
-		
-		return "redirect:/accounts/" + usernameToFollow;
-	}
-	
-	@Secured("USER")
-	@PostMapping("/accounts/{username}/unfollow")
-	public String unfollow(@PathVariable("username") String usernameToUnfollow, Principal principal) {
-		AccountDto loggedInAccount = accountService.findDtoByUsername(principal.getName());
-		AccountDto accountDtoToUnfollow = accountService.findDtoByUsername(usernameToUnfollow);
-		
-		accountService.unfollow(loggedInAccount.getId(), accountDtoToUnfollow.getId());
-		
-		return "redirect:/accounts/" + usernameToUnfollow;
-	}
-	
-	/*
-	@PreAuthorize("#username == authentication.principal.username")
-	public String (String username) {
-		//...
-	}
-	*/
 }

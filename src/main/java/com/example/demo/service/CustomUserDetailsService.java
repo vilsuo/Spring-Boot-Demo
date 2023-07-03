@@ -2,7 +2,6 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Account;
-import com.example.demo.domain.AccountWithRelation;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,17 +12,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-	/*
-	@Autowired
-	private AccountService accountService;
-	*/
 	
 	@Autowired
-	private AccountWithRelationService accountService;
+	private AccountService accountService;
 	
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		AccountWithRelation account = accountService.findByUsername(username);
+		Account account = accountService.findByUsername(username);
 
         return new org.springframework.security.core.userdetails.User(
                 account.getUsername(),

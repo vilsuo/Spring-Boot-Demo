@@ -1,28 +1,28 @@
 
 package com.example.demo.domain;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-/*
-no getters/setters?
-*/
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
-public class Relation extends AbstractPersistable<Long> {
+public class FileObject extends AbstractPersistable<Long> {
+	
+	private String name;
+    private String mediaType;
+    private Long size;
 	
 	@ManyToOne
-	@JoinColumn(name = "account_source_fk")
-	private Account source;
+	private Account account;
 	
-	@ManyToOne
-	@JoinColumn(name = "account_target_fk")
-	private Account target;
-	
-	private Status status;
+	@Lob
+	@Basic(fetch = FetchType.LAZY)
+	private byte[] content;
 }

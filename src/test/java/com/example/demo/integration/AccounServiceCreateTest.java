@@ -2,9 +2,9 @@ package com.example.demo.integration;
 
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
-import com.example.demo.domain.AccountWithRelation;
+import com.example.demo.domain.Account;
 import com.example.demo.error.validation.ResourceNotFoundException;
-import com.example.demo.service.AccountWithRelationService;
+import com.example.demo.service.AccountService;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
 import jakarta.transaction.Transactional;
@@ -25,10 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @Transactional
 @SpringBootTest
-public class AccounWithRelationServiceCreateTest {
+public class AccounServiceCreateTest {
 
 	@Autowired
-	private AccountWithRelationService accountService;
+	private AccountService accountService;
 	
 	private final String validUsername1 = "valid1";
 	private final String validUsername2 = "valid2";
@@ -223,7 +223,7 @@ public class AccounWithRelationServiceCreateTest {
 		accountService.createUSER(new AccountCreationDto(validUsername2, validPassword));
 		accountService.createUSER(new AccountCreationDto(validUsername3, validPassword));
 		
-		AccountWithRelation accountFound = accountService.findById(accountDto.getId());
+		Account accountFound = accountService.findById(accountDto.getId());
 		AccountDto accountDtoFound = accountService.findDtoById(accountDto.getId());
 		
 		assertEquals(
@@ -287,7 +287,7 @@ public class AccounWithRelationServiceCreateTest {
 			"Username can not be found after creation"
 		);
 		
-		AccountWithRelation accountFound = accountService.findByUsername(accountDto.getUsername());
+		Account accountFound = accountService.findByUsername(accountDto.getUsername());
 		AccountDto accountDtoFound = accountService.findDtoByUsername(accountDto.getUsername());
 		
 		assertEquals(

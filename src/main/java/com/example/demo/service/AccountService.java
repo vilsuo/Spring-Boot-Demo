@@ -2,17 +2,18 @@
 package com.example.demo.service;
 
 import com.example.demo.datatransfer.AccountCreationDto;
-import com.example.demo.domain.Account;
 import com.example.demo.datatransfer.AccountDto;
-import com.example.demo.service.repository.AccountRepository;
+import com.example.demo.domain.Account;
+import com.example.demo.domain.FileObject;
+import com.example.demo.domain.Relation;
 import com.example.demo.domain.Role;
+import com.example.demo.domain.Status;
 import com.example.demo.error.validation.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,7 +22,17 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.demo.service.repository.AccountRepository;
+import java.io.IOException;
+import org.springframework.web.multipart.MultipartFile;
 
+/*
+- split services better?
+- in which methods to add annotation @Transactional?
+
+- relationDto and FileObjectDto?
+	- implement with accountDto
+*/
 @Service
 public class AccountService {
 	
@@ -29,22 +40,34 @@ public class AccountService {
 	private AccountRepository accountRepository;
 	
 	@Autowired
+	private RelationService relationService;
+	
+	@Autowired
+	private FileObjectService fileObjectService;
+	
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
     private Validator validator;
 	
+	
 	private AccountDto convertToDto(Account account) {
 		if (account == null) {
-			throw new NullPointerException("Tried to convert null Account param='account' to AccountDto.");
+			throw new NullPointerException(
+				"Tried to convert null Account param='account' to AccountDto."
+			);
 		}
 		
 		return new AccountDto(account.getId(), account.getUsername());
 	}
 	
+	// only used by findByDto
 	public Account findById(Long id) {
 		if (id == null) {
-			throw new NullPointerException("Tried to find Account by null param='id'.");
+			throw new NullPointerException(
+				"Tried to find Account by null param='id'."
+			);
 		}
 		
 		return accountRepository.findById(id).orElseThrow(
@@ -52,16 +75,22 @@ public class AccountService {
 		);
 	}
 	
+	// used by custom user details service
 	public Account findByUsername(String username) {
 		if (username == null) {
-			throw new NullPointerException("Tried to find Account by null param='username'.");
+			throw new NullPointerException(
+				"Tried to find AccountWithRelation by null param='username'."
+			);
 		}
 		
 		return accountRepository.findByUsername(username).orElseThrow(
-			() -> new ResourceNotFoundException("Account", "username", username)
+			() -> new ResourceNotFoundException(
+				"AccountWithRelation", "username", username
+			)
 		);
 	}
 	
+	// only used in testing
 	public AccountDto findDtoById(Long id) {
 		return convertToDto(findById(id));
 	}
@@ -72,7 +101,9 @@ public class AccountService {
 	
 	public boolean existsByUsername(String username) {
 		if (username == null) {
-			throw new NullPointerException("Tried to check if Account with null param='username' exists.");
+			throw new NullPointerException(
+				"Tried to check if Account with null param='username' exists."
+			);
 		}
 		
 		return accountRepository.existsByUsername(username);
@@ -87,18 +118,21 @@ public class AccountService {
 		return create(accountCreationDto, Role.ADMIN);
 	}
 	
-	/*
-	returns an empty optional if account with the given username already exists
-	*/
+	// returns an empty optional if account with the given username already exists
 	@Transactional
-	private Optional<AccountDto> create(AccountCreationDto accountCreationDto, Role role) {
-
+	private Optional<AccountDto> create(
+			AccountCreationDto accountCreationDto, Role role) {
+		
 		if (accountCreationDto == null) {
-			throw new NullPointerException("Tried to create an Account with null param='accountCreationDto'.");
+			throw new NullPointerException(
+				"Tried to create an Account from null AccountCreationDto."
+			);
 		}
 		
 		if (role == null) {
-			throw new NullPointerException("Tried to create an Account with null param='role'.");
+			throw new NullPointerException(
+				"Tried to create an Account with null Role."
+			);
 		}
 		
 		Set<ConstraintViolation<AccountCreationDto>> accountCreationDtoViolations
@@ -111,12 +145,13 @@ public class AccountService {
 		String username = accountCreationDto.getUsername();
 		String password = accountCreationDto.getPassword();
 		
-		if (!accountRepository.existsByUsername(username)) {
+		if (!existsByUsername(username)) {
 			Account createdAccount = accountRepository.save(
 				new Account(
 						username,
 						passwordEncoder.encode(password),
 						role,
+						new HashSet<>(),
 						new HashSet<>(),
 						new HashSet<>()
 				)
@@ -125,53 +160,62 @@ public class AccountService {
 		}
 		return Optional.empty();
 	}
-
-	@Transactional
-    public void follow(Long fromId, Long toId) {
-        Account fromAccount = findById(fromId);
-        Account toAccount = findById(toId);
-		
-		fromAccount.addFollowing(toAccount);
-		toAccount.addFollower(fromAccount);
-    }
 	
-	@Transactional
-    public void unfollow(Long fromId, Long toId) {
-        Account fromAccount = findById(fromId);
-        Account toAccount = findById(toId);
-		
-		fromAccount.removeFollowing(toAccount);
-		toAccount.removeFollower(fromAccount);
-    }
-	
-	/*
-	Use in both ways.
-	*/
-	public boolean isFollowing(Long followerId, Long followedId) {
-		if (followerId == null) {
-			throw new NullPointerException("Account with null param='followerId' tried check if it follows other Account.");
-			
-		} else if (followedId == null) {
-			throw new NullPointerException("Account tried to check if it follows other Account with null param='followedId'.");
-		}
-		
-		return getFollowers(followedId).stream()
-				.filter(follower -> Objects.equals(follower.getId(), followerId))
-				.findFirst().isPresent();
+	public Set<Relation> getAccountsRelations(String username) {
+		return findByUsername(username).getRelationsTo();
 	}
 	
-    public Set<AccountDto> getFollowers(Long accountId) {
-		return findById(accountId).getFollowers().stream()
-				.map(account -> convertToDto(account))
-				.collect(Collectors.toSet());
+	public Set<Relation> getRelationsToAccount(String username) {
+		return findByUsername(username).getRelationsFrom();
+	}
+	
+	public boolean hasRelationStatus(
+			String sourceAccountUsername, String targetAccountUsername, 
+			Status status) {
 		
+		Account source = findByUsername(sourceAccountUsername);
+		Account target = findByUsername(targetAccountUsername);
+		
+		return relationService.relationExists(source, target, status);
+	}
+	
+	@Transactional
+    public void createRelationToAccount(
+			String sourceAccountUsername, String targetAccountUsername, 
+			Status status) {
+		
+		Account source = findByUsername(sourceAccountUsername);
+		Account target = findByUsername(targetAccountUsername);
+		Optional<Relation> opt = relationService.create(source, target, status);
+		
+		if (opt.isPresent()) {
+			// why are these needed? Service Tests does not pass otherwise
+			Relation relation = opt.get();
+			source.getRelationsTo().add(relation);
+			target.getRelationsFrom().add(relation);
+		}
     }
 	
-    public Set<AccountDto> getFollowing(Long accountId) {
-        return findById(accountId).getFollowing().stream()
-				.map(account -> convertToDto(account))
-				.collect(Collectors.toSet());
-    }
+	@Transactional
+	public void removeRelationFromAccount(
+			String sourceAccountUsername, String targetAccountUsername, 
+			Status status) {
+		
+		Account source = findByUsername(sourceAccountUsername);
+		Account target = findByUsername(targetAccountUsername);
+		
+		relationService.removeRelation(source, target, status);
+	}
+	
+	@Transactional
+	public void createImageToAccount(String username, MultipartFile file) throws IOException {
+		fileObjectService.create(findByUsername(username), file);
+	}
+	
+	@Transactional
+	public List<FileObject> getAccountImages(String username) {
+		return fileObjectService.getAccountImages(findByUsername(username));
+	}
 	
 	public List<AccountDto> list() {
 		return accountRepository.findAll().stream()

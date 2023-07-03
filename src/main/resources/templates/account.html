@@ -8,36 +8,46 @@
     <body>
         <div th:replace="~{fragments/layout :: account-info}"></div>
         
-        <div class="h-form">
+        <div th:replace="~{fragments/layout :: account-page-sidebar(${accountDto.username})}"></div>
+        
+        <div class="main">
             <h1>Account <span th:text="${accountDto.username}"></span> page</h1>
-            <div sec:authorize="isAuthenticated()">
-                <div th:if="${isfollowing}">
-                    <form method="POST" th:action="@{/accounts/{username}/unfollow(username=${accountDto.username})}">
-                        <input type="submit" value="Unfollow"></input>
-                    </form>
-                </div>
+            
+            <h2>Account relations</h2>
+            <ol>
+                <li th:each="relation : ${accountRelations}">
+                    From 
+                    <a th:href="@{/accounts/{username}(username=${relation.source.username})}"
+                       th:text="${relation.source.username}">
+                        username
+                    </a>
+                    To
+                    <a th:href="@{/accounts/{username}(username=${relation.target.username})}"
+                       th:text="${relation.target.username}">
+                        username
+                    </a>
+                    Status
+                    <span th:text="${relation.status}"></span>
+                </li>
+            </ol>
 
-                <div th:if="${!isfollowing}">
-                    <form method="POST" th:action="@{/accounts/{username}/follow(username=${accountDto.username})}">
-                        <input type="submit" value="Follow"/>
-                    </form>
-                </div>
-            </div>
+            <h2>Relations to account</h2>
+            <ol>
+                <li th:each="relation : ${relationsToAccount}">
+                    From 
+                    <a th:href="@{/accounts/{username}(username=${relation.source.username})}"
+                       th:text="${relation.source.username}">
+                        username
+                    </a>
+                    To
+                    <a th:href="@{/accounts/{username}(username=${relation.target.username})}"
+                       th:text="${relation.target.username}">
+                        username
+                    </a>
+                    Status
+                    <span th:text="${relation.status}"></span>
+                </li>
+            </ol>
         </div>
-        
-        <h2>Following</h2>
-        <ol>
-            <li th:each="followingAccountDto : ${following}">
-                <a th:href="@{/accounts/{username}(username=${followingAccountDto.username})}" th:text="${followingAccountDto.username}">username</a>
-            </li>
-        </ol>
-        
-        <h2>Followers</h2>
-        <ol>
-            <li th:each="followedAccountDto : ${followers}">
-                <a th:href="@{/accounts/{username}(username=${followedAccountDto.username})}" th:text="${followedAccountDto.username}">username</a>
-            </li>
-        </ol>
-        
     </body>
 </html>

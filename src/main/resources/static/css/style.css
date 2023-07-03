@@ -2,6 +2,14 @@ a:hover {
     color: lightblue;
 }
 
+.button-add {
+    color: red;
+}
+
+.button-remove {
+    color: green;
+}
+
 .main-bar {
     height: 40px;
     border: 1px solid black;
@@ -44,6 +52,11 @@ a:hover {
     margin-top: 10px;
     padding: 10px;
     border: 1px solid black;
+    
+}
+
+.sidenav fieldset {
+    display: flex;
 }
 
 .sidenav img {
@@ -56,6 +69,7 @@ a:hover {
 .sidenav a {
     text-decoration: none;
     display: block;
+    text-align: center;
 }
 
 .sidenav h3 {

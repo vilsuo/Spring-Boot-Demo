@@ -4,7 +4,7 @@ package com.example.demo.integration;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Status;
-import com.example.demo.service.AccountWithRelationService;
+import com.example.demo.service.AccountService;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
 import jakarta.transaction.Transactional;
@@ -25,7 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 TODO WRITE TESTS FOR METHODS:
 	- getAccountsRelations
 	- getRelationsToAccount
-	- addRelationToAccount
+	- createRelationToAccount
 	- removeRelationFromAccount
 
 */
@@ -36,7 +36,7 @@ TODO WRITE TESTS FOR METHODS:
 public class AccountServiceTest {
 
 	@Autowired
-	private AccountWithRelationService accountService;
+	private AccountService accountService;
 	
 	private final String username1 = "valid1";
 	private final String username2 = "valid2";
@@ -72,7 +72,7 @@ public class AccountServiceTest {
 		assertTrue(accountService.getAccountsRelations(username2).isEmpty());
 		assertTrue(accountService.getRelationsToAccount(username2).isEmpty());
 		
-		accountService.addRelationToAccount(username1, username2, Status.FRIEND);
+		accountService.createRelationToAccount(username1, username2, Status.FRIEND);
 		
 		assertEquals(1, accountService.getAccountsRelations(username1).size());
 		assertTrue(accountService.getRelationsToAccount(username1).isEmpty());
@@ -125,11 +125,11 @@ public class AccountServiceTest {
 		for (Long id : Arrays.asList(id1, id2, id3)) {
 			assertTrue(
 				accountService.getFollowers(id).isEmpty(),
-				"New Account with id='" + id + "' has followers"
+				"New AccountService with id='" + id + "' has followers"
 			);
 			assertTrue(
 				accountService.getFollowing(id).isEmpty(),
-				"New Account with id='" + id + "' follows"
+				"New AccountService with id='" + id + "' follows"
 			);
 		}
 		
@@ -174,11 +174,11 @@ public class AccountServiceTest {
 	
 	@Test
 	public void isFollowingTest() {
-		assertTrue(accountService.getFollowers(id1).isEmpty(), "New Account should not have any followers");
-		assertTrue(accountService.getFollowing(id1).isEmpty(), "New Account should not follow anyone");
+		assertTrue(accountService.getFollowers(id1).isEmpty(), "New AccountService should not have any followers");
+		assertTrue(accountService.getFollowing(id1).isEmpty(), "New AccountService should not follow anyone");
 		
-		assertFalse(accountService.isFollowing(id1, id2), "New Account is not supposed to follow anyone");
-		assertFalse(accountService.isFollowing(id2, id1), "New Account is not supposed to follow anyone");
+		assertFalse(accountService.isFollowing(id1, id2), "New AccountService is not supposed to follow anyone");
+		assertFalse(accountService.isFollowing(id2, id1), "New AccountService is not supposed to follow anyone");
 		
 		
 		accountService.follow(id1, id2);
@@ -188,7 +188,7 @@ public class AccountServiceTest {
 		);
 		assertFalse(
 			accountService.isFollowing(id2, id1),
-			"After beign followed, the Account is not supposed to follow back"
+			"After beign followed, the AccountService is not supposed to follow back"
 		);
 		assertTrue(
 			accountService.getFollowers(id1).isEmpty(),
@@ -229,7 +229,7 @@ public class AccountServiceTest {
 		);
 		assertEquals(
 			2, accountService.getFollowing(id1).size(),
-			"Following a second Account should increase the following count"
+			"Following a second AccountService should increase the following count"
 		);
 		
 	}
@@ -259,7 +259,7 @@ public class AccountServiceTest {
 		assertFalse(accountService.getFollowers(id1).contains(dto2), "Followers list still contains a follower who unfollowed");
 		assertFalse(accountService.getFollowing(id2).contains(dto1), "Following list still contains a account after unfollowing");
 		
-		assertFalse(accountService.isFollowing(id2, id1), "Account is following even after unfollowing");
+		assertFalse(accountService.isFollowing(id2, id1), "AccountService is following even after unfollowing");
 		assertTrue(accountService.isFollowing(id2, id3), "Unfollowing caused that account to unfollow other");
 		assertTrue(accountService.isFollowing(id1, id2), "Being unfollowed caused to unfollow back");
 		assertTrue(accountService.isFollowing(id1, id3), "Being unfollowed caused a transitional unfollow");
