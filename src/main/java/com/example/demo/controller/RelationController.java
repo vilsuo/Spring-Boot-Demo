@@ -2,7 +2,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.domain.Status;
-import com.example.demo.service.AccountService;
+import com.example.demo.service.AccountRelationService;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class RelationController {
 	
 	@Autowired
-	private AccountService accountService;
+	private AccountRelationService accountRelationService;
 	
 	@Secured("USER")
 	@PostMapping("/accounts/{username}/friend")
@@ -32,23 +32,23 @@ public class RelationController {
 	
 	@Secured("USER")
 	@PostMapping("/accounts/{username}/block")
-	public String addBlocked(@PathVariable("username") String username, Principal principal) {
+	public String addBlocked(@PathVariable String username, Principal principal) {
 		addRelation(principal.getName(), username, Status.BLOCKED);
 		return "redirect:/accounts/" + username;
 	}
 	
 	@Secured("USER")
 	@PostMapping("/accounts/{username}/unblock")
-	public String removeBlocked(@PathVariable("username") String username, Principal principal) {
+	public String removeBlocked(@PathVariable String username, Principal principal) {
 		removeRelation(principal.getName(), username, Status.BLOCKED);
 		return "redirect:/accounts/" + username;
 	}
 	
 	private void addRelation(String relationSourceUsername, String relationTargetUsername, Status status) {
-		accountService.createRelationToAccount(relationSourceUsername, relationTargetUsername, status);
+		accountRelationService.createRelationToAccount(relationSourceUsername, relationTargetUsername, status);
 	}
 	
 	private void removeRelation(String relationSourceUsername, String relationTargetUsername, Status status) {
-		accountService.removeRelationFromAccount(relationSourceUsername, relationTargetUsername, status);
+		accountRelationService.removeRelationFromAccount(relationSourceUsername, relationTargetUsername, status);
 	}
 }

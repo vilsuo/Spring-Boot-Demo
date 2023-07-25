@@ -3,7 +3,9 @@ package com.example.demo.controller;
 
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Status;
-import com.example.demo.service.AccountService;
+import com.example.demo.service.AccountFileObjectService;
+import com.example.demo.service.AccountFinderService;
+import com.example.demo.service.AccountRelationService;
 import java.io.IOException;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +19,50 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+/*
+TODO
+- make it so that other users (also anonymous users) can not post images and can
+	not see the option to post images
+*/
+
 @Controller
 public class FileObjectController {
 	
 	@Autowired
-    private AccountService accountService;
+    private AccountRelationService accountRelationService;
+	
+	@Autowired
+    private AccountFileObjectService accountFileObjectService;
+	
+	@Autowired
+	private AccountFinderService accountFinderService;
     
     @GetMapping("/accounts/{username}/images")
     public String images(
 			Model model, @PathVariable String username, Principal principal) {
 		
-		AccountDto accountDto = accountService.findDtoByUsername(username);
+		AccountDto accountDto = accountFinderService.findDtoByUsername(username);
 		
 		model.addAttribute("accountDto", accountDto);
-		model.addAttribute("totalAccountImages", accountService.getAccountImages(username).size());
+		model.addAttribute(
+			"totalAccountImages", 
+			accountFileObjectService.getAccountImages(username).size()
+		);
 		
 		if (principal != null) {
+			// implement this in a private method?
 			String loggedInUsername = principal.getName();
-			model.addAttribute("hasFriend", accountService.hasRelationStatus(loggedInUsername, username, Status.FRIEND));
-			model.addAttribute("hasBlock", accountService.hasRelationStatus(loggedInUsername, username, Status.BLOCKED));
+			model.addAttribute(
+				"hasFriend",
+				accountRelationService.hasRelationStatus(
+					loggedInUsername, username, Status.FRIEND
+				)
+			);
+			model.addAttribute(
+				"hasBlock",
+				accountRelationService.hasRelationStatus(
+					loggedInUsername, username, Status.BLOCKED)
+			);
 		}
 		
         return "images";
@@ -58,7 +85,7 @@ public class FileObjectController {
 			);
 		}
 		
-		accountService.createImageToAccount(principal.getName(), file);
+		accountFileObjectService.createImageToAccount(principal.getName(), file);
 
 		return "redirect:/accounts/" + username + "/images";
 	}

@@ -16,7 +16,10 @@ no getters/setters?
 */
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
-@EqualsAndHashCode(exclude = {"relationsTo", "relationsFrom"}, callSuper = false)
+@EqualsAndHashCode(
+	exclude = {"relationsTo", "relationsFrom", "images"}, 
+	callSuper = false
+)
 public class Account extends AbstractPersistable<Long> {
 	
 	private String username;

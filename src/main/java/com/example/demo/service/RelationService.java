@@ -1,6 +1,8 @@
 
 package com.example.demo.service;
 
+import com.example.demo.converter.EntityToDtoConverter;
+import com.example.demo.datatransfer.RelationDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
@@ -16,8 +18,9 @@ public class RelationService {
 	@Autowired
 	private RelationRepository relationRepository;
 	
-	
-	public boolean relationExists(Account source, Account target, Status status) {
+	public boolean relationExists(
+			Account source, Account target, Status status) {
+		
 		return !relationRepository
 				.findBySourceAndTarget(source, target)
 					.stream()
@@ -27,15 +30,24 @@ public class RelationService {
 	}
 	
 	@Transactional
-	public Optional<Relation> create(Account source, Account target, Status status) {
+	public Optional<RelationDto> create(
+			Account source, Account target, Status status) {
+		
 		if (status == null) {
-			throw new NullPointerException("Can not create a Relation with null Status");
+			throw new NullPointerException(
+				"Can not create a Relation with null Status"
+			);
 		}
 		
 		if (!relationExists(source, target, status)) {
-			return Optional.of(
-				relationRepository.save(new Relation(source, target, status))
-			);
+			Relation relation
+				= relationRepository.save(new Relation(source, target, status));
+			
+			// why are these needed? Service Tests does not pass otherwise
+			source.getRelationsTo().add(relation);
+			target.getRelationsFrom().add(relation);
+			return Optional.of(EntityToDtoConverter.convertRelation(relation));
+			
 		} else {
 			return Optional.empty();
 		}

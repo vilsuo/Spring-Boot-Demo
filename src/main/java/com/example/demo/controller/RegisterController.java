@@ -3,7 +3,8 @@ package com.example.demo.controller;
 
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
-import com.example.demo.service.AccountService;
+import com.example.demo.domain.Role;
+import com.example.demo.service.AccountCreatorService;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ TODO
 public class RegisterController {
 	
 	@Autowired
-	private AccountService accountService;
+	private AccountCreatorService accountCreatorService;
 	
 	@GetMapping("/register")
 	public String home(@ModelAttribute AccountCreationDto accountDto) {
@@ -34,32 +35,21 @@ public class RegisterController {
 			BindingResult bindingResult) {
 		
 		if (bindingResult.hasErrors()) {
-			System.out.println("unsuccessful");
-			System.out.println(bindingResult.getAllErrors().toString());
 			return "register";
 		}
 		
-		String username = accountCreationDto.getUsername();
-		System.out.println("username: " + username);
+		Optional<AccountDto> accountOptional
+			= accountCreatorService.createAndGetDto(
+				accountCreationDto, Role.USER
+			);
 		
-		if (!accountService.existsByUsername(username)) {
-			Optional<AccountDto> createdAccount
-				= accountService.createUSER(accountCreationDto);
-			
-			if (createdAccount.isPresent()) {
-				System.out.println("Success: Account '" + username + "' was created.");
-				return "login";
-				
-			} else {
-				// never should happen
-				System.out.println("Error: Account '" + username + "' was not created!");
-				bindingResult.rejectValue("username", null, "Error creating account with username '" + username + "'");
-				return "register";
-			}
-			
+		if (accountOptional.isPresent()) {
+			return "login";	
 		} else {
-			System.out.println("username is taken");
-			bindingResult.rejectValue("username", null, "Username '" + username + "' is already taken");
+			String username = accountCreationDto.getUsername();
+			bindingResult.rejectValue(
+				"username", null, "Username '" + username + "' is already taken"
+			);
 			return "register";
 		}
 	}

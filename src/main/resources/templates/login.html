@@ -11,15 +11,15 @@
             
         <form th:action="@{/login}" method="post">
             <div>
-                <input type="text" name="username" placeholder="Username"/>
+                <input type="text" th:id="username-input" name="username" placeholder="Username"/>
             </div>
             <div>
-                <input type="password" name="password" placeholder="Password"/>
+                <input type="password" th:id="password-input" name="password" placeholder="Password"/>
             </div>
-            <input type="submit" value="Log in"/>
+            <input type="submit" th:id="submit-button" value="Log in"/>
         </form>
         <div>
-            No account? <a th:href="@{/register}">Register</a>
+            No account? <a th:href="@{/register}" th:id="register-link">Register</a>
         </div>
     </body>
 </html>

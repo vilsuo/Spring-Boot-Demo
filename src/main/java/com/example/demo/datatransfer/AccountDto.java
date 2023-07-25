@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/*
+add Role here?
+*/
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor

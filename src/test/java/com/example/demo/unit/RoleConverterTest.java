@@ -3,16 +3,15 @@ package com.example.demo.unit;
 
 import com.example.demo.domain.Role;
 import com.example.demo.converter.RoleConverter;
+import java.util.Arrays;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 public class RoleConverterTest {
 	
-	private RoleConverter roleConverter = new RoleConverter();
+	private final RoleConverter roleConverter = new RoleConverter();
 	
 	@Test
 	public void convertToDatabaseColumnTest() {
@@ -28,10 +27,19 @@ public class RoleConverterTest {
 		assertEquals(roleConverter.convertToEntityAttribute("ADMIN"), Role.ADMIN);
 	}
 	
-	@ParameterizedTest
-	@NullAndEmptySource
-	@ValueSource(strings = { "NONEXISTENT", "User", "user", "admin", "Admin" })
-	public void convertToEntityAttributeThrowsExceptionTest(String value) {
-		assertThrows(IllegalArgumentException.class, () -> roleConverter.convertToEntityAttribute(value));
+	@Test
+	public void convertToEntityAttributeThrowsExceptionTest() {
+		List<String> values = Arrays.asList(
+			null, "", "NONEXISTENT", "User", "user", "admin", "Admin"
+		);
+		
+		for (final String value : values) {
+			assertThrows(
+				IllegalArgumentException.class, 
+				() -> roleConverter.convertToEntityAttribute(value),
+				"Converting String '" + value + "' to Role should throw "
+				+ "an IllegalArgumentException"
+			);
+		}
 	}
 }

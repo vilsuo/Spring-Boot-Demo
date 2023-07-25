@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 	
 	@Autowired
-	private AccountService accountService;
+	private AccountFinderService accountFinderService;
 	
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountService.findByUsername(username);
+		Account account = accountFinderService.findByUsername(username);
 
         return new org.springframework.security.core.userdetails.User(
                 account.getUsername(),

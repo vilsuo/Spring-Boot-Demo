@@ -11,16 +11,16 @@
             <table>
                 <tr>
                     <td>username: </td>
-                    <td><input type="text" th:field="*{username}"/></td>
+                    <td><input type="text" th:field="*{username}" th:id="username-input"/></td>
                     <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}">username error message</td>
                 </tr>
                 <tr>
                     <td>password: </td>
-                    <td><input type="password" th:field="*{password}"/></td>
+                    <td><input type="password" th:field="*{password}" th:id="password-input"/></td>
                     <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password error message</td>
                 </tr>
                 <tr>
-                    <td><input type="submit" value="Add new account!"/></td>
+                    <td><input type="submit" th:id="submit-button" value="Add new account!"/></td>
                 </tr>
             </table>
         </form>

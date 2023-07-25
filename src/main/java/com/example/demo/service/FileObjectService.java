@@ -28,7 +28,7 @@ public class FileObjectService {
 		}
 		
 		String contentType = file.getContentType();
-		if (!"image/gif".equals(contentType) && !"image/jpeg".equals(contentType)) {
+		if (!isSupportedContentType(contentType)) {
 			throw new IllegalArgumentException(
 				"Illegal file content type: " + contentType
 			);
@@ -43,6 +43,13 @@ public class FileObjectService {
 		);
 		
 		fileObjectRepository.save(fileObject);
+	}
+	
+	private boolean isSupportedContentType(String contentType) {
+		boolean isGif = "image/gif".equals(contentType);
+		boolean isJpg = "image/jpeg".equals(contentType);
+		
+		return (isGif || isJpg);
 	}
 	
 	public List<FileObject> getAccountImages(Account account) {

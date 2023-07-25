@@ -9,11 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class RoleTest {
 	
 	@Test
+	public void hasTwoRolesTest() {
+		assertEquals(Role.values().length, 2);
+	}
+	
+	@Test
 	public void getNameTest() {
 		assertEquals(Role.USER.getName(), "USER");
 		assertEquals(Role.ADMIN.getName(), "ADMIN");
-		
-		assertEquals(Role.values().length, 2);
 	}
 	
 	@Test
@@ -26,6 +29,5 @@ public class RoleTest {
 		assertEquals(Role.getRole(admin), Role.ADMIN);
 		assertNull(Role.getRole(invalidName));
 		assertNull(Role.getRole(null));
-	}
-	
+	}	
 }

@@ -3,7 +3,8 @@ package com.example.demo.controller;
 
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Status;
-import com.example.demo.service.AccountService;
+import com.example.demo.service.AccountFinderService;
+import com.example.demo.service.AccountRelationService;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,11 +27,14 @@ TODO
 public class AccountController {
 	
 	@Autowired
-	private AccountService accountService;
+	private AccountRelationService accountRelationService;
+	
+	@Autowired
+	private AccountFinderService accountFinderService;
 	
 	@GetMapping("/accounts")
 	public String list(Model model) {
-		model.addAttribute("accountDtos", accountService.list());
+		model.addAttribute("accountDtos", accountFinderService.list());
 		return "accounts";
 	}
 	
@@ -38,17 +42,17 @@ public class AccountController {
 	public String get(
 			Model model, @PathVariable String username, Principal principal) {
 		
-		AccountDto accountDto = accountService.findDtoByUsername(username);
+		AccountDto accountDto = accountFinderService.findDtoByUsername(username);
 		
 		// handle better?
 		model.addAttribute("accountDto", accountDto);
-		model.addAttribute("accountRelations", accountService.getAccountsRelations(username));
-		model.addAttribute("relationsToAccount", accountService.getRelationsToAccount(username));
+		model.addAttribute("accountRelations", accountRelationService.getAccountsRelations(username));
+		model.addAttribute("relationsToAccount", accountRelationService.getRelationsToAccount(username));
 		
 		if (principal != null) {
 			String loggedInUsername = principal.getName();
-			model.addAttribute("hasFriend", accountService.hasRelationStatus(loggedInUsername, username, Status.FRIEND));
-			model.addAttribute("hasBlock", accountService.hasRelationStatus(loggedInUsername, username, Status.BLOCKED));
+			model.addAttribute("hasFriend", accountRelationService.hasRelationStatus(loggedInUsername, username, Status.FRIEND));
+			model.addAttribute("hasBlock", accountRelationService.hasRelationStatus(loggedInUsername, username, Status.BLOCKED));
 		}
 		return "account";
 	}
