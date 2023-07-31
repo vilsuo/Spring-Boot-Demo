@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class RoleTest {
 	
 	@Test
-	public void hasTwoRolesTest() {
+	public void hasTwoRoleOptionsTest() {
 		assertEquals(Role.values().length, 2);
 	}
 	

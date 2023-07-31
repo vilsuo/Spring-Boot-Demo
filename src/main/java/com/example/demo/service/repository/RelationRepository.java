@@ -8,4 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RelationRepository extends JpaRepository<Relation, Long> {
 	
 	List<Relation> findBySourceAndTarget(Account source, Account target);
+	
+	List<Relation> findBySource(Account account);
+	List<Relation> findByTarget(Account account);
 }

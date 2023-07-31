@@ -46,8 +46,8 @@ public class AccountController {
 		
 		// handle better?
 		model.addAttribute("accountDto", accountDto);
-		model.addAttribute("accountRelations", accountRelationService.getAccountsRelations(username));
-		model.addAttribute("relationsToAccount", accountRelationService.getRelationsToAccount(username));
+		model.addAttribute("accountRelations", accountRelationService.getAccountRelationDtos(username));
+		model.addAttribute("relationsToAccount", accountRelationService.getRelationDtosToAccount(username));
 		
 		if (principal != null) {
 			String loggedInUsername = principal.getName();

@@ -7,7 +7,6 @@ import com.example.demo.domain.Account;
 import com.example.demo.error.validation.ResourceNotFoundException;
 import com.example.demo.service.repository.AccountRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,6 +71,6 @@ public class AccountFinderService {
 	public List<AccountDto> listDto() {
 		return list().stream()
 				.map(EntityToDtoConverter::convertAccount)
-				.collect(Collectors.toList());
+				.toList();
 	}
 }

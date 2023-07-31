@@ -4,6 +4,7 @@ package com.example.demo.service;
 import com.example.demo.converter.EntityToDtoConverter;
 import com.example.demo.datatransfer.RelationDto;
 import com.example.demo.domain.Account;
+import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
 import java.util.List;
 import java.util.Optional;
@@ -20,15 +21,53 @@ public class AccountRelationService {
 	@Autowired
 	private RelationService relationService;
 	
-	public List<RelationDto> getAccountsRelations(String username) {
-		return accountFinderService.findByUsername(username).getRelationsTo()
+	/*
+	public List<Relation> getAccountRelations(String username) {
+		return new ArrayList<>(
+			accountFinderService.findByUsername(username).getRelationsTo()
+		);
+	}
+	
+	public List<RelationDto> getAccountRelationDtos(String username) {
+		return getAccountRelations(username)
 				.stream()
 				.map(EntityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
-	public List<RelationDto> getRelationsToAccount(String username) {
-		return accountFinderService.findByUsername(username).getRelationsFrom()
+	public List<Relation> getRelationsToAccount(String username) {
+		return new ArrayList<>(
+			accountFinderService.findByUsername(username).getRelationsFrom()
+		);
+	}
+	
+	public List<RelationDto> getRelationDtosToAccount(String username) {
+		return getRelationsToAccount(username)
+				.stream()
+				.map(EntityToDtoConverter::convertRelation)
+				.toList();
+	}
+	*/
+	
+	public List<Relation> getAccountRelations(String username) {
+		Account account = accountFinderService.findByUsername(username);
+		return relationService.getRelationsFrom(account);
+	}
+	
+	public List<RelationDto> getAccountRelationDtos(String username) {
+		return getAccountRelations(username)
+				.stream()
+				.map(EntityToDtoConverter::convertRelation)
+				.toList();
+	}
+	
+	public List<Relation> getRelationsToAccount(String username) {
+		Account account = accountFinderService.findByUsername(username);
+		return relationService.getRelationsTo(account);
+	}
+	
+	public List<RelationDto> getRelationDtosToAccount(String username) {
+		return getRelationsToAccount(username)
 				.stream()
 				.map(EntityToDtoConverter::convertRelation)
 				.toList();
@@ -44,7 +83,7 @@ public class AccountRelationService {
 	}
 	
 	@Transactional
-    public Optional<RelationDto> createRelationToAccount(
+    public Optional<Relation> createRelationToAccount(
 			String sourceAccountUsername, String targetAccountUsername, 
 			Status status) {
 		

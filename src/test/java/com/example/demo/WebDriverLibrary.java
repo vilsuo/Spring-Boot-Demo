@@ -14,15 +14,17 @@ public class WebDriverLibrary {
     @Bean
     public WebDriver getChromeDriver() {
         WebDriverManager.chromedriver().setup();
-        return new ChromeDriver();
+		//ChromeOptions options = new ChromeOptions();
+		//options.addArguments("--headless");
+		
+        return newWebDriver();
     }
 	
-	/*
-	@Bean
-	public WebDriver getChromeDriver() {
-		ChromeOptions options = new ChromeOptions();
-		//options.addArguments("--headless");
-        return new ChromeDriver(options);
+	public static WebDriver newWebDriver(ChromeOptions options) {
+		return new ChromeDriver(options);
 	}
-	*/
+	
+	public static WebDriver newWebDriver() {
+		return new ChromeDriver();
+	}
 }

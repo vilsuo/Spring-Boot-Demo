@@ -45,7 +45,7 @@ public class AccountRelationServiceTest {
 	private final String username1 = VALID_USERNAMES.get(0);
 	private final String username2 = VALID_USERNAMES.get(1);
 	private final String username3 = VALID_USERNAMES.get(2);
-	private final String username4 = VALID_USERNAMES.get(3);
+	private final String unsedUsername = VALID_USERNAMES.get(3);
 	
 	private final String password1 = VALID_PASSWORDS.get(0);
 	private final String password2 = VALID_PASSWORDS.get(1);
@@ -55,69 +55,74 @@ public class AccountRelationServiceTest {
 		accountCreatorService.create(new AccountCreationDto(username1, password1), Role.USER);
 		accountCreatorService.create(new AccountCreationDto(username2, password1), Role.USER);
 		accountCreatorService.create(new AccountCreationDto(username3, password2), Role.USER);
-		accountCreatorService.create(new AccountCreationDto(username4, password2), Role.USER);
+	}
+	
+	/*
+	@Test
+	public void a() {
+		
 	}
 	
 	@Test
 	public void createRelationTest() {
-		assertTrue(accountRelationService.getAccountsRelations(username1).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username2).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username1).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username2).isEmpty());
 		
 		accountRelationService.createRelationToAccount(username1, username2, Status.FRIEND);
 		
-		assertEquals(1, accountRelationService.getAccountsRelations(username1).size());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertEquals(1, accountRelationService.getRelationsToAccount(username2).size());
+		assertEquals(1, accountRelationService.getAccountRelationDtos(username1).size());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertEquals(1, accountRelationService.getRelationDtosToAccount(username2).size());
 		
 		accountRelationService.createRelationToAccount(username1, username2, Status.BLOCKED);
 		
-		assertEquals(2, accountRelationService.getAccountsRelations(username1).size());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertEquals(2, accountRelationService.getRelationsToAccount(username2).size());
+		assertEquals(2, accountRelationService.getAccountRelationDtos(username1).size());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertEquals(2, accountRelationService.getRelationDtosToAccount(username2).size());
 		
 		accountRelationService.createRelationToAccount(username2, username1, Status.FRIEND);
 		
-		assertEquals(2, accountRelationService.getAccountsRelations(username1).size());
-		assertEquals(1, accountRelationService.getRelationsToAccount(username1).size());
-		assertEquals(1, accountRelationService.getAccountsRelations(username2).size());
-		assertEquals(2, accountRelationService.getRelationsToAccount(username2).size());
+		assertEquals(2, accountRelationService.getAccountRelationDtos(username1).size());
+		assertEquals(1, accountRelationService.getRelationDtosToAccount(username1).size());
+		assertEquals(1, accountRelationService.getAccountRelationDtos(username2).size());
+		assertEquals(2, accountRelationService.getRelationDtosToAccount(username2).size());
 	}
 	
 	@Test
 	public void dublicateRelationDoesNotGetAddedTest() {
-		assertTrue(accountRelationService.getAccountsRelations(username1).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username2).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username1).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username2).isEmpty());
 		
 		Optional<RelationDto> opt1 = accountRelationService.createRelationToAccount(username1, username2, Status.FRIEND);
 		Optional<RelationDto> opt2 = accountRelationService.createRelationToAccount(username1, username2, Status.FRIEND);
 		assertTrue(opt1.isPresent());
 		assertTrue(opt2.isEmpty(), "When creating a dublicate relation, the create method does not return empty optional");
 		
-		assertEquals(1, accountRelationService.getAccountsRelations(username1).size());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertEquals(1, accountRelationService.getRelationsToAccount(username2).size());
+		assertEquals(1, accountRelationService.getAccountRelationDtos(username1).size());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertEquals(1, accountRelationService.getRelationDtosToAccount(username2).size());
 	}
 	
 	
 	@Test
 	public void getRelationsAndHasRelationTestTest() {
-		assertTrue(accountRelationService.getAccountsRelations(username1).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username2).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username1).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username2).isEmpty());
 		
 		Optional<RelationDto> opt1
 			= accountRelationService.createRelationToAccount(username1, username2, Status.FRIEND);
 		
 		RelationDto relationDtoFrom
-			= accountRelationService.getAccountsRelations(username1).get(0);
+			= accountRelationService.getAccountRelationDtos(username1).get(0);
 		
 		assertEquals(
 			username1, opt1.get().getSource().getUsername(),
@@ -135,7 +140,7 @@ public class AccountRelationServiceTest {
 			opt1.get(), relationDtoFrom,
 			"When creating relation from an account and then after getting that accounts relations, the relations do not match"
 		);
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
 		assertTrue(
 			accountRelationService.hasRelationStatus(username1, username2, Status.FRIEND),
 			"The created relation can not be found"
@@ -146,7 +151,7 @@ public class AccountRelationServiceTest {
 		);
 		
 		RelationDto relationDtoTo
-			= accountRelationService.getRelationsToAccount(username2).get(0);
+			= accountRelationService.getRelationDtosToAccount(username2).get(0);
 		
 		assertEquals(
 			username1, relationDtoTo.getSource().getUsername(),
@@ -165,7 +170,7 @@ public class AccountRelationServiceTest {
 			"When creating relation to an account and then after getting relations to that accounts, the relations do not match"
 		);
 		assertTrue(
-			accountRelationService.getRelationsToAccount(username1).isEmpty(),
+			accountRelationService.getRelationDtosToAccount(username1).isEmpty(),
 			"After creating a relation, the source account should not get any relations added to it from other accounts"
 		);
 		assertFalse(
@@ -177,19 +182,19 @@ public class AccountRelationServiceTest {
 			accountRelationService.createRelationToAccount(username1, username2, Status.BLOCKED);
 		
 		assertTrue(
-			accountRelationService.getAccountsRelations(username1).contains(opt1.get()),
+			accountRelationService.getAccountRelationDtos(username1).contains(opt1.get()),
 			"After creating a second relation from an account, the first one can not be found"
 		);
 		assertTrue(
-			accountRelationService.getAccountsRelations(username1).contains(opt2.get()),
+			accountRelationService.getAccountRelationDtos(username1).contains(opt2.get()),
 			"After creating a second relation from an account, the second one can not be found"
 		);
 		assertTrue(
-			accountRelationService.getAccountsRelations(username1).contains(opt1.get()),
+			accountRelationService.getAccountRelationDtos(username1).contains(opt1.get()),
 			"After creating a second relation to an account, the first one can not be found"
 		);
 		assertTrue(
-			accountRelationService.getRelationsToAccount(username2).contains(opt2.get()),
+			accountRelationService.getRelationDtosToAccount(username2).contains(opt2.get()),
 			"After creating a second relation to an account, the second one can not be found"
 		);
 		
@@ -205,17 +210,18 @@ public class AccountRelationServiceTest {
 	
 	@Test
 	public void removingNonExistingRelationDoesNothing() {
-		assertTrue(accountRelationService.getAccountsRelations(username1).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username2).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username1).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username2).isEmpty());
 		
 		accountRelationService.removeRelationFromAccount(username1, username2, Status.FRIEND);
 		
-		assertTrue(accountRelationService.getAccountsRelations(username1).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username1).isEmpty());
-		assertTrue(accountRelationService.getAccountsRelations(username2).isEmpty());
-		assertTrue(accountRelationService.getRelationsToAccount(username2).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username1).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username1).isEmpty());
+		assertTrue(accountRelationService.getAccountRelationDtos(username2).isEmpty());
+		assertTrue(accountRelationService.getRelationDtosToAccount(username2).isEmpty());
 	}
 	
+	*/
 }

@@ -8,11 +8,13 @@ import org.openqa.selenium.support.How;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LoginPage extends BasePage {
+public class LoginPage {//extends BasePage<LoginPage> {
 	
+	/*
 	public LoginPage(WebDriver driver) {
-		super(driver);
+		super(driver, "/login");
 	}
+	*/
 	
 	@FindBy(how = How.ID, using = "username-input")
 	public WebElement usernameElement;
@@ -26,8 +28,8 @@ public class LoginPage extends BasePage {
 	@FindBy(how = How.ID, using = "register-link")
 	public WebElement registerLink;
 	
-	/*
-	public HomePage loginAs(String username, String password) {
+	// change return value to HomePage
+	public void loginAs(String username, String password) {
         // ... clever magic happens here
 		usernameElement.sendKeys(username);
 		passwordElement.sendKeys(password);
@@ -35,6 +37,7 @@ public class LoginPage extends BasePage {
 		submitButton.click();
     }
     
+	/*
     public LoginPage loginAsExpectingError(String username, String password) {
         //  ... failed login here, maybe because one or both of the username 
 		// and password are wrong

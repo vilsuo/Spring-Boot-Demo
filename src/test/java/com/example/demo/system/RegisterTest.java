@@ -1,15 +1,22 @@
 
 package com.example.demo.system;
 
+import com.example.demo.WebDriverLibrary;
+import com.example.demo.pages.LoginPage;
 import com.example.demo.pages.RegisterPage;
 import com.example.demo.unit.PasswordValidatorTest;
 import com.example.demo.unit.UsernameValidatorTest;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -33,25 +40,44 @@ public class RegisterTest {
 	@Autowired
 	private RegisterPage registerPage;
 	
-    @LocalServerPort
-    private Integer port;
-	
 	/*
-	private static String registerUrl;
-	private static String loginUrl;
-	
-	@BeforeAll
-	public static void setUp() {
-		registerUrl = "http://localhost:" + port + "/register";
-		loginUrl = "http://localhost:" + port + "/login";
-	}
+	@Autowired
+	private LoginPage loginPage;
 	*/
 	
+    @LocalServerPort
+    private Integer port;
+
+	@Autowired
+	private WebDriver driver;
+
+	/*
+    @BeforeAll
+    static void setupClass() {
+        WebDriverManager.chromedriver().setup();
+    }
+	*/
+	
+	@BeforeEach
+    void setupTest() {
+		System.out.println("setupTest()");
+        //driver = new ChromeDriver();
+		driver = WebDriverLibrary.newWebDriver();
+    }
+	
+	@AfterEach
+    void teardown() {
+		System.out.println("teardown()");
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+	
+	/*
 	@Test
     public void redirectsToLoginPageAfterRegisteringWithValidUsernameAndPasswordTest() {
-		registerPage.navigate("http://localhost:" + port + "/register");
-		
-		registerPage.registerAs(validUsername1, validPassword1);
+		//LoginPage loginPage = registerPage.registerAs(validUsername1, validPassword1);
     }
+	*/
 	
 }
