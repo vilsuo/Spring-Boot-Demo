@@ -146,17 +146,18 @@ public class AccounCreatorServiceTest {
 		}
 	}
 	
-	@Test
-	public void createWithValidUsernameAndPasswordAndRoleDoesNotThrowTest() {
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void createWithValidUsernameAndPasswordAndRoleDoesNotThrowTest(final Role role) {
 		for (final String username : VALID_USERNAMES) {
 			for (final String password : VALID_PASSWORDS) {
 				assertDoesNotThrow(
 					() -> accountCreatorService.create(
-						new AccountCreationDto(username, password), Role.USER
+						new AccountCreationDto(username, password), role
 					),
 					"Creating an account with valid username '" + username
 					+ "', valid password '" + password + "' and valid role '"
-					+ Role.USER.getName() + "' throws an exception"
+					+ role.getName() + "' throws an exception"
 				);
 			}
 		}

@@ -31,9 +31,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 TODO
-test methods in this class
-	- getRelationsFrom
-	- getRelationsTo
 
 implement tests for class RelationDtoService in RelationDtoServiceTest class
 - test only methods that map Relation to RelationDto
@@ -295,4 +292,142 @@ public class RelationServiceTest {
 			}
 		);
 	}
+	
+	@Test
+	public void getRelationsFromIsEmptyInitiallyTest() {
+		assertTrue(
+			relationService.getRelationsFrom(account1).isEmpty(),
+			"Account with username " + account1.getUsername() + " is a source "
+			+ "of a Relation initially"
+		);
+	}
+	
+	@Test
+	public void getRelationsToIsEmptyInitiallyTest() {
+		assertTrue(
+			relationService.getRelationsTo(account1).isEmpty(),
+			"Account with username " + account1.getUsername() + " is a target "
+			+ "of a Relation initially"
+		);
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Status.class)
+	public void getRelationsFromRelationIsAddedWhenCreatingRelationFromAccountTest(final Status status) {
+		final Account sourceAccount = account1;
+		Relation relation
+			= relationService.create(sourceAccount, account2, status).get();
+		
+		List<Relation> relations = relationService.getRelationsFrom(sourceAccount);
+		assertEquals(
+			1, relations.size(),
+			"After creating a single Relation from the source Account with "
+			+ "Status " + status.getName() + ", the source Account is the "
+			+ "source of a " + relations.size() + " Relation(s)"
+		);
+		
+		assertTrue(
+			relations.contains(relation),
+			"The created Relation can not be found from the Relations list"
+		);
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Status.class)
+	public void getRelationsToRelationIsAddedWhenCreatingRelationToAccountTest(final Status status) {
+		final Account targetAccount = account2;
+		Relation relation
+			= relationService.create(account1, targetAccount, status).get();
+		
+		List<Relation> relations = relationService.getRelationsTo(targetAccount);
+		assertEquals(
+			1, relations.size(),
+			"After creating a single Relation to the target Account, with "
+			+ "Status " + status.getName() + ", the target Account is the "
+			+ "target of " + relations.size() + " Relation(s)"
+		);
+		
+		assertTrue(
+			relations.contains(relation),
+			"The created Relation can not be found from the Relations list"
+		);
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Status.class)
+	public void getRelationsFromDublicateRelationIsNotAddedTest(final Status status) {
+		final Account sourceAccount = account1;
+		relationService.create(sourceAccount, account2, status);
+		relationService.create(sourceAccount, account2, status);
+		
+		List<Relation> relations = relationService.getRelationsFrom(sourceAccount);
+		assertEquals(
+			1, relations.size(),
+			"After creating a two identical Relations from the source Account "
+			+ "with Status " + status.getName() + ", the source Account is the "
+			+ "source of a " + relations.size() + " Relation(s)"
+		);
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Status.class)
+	public void getRelationsToDublicateRelationIsNotAddedTest(final Status status) {
+		final Account targetAccount = account2;
+		relationService.create(account1, targetAccount, status);
+		relationService.create(account1, targetAccount, status);
+		
+		List<Relation> relations = relationService.getRelationsTo(targetAccount);
+		assertEquals(
+			1, relations.size(),
+			"After creating two indentical Relations to the target Account "
+			+ "with Status " + status.getName() + ", the target Account is the "
+			+ "target of " + relations.size() + " Relation(s)"
+		);
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Status.class)
+	public void getRelationsFromRelationCanNotBeFoundAfterRemovingTest(final Status status) {
+		final Account sourceAccount = account1;
+		Relation relation
+			= relationService.create(sourceAccount, account2, status).get();
+		
+		removeRelation(relation);
+		
+		List<Relation> relations = relationService.getRelationsFrom(sourceAccount);
+		assertTrue(
+			relations.isEmpty(),
+			"After creating and then removing the same Relation with Status "
+			+ status.getName() + ", the source Account is the source of a " 
+			+ relations.size() + " Relation(s)"
+		);
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Status.class)
+	public void getRelationsToRelationCanNotBeFoundAfterRemovingTest(final Status status) {
+		final Account targetAccount = account2;
+		Relation relation
+			= relationService.create(account1, targetAccount, status).get();
+		removeRelation(relation);
+		
+		List<Relation> relations = relationService.getRelationsTo(targetAccount);
+		assertTrue(
+			relations.isEmpty(),
+			"After creating and then removing the same Relation with Status "
+			+ status.getName() + ", the target Account is the target of a " 
+			+ relations.size() + " Relation(s)"
+		);
+	}
+	
+	/*
+	private static Stream<Arguments> statusEnumerate() {
+		List<Status> params = List.of(Status.values());
+
+		return IntStream.range(0, params.size())
+				.mapToObj(
+					index -> Arguments.arguments(params.get(index), index)
+				);
+	}
+	*/
 }

@@ -27,9 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
-REMOVE DTO-TESTS?
-
-make parametrized test with enumsource Role
+MODE DTO-TESTS TO NEW CLASS AccountFinderDtoServiceTest?
 */
 
 @ActiveProfiles("test")
