@@ -1,8 +1,9 @@
 
-package com.example.demo.service;
+package com.example.demo.service.datatransfer;
 
 import com.example.demo.converter.EntityToDtoConverter;
 import com.example.demo.datatransfer.AccountDto;
+import com.example.demo.service.AccountFinderService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

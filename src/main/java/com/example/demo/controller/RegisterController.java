@@ -4,7 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Role;
-import com.example.demo.service.AccountDtoCreatorService;
+import com.example.demo.service.datatransfer.AccountDtoCreatorService;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;

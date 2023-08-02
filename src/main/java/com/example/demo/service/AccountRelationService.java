@@ -26,23 +26,9 @@ public class AccountRelationService {
 		return relationService.getRelationsFrom(account);
 	}
 	
-	public List<RelationDto> getAccountRelationDtos(String username) {
-		return getAccountRelations(username)
-				.stream()
-				.map(EntityToDtoConverter::convertRelation)
-				.toList();
-	}
-	
 	public List<Relation> getRelationsToAccount(String username) {
 		Account account = accountFinderService.findByUsername(username);
 		return relationService.getRelationsTo(account);
-	}
-	
-	public List<RelationDto> getRelationDtosToAccount(String username) {
-		return getRelationsToAccount(username)
-				.stream()
-				.map(EntityToDtoConverter::convertRelation)
-				.toList();
 	}
 	
 	public boolean hasRelationStatus(

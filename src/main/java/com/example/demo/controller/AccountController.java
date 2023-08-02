@@ -3,8 +3,8 @@ package com.example.demo.controller;
 
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Status;
-import com.example.demo.service.AccountDtoFinderService;
-import com.example.demo.service.AccountRelationService;
+import com.example.demo.service.datatransfer.AccountDtoFinderService;
+import com.example.demo.service.datatransfer.AccountRelationDtoService;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +27,7 @@ TODO
 public class AccountController {
 	
 	@Autowired
-	private AccountRelationService accountRelationService;
+	private AccountRelationDtoService accountRelationDtoService;
 	
 	@Autowired
 	private AccountDtoFinderService accountDtoFinderService;
@@ -46,13 +46,13 @@ public class AccountController {
 		
 		// handle better?
 		model.addAttribute("accountDto", accountDto);
-		model.addAttribute("accountRelations", accountRelationService.getAccountRelationDtos(username));
-		model.addAttribute("relationsToAccount", accountRelationService.getRelationDtosToAccount(username));
+		model.addAttribute("accountRelations", accountRelationDtoService.getAccountRelationDtos(username));
+		model.addAttribute("relationsToAccount", accountRelationDtoService.getRelationDtosToAccount(username));
 		
 		if (principal != null) {
 			String loggedInUsername = principal.getName();
-			model.addAttribute("hasFriend", accountRelationService.hasRelationStatus(loggedInUsername, username, Status.FRIEND));
-			model.addAttribute("hasBlock", accountRelationService.hasRelationStatus(loggedInUsername, username, Status.BLOCKED));
+			model.addAttribute("hasFriend", accountRelationDtoService.hasRelationStatus(loggedInUsername, username, Status.FRIEND));
+			model.addAttribute("hasBlock", accountRelationDtoService.hasRelationStatus(loggedInUsername, username, Status.BLOCKED));
 		}
 		return "account";
 	}
