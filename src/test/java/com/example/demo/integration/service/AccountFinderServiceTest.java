@@ -59,18 +59,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	/*
-	@Test
-	public void findDtoByIdNullThrowsTest() {
-		assertThrows(
-			IllegalArgumentException.class,
-			() -> accountFinderService.findDtoById(null),
-			"Serching AccountDto by null id does not throw "
-			+ "IllegalArgumentException"
-		);
-	}
-	*/
-	
 	@Test
 	public void findByIdWhenIdIsNotFoundThrowsTest() {
 		assertThrows(
@@ -80,18 +68,6 @@ public class AccountFinderServiceTest {
 			+ "does not throw ResourceNotFoundException"
 		);	
 	}
-	
-	/*
-	@Test
-	public void findDtoByIdWhenIdIsNotFoundThrowsTest() {
-		assertThrows(
-			ResourceNotFoundException.class,
-			() -> accountFinderService.findDtoById(id),
-			"Searching AccountDto by id that is not found from the database "
-			+ "does not throw ResourceNotFoundException"
-		);	
-	}
-	*/
 	
 	@Test
 	public void findByIdDoesNotThrowWhenIdExists() {
@@ -104,20 +80,6 @@ public class AccountFinderServiceTest {
 			"When finding the created Account by id the method throws"
 		);
 	}
-	
-	/*
-	@Test
-	public void findDtoByIdDoesNotThrowWhenIdExists() {
-		Account account = accountCreatorService.create(
-			new AccountCreationDto(username1, password1), Role.USER
-		).get();
-		
-		assertDoesNotThrow(
-			() -> accountFinderService.findDtoById(account.getId()),
-			"When finding the created AccountDto by id the method throws"
-		);
-	}
-	*/
 	
 	@Test
 	public void findByIdAfterCreatingAccountFindsTheCorrectOneTest() {
@@ -151,41 +113,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	/*
-	@Test
-	public void findDtoByIdAfterCreatingAccountFindsTheCorrectOneTest() {
-		AccountDto accountDto1 = accountCreatorService.createAndGetDto(
-			new AccountCreationDto(username1, password1), Role.USER
-		).get();
-		
-		AccountDto accountDto2 = accountCreatorService.createAndGetDto(
-			new AccountCreationDto(username2, password2), Role.ADMIN
-		).get();
-		
-		AccountDto accountDtoFound1 = accountFinderService.findDtoById(
-			accountDto1.getId()
-		);
-		AccountDto accountDtoFound2 = accountFinderService.findDtoById(
-			accountDto2.getId()
-		);
-		
-		assertNotEquals(
-			accountDtoFound1, accountDtoFound2,
-			"Different ids find the same AccountDto"
-		);
-		
-		assertEquals(
-			accountDto1, accountDtoFound1,
-			"AccountDto found does not equal AccountDto created"
-		);
-		
-		assertEquals(
-			accountDto2, accountDtoFound2,
-			"AccountDto found does not equal AccountDto created"
-		);
-	}
-	*/
-	
 	@Test
 	public void findByUsernameNullThrowsTest() {
 		assertThrows(
@@ -196,18 +123,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	/*
-	@Test
-	public void findDtoByUsernameNullThrowsTest() {
-		assertThrows(
-			IllegalArgumentException.class,
-			() -> accountFinderService.findDtoById(null),
-			"Serching AccountDto by null username does not throw "
-			+ "IllegalArgumentException"
-		);
-	}
-	*/
-	
 	@Test
 	public void findByUsernameWhenUsernameIsNotFoundThrowsTest() {
 		assertThrows(
@@ -217,18 +132,6 @@ public class AccountFinderServiceTest {
 			+ "does not throw ResourceNotFoundException"
 		);	
 	}
-	
-	/*
-	@Test
-	public void findDtoByUsernameWhenUsernameIsNotFoundThrowsTest() {
-		assertThrows(
-			ResourceNotFoundException.class,
-			() -> accountFinderService.findDtoByUsername(username1),
-			"Searching AccountDto by username that is not found from the "
-			+ "database does not throw ResourceNotFoundException"
-		);	
-	}
-	*/
 	
 	@Test
 	public void findByUsernameDoesNotThrowWhenUsernameExists() {
@@ -241,22 +144,6 @@ public class AccountFinderServiceTest {
 			"When finding the created Account by username the method throws"
 		);
 	}
-	
-	/*
-	@Test
-	public void findDtoByUsernameDoesNotThrowWhenUsernameExists() {
-		Account account = accountCreatorService.create(
-			new AccountCreationDto(username1, password1), Role.USER
-		).get();
-		
-		assertDoesNotThrow(
-			() -> accountFinderService.findDtoByUsername(
-				account.getUsername()
-			),
-			"When finding the created AccountDto by username the method throws"
-		);
-	}
-	*/
 	
 	@Test
 	public void findByUsernameAfterCreatingAccountFindsTheCorrectOneTest() {
@@ -290,41 +177,6 @@ public class AccountFinderServiceTest {
 			"The second created Account differs from the found one"
 		);
 	}
-	
-	/*
-	@Test
-	public void findDtoByUsernameAfterCreatingAccountFindsTheCorrectOneTest() {
-		AccountDto accountDto1 = accountCreatorService.createAndGetDto(
-			new AccountCreationDto(username1, password1), Role.USER
-		).get();
-		
-		AccountDto accountDto2 = accountCreatorService.createAndGetDto(
-			new AccountCreationDto(username2, password2), Role.ADMIN
-		).get();
-		
-		AccountDto accountDtoFound1 = accountFinderService.findDtoByUsername(
-			accountDto1.getUsername()
-		);
-		AccountDto accountDtoFound2 = accountFinderService.findDtoByUsername(
-			accountDto2.getUsername()
-		);
-		
-		assertNotEquals(
-			accountDtoFound1, accountDtoFound2, 
-			"Different usernames find the same AccountDto"
-		);
-		
-		assertEquals(
-			accountDto1, accountDtoFound1,
-			"The first created Account differs from the found one"
-		);
-		
-		assertEquals(
-			accountDto2, accountDtoFound2,
-			"The second created Account differs from the found one"
-		);
-	}
-	*/
 	
 	@Test
 	public void existsByUsernameNullThrowsTest() {
@@ -365,16 +217,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	/*
-	@Test
-	public void listDtoIsEmptyTest() {
-		assertTrue(
-			accountFinderService.listDto().isEmpty(),
-			"AccountDto list is not empty before creating any Accounts"
-		);
-	}
-	*/
-	
 	@Test
 	public void listCreatingAccountsWithUniqueUsernamesIncrementTheListSizeTest() {
 		accountCreatorService.create(
@@ -395,29 +237,6 @@ public class AccountFinderServiceTest {
 			"After creating the second Account, the list size is not incremented"
 		);
 	}
-	
-	/*
-	@Test
-	public void listDtoCreatingAccountsWithUniqueUsernamesIncrementTheListSizeTest() {
-		accountCreatorService.create(
-			new AccountCreationDto(username1, password1), Role.USER
-		);
-		
-		assertEquals(
-			1, accountFinderService.listDto().size(),
-			"After creating the first Account, the list size is not incremented"
-		);
-		
-		accountCreatorService.create(
-			new AccountCreationDto(username2, password2), Role.ADMIN
-		);
-		
-		assertEquals(
-			2, accountFinderService.listDto().size(),
-			"After creating the second Account, the list size is not incremented"
-		);
-	}
-	*/
 	
 	@Test
 	public void listCreatingAccountsWithDublicateUsernamesDoesNotIncrementTheListSizeTest() {
@@ -442,31 +261,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	/*
-	@Test
-	public void listDtoCreatingAccountsWithDublicateUsernamesDoesNotIncrementTheListSizeTest() {
-		final String commonUsername = username1;
-		accountCreatorService.create(
-			new AccountCreationDto(commonUsername, password1), Role.USER
-		);
-		
-		assertEquals(
-			1, accountFinderService.listDto().size(),
-			"After creating the first Account, the list size is not incremented"
-		);
-		
-		accountCreatorService.create(
-			new AccountCreationDto(commonUsername, password2), Role.ADMIN
-		);
-		
-		assertEquals(
-			1, accountFinderService.listDto().size(),
-			"After creating the second Account with the same username as the "
-			+ "first one, the list size changes"
-		);
-	}
-	*/
-	
 	@Test
 	public void listCreatedAccountsCanBeFoundInTheListTest() {
 		Account account1 = accountCreatorService.create(
@@ -488,29 +282,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	/*
-	@Test
-	public void listDtoCreatedAccountsCanBeFoundInTheListTest() {
-		AccountDto accountDto1 = accountCreatorService.createAndGetDto(
-			new AccountCreationDto(username1, password1), Role.USER
-		).get();
-		
-		assertTrue(
-			accountFinderService.listDto().contains(accountDto1),
-			"The first created AccountDto can not be found in the list"
-		);
-		
-		AccountDto accountDto2 = accountCreatorService.createAndGetDto(
-			new AccountCreationDto(username2, password2), Role.ADMIN
-		).get();
-		
-		assertTrue(
-			accountFinderService.listDto().contains(accountDto2),
-			"The second created AccountDto can not be found in the list"
-		);
-	}
-	*/
-	
 	@Test
 	public void listNotCreatedAccountCanNotBeFoundFromTheListTest() {
 		Account account = new Account(
@@ -524,17 +295,4 @@ public class AccountFinderServiceTest {
 			+ " Account list"
 		);
 	}
-	
-	/*
-	@Test
-	public void listDtoNotCreatedAccountCanNotBeFoundFromTheListTest() {
-		AccountDto accountDto = new AccountDto(id, username1);
-		
-		assertFalse(
-			accountFinderService.listDto().contains(accountDto),
-			"AccountDto that has not saved to the database can be found from "
-			+ " Account list"
-		);
-	}
-	*/
 }

@@ -1,8 +1,6 @@
 
 package com.example.demo.service;
 
-import com.example.demo.converter.EntityToDtoConverter;
-import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Account;
 import com.example.demo.error.validation.ResourceNotFoundException;
 import com.example.demo.service.repository.AccountRepository;
@@ -28,13 +26,6 @@ public class AccountFinderService {
 		);
 	}
 	
-	/*
-	public AccountDto findDtoById(Long id) {
-		return EntityToDtoConverter.convertAccount(findById(id));
-	}
-	*/
-	
-	// only used by CustomUserDetailsService
 	public Account findByUsername(String username) {
 		if (username == null) {
 			throw new IllegalArgumentException(
@@ -48,12 +39,6 @@ public class AccountFinderService {
 			)
 		);
 	}
-	
-	/*
-	public AccountDto findDtoByUsername(String username) {
-		return EntityToDtoConverter.convertAccount(findByUsername(username));
-	}
-	*/
 	
 	public boolean existsByUsername(String username) {
 		if (username == null) {
@@ -69,12 +54,4 @@ public class AccountFinderService {
 	public List<Account> list() {
 		return accountRepository.findAll();
 	}
-	
-	/*
-	public List<AccountDto> listDto() {
-		return list().stream()
-				.map(EntityToDtoConverter::convertAccount)
-				.toList();
-	}
-	*/
 }

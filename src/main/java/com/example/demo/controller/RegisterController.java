@@ -4,7 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Role;
-import com.example.demo.service.AccountCreatorService;
+import com.example.demo.service.AccountDtoCreatorService;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ TODO
 public class RegisterController {
 	
 	@Autowired
-	private AccountCreatorService accountCreatorService;
+	private AccountDtoCreatorService accountDtoCreatorService;
 	
 	@GetMapping("/register")
 	public String home(@ModelAttribute AccountCreationDto accountDto) {
@@ -39,7 +39,7 @@ public class RegisterController {
 		}
 		
 		Optional<AccountDto> accountOptional
-			= accountCreatorService.createAndGetDto(
+			= accountDtoCreatorService.create(
 				accountCreationDto, Role.USER
 			);
 		
