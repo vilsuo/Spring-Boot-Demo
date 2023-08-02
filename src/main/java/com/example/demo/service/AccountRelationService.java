@@ -21,34 +21,6 @@ public class AccountRelationService {
 	@Autowired
 	private RelationService relationService;
 	
-	/*
-	public List<Relation> getAccountRelations(String username) {
-		return new ArrayList<>(
-			accountFinderService.findByUsername(username).getRelationsTo()
-		);
-	}
-	
-	public List<RelationDto> getAccountRelationDtos(String username) {
-		return getAccountRelations(username)
-				.stream()
-				.map(EntityToDtoConverter::convertRelation)
-				.toList();
-	}
-	
-	public List<Relation> getRelationsToAccount(String username) {
-		return new ArrayList<>(
-			accountFinderService.findByUsername(username).getRelationsFrom()
-		);
-	}
-	
-	public List<RelationDto> getRelationDtosToAccount(String username) {
-		return getRelationsToAccount(username)
-				.stream()
-				.map(EntityToDtoConverter::convertRelation)
-				.toList();
-	}
-	*/
-	
 	public List<Relation> getAccountRelations(String username) {
 		Account account = accountFinderService.findByUsername(username);
 		return relationService.getRelationsFrom(account);

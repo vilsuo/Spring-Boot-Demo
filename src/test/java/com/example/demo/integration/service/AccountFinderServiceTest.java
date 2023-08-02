@@ -26,10 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-/*
-MODE DTO-TESTS TO NEW CLASS AccountFinderDtoServiceTest?
-*/
-
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -63,6 +59,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void findDtoByIdNullThrowsTest() {
 		assertThrows(
@@ -72,6 +69,7 @@ public class AccountFinderServiceTest {
 			+ "IllegalArgumentException"
 		);
 	}
+	*/
 	
 	@Test
 	public void findByIdWhenIdIsNotFoundThrowsTest() {
@@ -83,6 +81,7 @@ public class AccountFinderServiceTest {
 		);	
 	}
 	
+	/*
 	@Test
 	public void findDtoByIdWhenIdIsNotFoundThrowsTest() {
 		assertThrows(
@@ -92,6 +91,7 @@ public class AccountFinderServiceTest {
 			+ "does not throw ResourceNotFoundException"
 		);	
 	}
+	*/
 	
 	@Test
 	public void findByIdDoesNotThrowWhenIdExists() {
@@ -105,6 +105,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void findDtoByIdDoesNotThrowWhenIdExists() {
 		Account account = accountCreatorService.create(
@@ -116,6 +117,7 @@ public class AccountFinderServiceTest {
 			"When finding the created AccountDto by id the method throws"
 		);
 	}
+	*/
 	
 	@Test
 	public void findByIdAfterCreatingAccountFindsTheCorrectOneTest() {
@@ -149,6 +151,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void findDtoByIdAfterCreatingAccountFindsTheCorrectOneTest() {
 		AccountDto accountDto1 = accountCreatorService.createAndGetDto(
@@ -181,6 +184,7 @@ public class AccountFinderServiceTest {
 			"AccountDto found does not equal AccountDto created"
 		);
 	}
+	*/
 	
 	@Test
 	public void findByUsernameNullThrowsTest() {
@@ -192,6 +196,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void findDtoByUsernameNullThrowsTest() {
 		assertThrows(
@@ -201,6 +206,7 @@ public class AccountFinderServiceTest {
 			+ "IllegalArgumentException"
 		);
 	}
+	*/
 	
 	@Test
 	public void findByUsernameWhenUsernameIsNotFoundThrowsTest() {
@@ -212,6 +218,7 @@ public class AccountFinderServiceTest {
 		);	
 	}
 	
+	/*
 	@Test
 	public void findDtoByUsernameWhenUsernameIsNotFoundThrowsTest() {
 		assertThrows(
@@ -221,6 +228,7 @@ public class AccountFinderServiceTest {
 			+ "database does not throw ResourceNotFoundException"
 		);	
 	}
+	*/
 	
 	@Test
 	public void findByUsernameDoesNotThrowWhenUsernameExists() {
@@ -234,6 +242,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void findDtoByUsernameDoesNotThrowWhenUsernameExists() {
 		Account account = accountCreatorService.create(
@@ -247,6 +256,7 @@ public class AccountFinderServiceTest {
 			"When finding the created AccountDto by username the method throws"
 		);
 	}
+	*/
 	
 	@Test
 	public void findByUsernameAfterCreatingAccountFindsTheCorrectOneTest() {
@@ -281,6 +291,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void findDtoByUsernameAfterCreatingAccountFindsTheCorrectOneTest() {
 		AccountDto accountDto1 = accountCreatorService.createAndGetDto(
@@ -313,6 +324,7 @@ public class AccountFinderServiceTest {
 			"The second created Account differs from the found one"
 		);
 	}
+	*/
 	
 	@Test
 	public void existsByUsernameNullThrowsTest() {
@@ -353,6 +365,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void listDtoIsEmptyTest() {
 		assertTrue(
@@ -360,6 +373,7 @@ public class AccountFinderServiceTest {
 			"AccountDto list is not empty before creating any Accounts"
 		);
 	}
+	*/
 	
 	@Test
 	public void listCreatingAccountsWithUniqueUsernamesIncrementTheListSizeTest() {
@@ -382,6 +396,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void listDtoCreatingAccountsWithUniqueUsernamesIncrementTheListSizeTest() {
 		accountCreatorService.create(
@@ -402,6 +417,7 @@ public class AccountFinderServiceTest {
 			"After creating the second Account, the list size is not incremented"
 		);
 	}
+	*/
 	
 	@Test
 	public void listCreatingAccountsWithDublicateUsernamesDoesNotIncrementTheListSizeTest() {
@@ -426,6 +442,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void listDtoCreatingAccountsWithDublicateUsernamesDoesNotIncrementTheListSizeTest() {
 		final String commonUsername = username1;
@@ -448,6 +465,7 @@ public class AccountFinderServiceTest {
 			+ "first one, the list size changes"
 		);
 	}
+	*/
 	
 	@Test
 	public void listCreatedAccountsCanBeFoundInTheListTest() {
@@ -470,6 +488,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void listDtoCreatedAccountsCanBeFoundInTheListTest() {
 		AccountDto accountDto1 = accountCreatorService.createAndGetDto(
@@ -490,6 +509,7 @@ public class AccountFinderServiceTest {
 			"The second created AccountDto can not be found in the list"
 		);
 	}
+	*/
 	
 	@Test
 	public void listNotCreatedAccountCanNotBeFoundFromTheListTest() {
@@ -505,6 +525,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	/*
 	@Test
 	public void listDtoNotCreatedAccountCanNotBeFoundFromTheListTest() {
 		AccountDto accountDto = new AccountDto(id, username1);
@@ -515,4 +536,5 @@ public class AccountFinderServiceTest {
 			+ " Account list"
 		);
 	}
+	*/
 }

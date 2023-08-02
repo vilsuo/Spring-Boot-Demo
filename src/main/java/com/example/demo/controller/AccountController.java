@@ -3,7 +3,7 @@ package com.example.demo.controller;
 
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Status;
-import com.example.demo.service.AccountFinderService;
+import com.example.demo.service.AccountDtoFinderService;
 import com.example.demo.service.AccountRelationService;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +30,11 @@ public class AccountController {
 	private AccountRelationService accountRelationService;
 	
 	@Autowired
-	private AccountFinderService accountFinderService;
+	private AccountDtoFinderService accountDtoFinderService;
 	
 	@GetMapping("/accounts")
 	public String list(Model model) {
-		model.addAttribute("accountDtos", accountFinderService.list());
+		model.addAttribute("accountDtos", accountDtoFinderService.list());
 		return "accounts";
 	}
 	
@@ -42,7 +42,7 @@ public class AccountController {
 	public String get(
 			Model model, @PathVariable String username, Principal principal) {
 		
-		AccountDto accountDto = accountFinderService.findDtoByUsername(username);
+		AccountDto accountDto = accountDtoFinderService.findByUsername(username);
 		
 		// handle better?
 		model.addAttribute("accountDto", accountDto);

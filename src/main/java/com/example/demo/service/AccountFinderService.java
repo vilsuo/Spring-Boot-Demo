@@ -16,7 +16,6 @@ public class AccountFinderService {
 	@Autowired
 	private AccountRepository accountRepository;
 	
-	// only used by findByDtoId
 	public Account findById(Long id) {
 		if (id == null) {
 			throw new IllegalArgumentException(
@@ -29,10 +28,11 @@ public class AccountFinderService {
 		);
 	}
 	
-	// only used in testing
+	/*
 	public AccountDto findDtoById(Long id) {
 		return EntityToDtoConverter.convertAccount(findById(id));
 	}
+	*/
 	
 	// only used by CustomUserDetailsService
 	public Account findByUsername(String username) {
@@ -49,9 +49,11 @@ public class AccountFinderService {
 		);
 	}
 	
+	/*
 	public AccountDto findDtoByUsername(String username) {
 		return EntityToDtoConverter.convertAccount(findByUsername(username));
 	}
+	*/
 	
 	public boolean existsByUsername(String username) {
 		if (username == null) {
@@ -68,9 +70,11 @@ public class AccountFinderService {
 		return accountRepository.findAll();
 	}
 	
+	/*
 	public List<AccountDto> listDto() {
 		return list().stream()
 				.map(EntityToDtoConverter::convertAccount)
 				.toList();
 	}
+	*/
 }

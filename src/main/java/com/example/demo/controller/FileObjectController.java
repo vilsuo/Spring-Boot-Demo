@@ -4,7 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Status;
 import com.example.demo.service.AccountFileObjectService;
-import com.example.demo.service.AccountFinderService;
+import com.example.demo.service.AccountDtoFinderService;
 import com.example.demo.service.AccountRelationService;
 import java.io.IOException;
 import java.security.Principal;
@@ -35,13 +35,13 @@ public class FileObjectController {
     private AccountFileObjectService accountFileObjectService;
 	
 	@Autowired
-	private AccountFinderService accountFinderService;
+	private AccountDtoFinderService accountDtoFinderService;
     
     @GetMapping("/accounts/{username}/images")
     public String images(
 			Model model, @PathVariable String username, Principal principal) {
 		
-		AccountDto accountDto = accountFinderService.findDtoByUsername(username);
+		AccountDto accountDto = accountDtoFinderService.findByUsername(username);
 		
 		model.addAttribute("accountDto", accountDto);
 		model.addAttribute(
