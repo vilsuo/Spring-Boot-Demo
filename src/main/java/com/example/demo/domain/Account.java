@@ -11,9 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-/*
-no getters/setters?
-*/
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
 @EqualsAndHashCode(

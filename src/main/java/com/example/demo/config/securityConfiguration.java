@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
-public class securityConfiguration {
+public class SecurityConfiguration {
 	
 	@Value("${security.enable-csrf:true}")
    	private boolean csrfEnabled;

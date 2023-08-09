@@ -4,7 +4,6 @@ package com.example.demo.service.datatransfer;
 import com.example.demo.converter.EntityToDtoConverter;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
-import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
 import com.example.demo.service.AccountCreatorService;
 import java.util.Optional;
@@ -22,10 +21,13 @@ public class AccountDtoCreatorService {
 	@Autowired
 	private AccountCreatorService accountCreatorService;
 	
+	@Autowired
+	private EntityToDtoConverter entityToDtoConverter;
+	
 	public Optional<AccountDto> create(
 			AccountCreationDto accountCreationDto, Role role) {
 		
-		return EntityToDtoConverter.convertOptionalAccount(
+		return entityToDtoConverter.convertOptionalAccount(
 			accountCreatorService.create(accountCreationDto, role)
 		);
 	}

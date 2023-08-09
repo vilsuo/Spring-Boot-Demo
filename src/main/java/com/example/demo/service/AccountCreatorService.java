@@ -1,9 +1,7 @@
 
 package com.example.demo.service;
 
-import com.example.demo.converter.EntityToDtoConverter;
 import com.example.demo.datatransfer.AccountCreationDto;
-import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
 import com.example.demo.service.repository.AccountRepository;
@@ -37,21 +35,6 @@ public class AccountCreatorService {
 	
 	@Autowired
     private Validator validator;
-	
-	/*
-	public Optional<AccountDto> createAndGetDto(
-			AccountCreationDto accountCreationDto, Role role) {
-		
-		Optional<Account> opt = create(accountCreationDto, role);
-		if (opt.isPresent()) {
-			return Optional.ofNullable(
-				EntityToDtoConverter.convertAccount(opt.get())
-			);
-		} else {
-			return Optional.empty();
-		}
-	}
-	*/
 	
 	/**
 	 * Create an Account in the Database
@@ -96,11 +79,6 @@ public class AccountCreatorService {
 				makeAccount(accountCreationDto, role)
 			);
 			return Optional.of(createdAccount);
-			/*
-			return Optional.ofNullable(
-				EntityToDtoConverter.convertAccount(createdAccount)
-			);
-			*/
 		}
 		return Optional.empty();
 	}

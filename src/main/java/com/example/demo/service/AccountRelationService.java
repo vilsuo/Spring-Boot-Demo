@@ -1,8 +1,6 @@
 
 package com.example.demo.service;
 
-import com.example.demo.converter.EntityToDtoConverter;
-import com.example.demo.datatransfer.RelationDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;

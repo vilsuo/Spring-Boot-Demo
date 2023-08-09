@@ -14,14 +14,17 @@ public class AccountDtoFinderService {
 	@Autowired
 	private AccountFinderService accountFinderService;
 	
+	@Autowired
+	private EntityToDtoConverter entityToDtoConverter;
+	
 	public AccountDto findById(Long id) {
-		return EntityToDtoConverter.convertAccount(
+		return entityToDtoConverter.convertAccount(
 			accountFinderService.findById(id)
 		);
 	}
 	
 	public AccountDto findByUsername(String username) {
-		return EntityToDtoConverter.convertAccount(
+		return entityToDtoConverter.convertAccount(
 			accountFinderService.findByUsername(username)
 		);
 	}
@@ -32,7 +35,7 @@ public class AccountDtoFinderService {
 	
 	public List<AccountDto> list() {
 		return accountFinderService.list().stream()
-				.map(EntityToDtoConverter::convertAccount)
+				.map(entityToDtoConverter::convertAccount)
 				.toList();
 	}
 }

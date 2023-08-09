@@ -6,18 +6,17 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/*
-add Role here?
-*/
-@Getter
+@Getter @Setter
 @EqualsAndHashCode
-@AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 public class AccountDto {
 	
 	@NotNull
-	private final Long id;
+	private Long id;
 	
 	@Username
-	private final String username;
+	private String username;
 }

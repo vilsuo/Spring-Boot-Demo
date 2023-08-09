@@ -17,17 +17,20 @@ public class AccountRelationDtoService {
 	@Autowired
 	private AccountRelationService accountRelationService;
 	
+	@Autowired
+	private EntityToDtoConverter entityToDtoConverter;
+	
 	public List<RelationDto> getAccountRelationDtos(String username) {
 		return accountRelationService.getAccountRelations(username)
 				.stream()
-				.map(EntityToDtoConverter::convertRelation)
+				.map(entityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
 	public List<RelationDto> getRelationDtosToAccount(String username) {
 		return accountRelationService.getRelationsToAccount(username)
 				.stream()
-				.map(EntityToDtoConverter::convertRelation)
+				.map(entityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
@@ -45,7 +48,7 @@ public class AccountRelationDtoService {
 			String sourceAccountUsername, String targetAccountUsername, 
 			Status status) {
 		
-		return EntityToDtoConverter.convertOptionalRelation(
+		return entityToDtoConverter.convertOptionalRelation(
 			accountRelationService.createRelationToAccount(
 				sourceAccountUsername, targetAccountUsername, status
 			)

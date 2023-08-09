@@ -17,17 +17,20 @@ public class RelationDtoService {
 	@Autowired
 	private RelationService relationService;
 	
+	@Autowired
+	private EntityToDtoConverter entityToDtoConverter;
+	
 	public List<RelationDto> getRelationsFrom(Account account) {
 		return relationService.getRelationsFrom(account)
 				.stream()
-				.map(EntityToDtoConverter::convertRelation)
+				.map(entityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
 	public List<RelationDto> getRelationsTo(Account account) {
 		return relationService.getRelationsTo(account)
 				.stream()
-				.map(EntityToDtoConverter::convertRelation)
+				.map(entityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
@@ -40,7 +43,7 @@ public class RelationDtoService {
 	public Optional<RelationDto> create(
 			Account source, Account target, Status status) {
 		
-		return EntityToDtoConverter.convertOptionalRelation(
+		return entityToDtoConverter.convertOptionalRelation(
 			relationService.create(source, target, status)
 		);
 	}
