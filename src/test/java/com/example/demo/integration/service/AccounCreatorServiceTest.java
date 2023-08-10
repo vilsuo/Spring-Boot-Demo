@@ -11,14 +11,17 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -53,18 +56,20 @@ public class AccounCreatorServiceTest {
 	private final List<String> VALID_PASSWORDS = PasswordValidatorTest.VALID_PASSWORDS;
 	private final List<String> INVALID_PASSWORDS = PasswordValidatorTest.INVALID_PASSWORDS;
 	
+	private final int MIN_LENGTH = Math.min(VALID_USERNAMES.size(), VALID_PASSWORDS.size());
+	
 	private final String validUsername1 = VALID_USERNAMES.get(0);
-	private final String validUsername2 = VALID_USERNAMES.get(1);
 	
 	private final String validPassword1 = VALID_PASSWORDS.get(0);
 	private final String validPassword2 = VALID_PASSWORDS.get(1);
 	
-	@Test
-	public void createWithNullThrowsTest() {
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void createWithNullThrowsTest(final Role role) {
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountCreatorService.create(
-				new AccountCreationDto(), Role.USER
+				new AccountCreationDto(), role
 			),
 			"Creating account with uninitialized AccountCreationDto does not "
 			+ "throw a ConstraintViolationException"
@@ -73,7 +78,7 @@ public class AccounCreatorServiceTest {
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountCreatorService.create(
-				new AccountCreationDto(null, null), Role.USER
+				new AccountCreationDto(null, null), role
 			),
 			"Creating account with null parameters does not throw a "
 			+ "ConstraintViolationException"
@@ -81,7 +86,7 @@ public class AccounCreatorServiceTest {
 		
 		assertThrows(
 			IllegalArgumentException.class,
-			() -> accountCreatorService.create(null, Role.USER),
+			() -> accountCreatorService.create(null, role),
 			"Creating account with null AccountCreationDto does not throw a "
 			+ "IllegalArgumentException"
 		);
@@ -98,7 +103,7 @@ public class AccounCreatorServiceTest {
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountCreatorService.create(
-				new AccountCreationDto(null, validPassword1), Role.USER
+				new AccountCreationDto(null, validPassword1), role
 			),
 			"Creating account with null username does not throw a "
 			+ "ConstraintViolationException"
@@ -107,7 +112,7 @@ public class AccounCreatorServiceTest {
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountCreatorService.create(
-				new AccountCreationDto(validUsername1, null), Role.USER
+				new AccountCreationDto(validUsername1, null), role
 			),
 			"Creating account with null password does not throw a "
 			+ "ConstraintViolationException"
@@ -163,43 +168,110 @@ public class AccounCreatorServiceTest {
 		}
 	}
 	
-	@Test
-	public void createWithoutTakenUsernameIsPresentTest() {
+	@CartesianTest
+	public void createWithTakenUsernameAndWithoutTakenPasswordIsNotPresentTest(
+			@CartesianTest.Enum Role role1,	@CartesianTest.Enum Role role2) {
+		
+		int looped = 0;
+		for (int i = 2; i < MIN_LENGTH; i += 2) {
+			final String commonUsername = VALID_USERNAMES.get(i / 2 - 1);
+			final String password1 = VALID_PASSWORDS.get(i - 2);
+			final String password2 = VALID_PASSWORDS.get(i - 1);
+			
+			assertOptionalAccountsWithParameters(
+				commonUsername, password1, role1,
+				commonUsername, password2, role2
+			);
+			
+			++looped;
+		}
+		
+		assertTrue(looped > 0, "no tests were run!");
+	}
+	
+	@CartesianTest
+	public void createWithoutTakenUsernameAndWithTakenPasswordIsPresentTest(
+			@CartesianTest.Enum Role role1,	@CartesianTest.Enum Role role2) {
+		
+		int looped = 0;
+		for (int i = 2; i < MIN_LENGTH; i += 2) {
+			final String username1 = VALID_USERNAMES.get(i - 2);
+			final String username2 = VALID_USERNAMES.get(i - 1);
+			final String commonPassword = VALID_PASSWORDS.get(i / 2 - 1);
+			
+			assertOptionalAccountsWithParameters(
+				username1, commonPassword, role1,
+				username2, commonPassword, role2
+			);
+			
+			++looped;
+		}
+		
+		assertTrue(looped > 0, "no tests were run!");
+	}
+	
+	@CartesianTest
+	public void createWithoutTakenUsernameAndPasswordIsPresentTest(
+			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2) {
+		
+		int looped = 0;
+		for (int i = 2; i < MIN_LENGTH; i += 2) {
+			final String username1 = VALID_USERNAMES.get(i - 2);
+			final String username2 = VALID_USERNAMES.get(i - 1);
+			final String password1 = VALID_PASSWORDS.get(i - 2);
+			final String password2 = VALID_PASSWORDS.get(i - 1);
+			
+			assertOptionalAccountsWithParameters(
+				username1, password1, role1,
+				username2, password2, role2
+			);
+			
+			++looped;
+		}
+		
+		assertTrue(looped > 0, "no tests were run!");
+	}
+	
+	private void assertOptionalAccountsWithParameters(
+		String username1, String password1, Role role1,
+		String username2, String password2, Role role2) {
+		
+		final String account1Info = 
+			"Account with valid username " + username1 + ", valid "
+			+ "password " + password1 + " and Role " + role1.getName();
+		
 		Optional<Account> opt1 = accountCreatorService.create(
-			new AccountCreationDto(validUsername1, validPassword1), Role.USER
+			new AccountCreationDto(username1, password1), role1
 		);
+		
+		//opt1.ifPresentOrElse(
+		//	(account) -> System.out.println("YES 1: " + account1Info), 
+		//	() -> System.out.println("NO 1: " + account1Info)
+		//);
 		
 		assertTrue(
 			opt1.isPresent(), 
-			"First Optional is not present when creating an Account with valid "
-			+ "parameters in an empty database"
+			"First Optional is not present when creating an " + account1Info
 		);
 		
+		final String account2Info = 
+			"Account with valid username " + username2 + ", valid "
+			+ "password " + password2 + " and Role " + role2.getName();
+
 		Optional<Account> opt2 = accountCreatorService.create(
-			new AccountCreationDto(validUsername2, validPassword1), Role.USER
+			new AccountCreationDto(username2, password2), role2
 		);
 		
-		assertTrue(
-			opt2.isPresent(), 
-			"Second Optional is not present when creating an Account with "
-			+ "valid parameters in an empty database"
-		);
-	}
-	
-	@Test
-	public void createWithTakenUsernameIsNotPresentTest() {
-		final String commonUsername = validUsername1;
-		accountCreatorService.create(
-			new AccountCreationDto(commonUsername, validPassword1), Role.USER
-		);
+		//opt2.ifPresentOrElse(
+		//	(account) -> System.out.println("YES 2: " + account2Info), 
+		//	() -> System.out.println("NO 2: " + account2Info)
+		//);
 		
-		Optional<Account> opt2 = accountCreatorService.create(
-			new AccountCreationDto(commonUsername, validPassword2), Role.USER
-		);
-		assertTrue(
-			opt2.isEmpty(),
-			"Optional is present when creating an Account with an username "
-			+ "that is already taken"
+		assertEquals(
+			username1.equals(username2), opt2.isEmpty(),
+			"Second Optional is " + (opt2.isEmpty() ? "not" : "")
+			+ " present when creating an " + account2Info + ", after "
+			+ "creating an " + account1Info
 		);
 	}
 	
@@ -219,7 +291,6 @@ public class AccounCreatorServiceTest {
 			"After attempting to create an Account with taken username, "
 			+ "the orignal created Account with than username is changed"
 		);
-				
 	}
 	
 	@Test
@@ -232,6 +303,7 @@ public class AccounCreatorServiceTest {
 		assertEquals(username, opt.get().getUsername());
 	}
 	
+	@Test
 	public void createReturnedOptionalHasEncodedPasswordTest() {
 		final String password = validPassword1;
 		
@@ -240,13 +312,19 @@ public class AccounCreatorServiceTest {
 		);
 		
 		final String returnedPassword = opt.get().getPassword();
-		final String encodedPassword 
-			= accountCreatorService.encodePassword(password);
 		
-		assertEquals(
-			returnedPassword, encodedPassword,
-			"The returned Optional Account has password " + returnedPassword
-			+ " but the correct encoded password would be " + encodedPassword
+		assertNotEquals(
+			password, returnedPassword,
+			"The returned Optional Account has password " + password
+			+ " saved in plain text"
+		);
+		
+		assertTrue(
+			accountCreatorService.getPasswordEncoder().matches(
+				password, returnedPassword
+			),
+			"The returned Optional Accounts password " + password
+			+ " is not encoded correctly"
 		);
 	}
 	
@@ -264,28 +342,4 @@ public class AccounCreatorServiceTest {
 			+ "role " + role.getName()
 		);
 	}
-	
-	/*
-	private void assertAccountIsCreatedFromAccountCreationDtoAndRole(
-		final Account account, final AccountCreationDto accountCreationDto, 
-		final Role role) {
-		
-		assertEquals(
-			accountCreationDto.getUsername(), account.getUsername(), 
-			"The Account is given a different username than it was created with"
-		);
-		
-		assertEquals(
-			role, account.getRole(),
-			"The Account is given different Role than it was created with"
-		);
-		assertEquals(
-			accountCreatorService.encodePassword(
-				accountCreationDto.getPassword()
-			),
-			account.getPassword(),
-			"The Accounts password is not encoded correctly"
-		);
-	}
-	*/
 }

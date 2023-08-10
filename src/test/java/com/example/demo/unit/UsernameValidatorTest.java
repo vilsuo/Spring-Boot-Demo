@@ -10,6 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
+/*
+TODO
+- Make collection lists as sets to ensure there are no dublicates
+*/
 public class UsernameValidatorTest {
 	
 	private static final UsernameValidator validator = new UsernameValidator();
@@ -27,7 +31,7 @@ public class UsernameValidatorTest {
 	);
 	
 	private static final List<String> RANDOM_VALID_USERNAMES = Arrays.asList(
-		"a", "1", "C", "b1", "7d", "42", "192837465", "eL900VQeU",
+		"a", "7", "C", "b1", "7d", "42", "192837465", "eL900VQeU",
 		"exactly_at_the_lenght_limit123", "ALLCAPS", "alllowercase", 
 		"normal_username1", "W1eRd_U5eR_n4M3", "66EKF5cvV926BtDb",
 		"vJdjk6t4m39F", "T68LhFKhWqDTpLz", "Uz0D44Sj7gHS3f"

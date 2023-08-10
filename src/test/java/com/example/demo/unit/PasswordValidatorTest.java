@@ -11,6 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 /*
+TODO
+- Make collection lists as sets to ensure there are no dublicates
+
+
 Tests assumes that all characters are allowed in a password
 */
 public class PasswordValidatorTest {

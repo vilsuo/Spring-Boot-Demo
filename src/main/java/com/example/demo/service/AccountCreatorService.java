@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 IMPLEMENT POSSIBLY IN FUTURE:
 	- delete account
 */
-
 @Service
 public class AccountCreatorService {
 	
@@ -35,6 +34,10 @@ public class AccountCreatorService {
 	
 	@Autowired
     private Validator validator;
+	
+	public PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
+	}
 	
 	/**
 	 * Create an Account in the Database
