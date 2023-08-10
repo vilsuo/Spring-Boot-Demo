@@ -43,16 +43,11 @@ public class EntityToDtoConverter {
 			);
 		}
 		
-		return new RelationDto(
-			relation.getId(),
-			convertAccount(relation.getSource()),
-			convertAccount(relation.getTarget()),
-			relation.getStatus()
-		);
+		return modelMapper.map(relation, RelationDto.class);
 	}
 	
 	public Optional<RelationDto> convertOptionalRelation(
-			final Optional<Relation> opt) {
+			final Optional<? extends Relation> opt) {
 		
 		if (opt.isPresent()) {
 			return Optional.ofNullable(

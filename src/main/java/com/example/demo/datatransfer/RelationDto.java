@@ -5,10 +5,12 @@ import com.example.demo.domain.Status;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
 @EqualsAndHashCode
-@AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 public class RelationDto {
 	
 	private Long id;

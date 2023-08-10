@@ -3,7 +3,6 @@ package com.example.demo.integration.service.datatransfer;
 
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
-import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
 import com.example.demo.error.validation.ResourceNotFoundException;
 import com.example.demo.service.datatransfer.AccountDtoCreatorService;
