@@ -1,5 +1,8 @@
 package com.example.demo.integration.service;
 
+import static com.example.demo.testhelpers.AccountCreationHelpers.accountCreationDtoPairStream;
+import static com.example.demo.testhelpers.AccountCreationHelpers.accountCreationDtoStream;
+import static com.example.demo.testhelpers.AccountCreationHelpers.accountInfo;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
@@ -11,7 +14,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -29,7 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 TODO
-make parametrized test with enumsource Role
+implement method 'assertOptionalAccountsWithParameters' better
 
 make class for AccountCreatorDtoService
 - test
@@ -51,28 +53,26 @@ public class AccounCreatorServiceTest {
 	private AccountFinderService accountFinderService;
 	
 	private final List<String> VALID_USERNAMES = UsernameValidatorTest.VALID_USERNAMES;
-	private final List<String> INVALID_USERNAMES = UsernameValidatorTest.INVALID_USERNAMES;
-	
 	private final List<String> VALID_PASSWORDS = PasswordValidatorTest.VALID_PASSWORDS;
-	private final List<String> INVALID_PASSWORDS = PasswordValidatorTest.INVALID_PASSWORDS;
 	
-	private final int MIN_LENGTH = Math.min(VALID_USERNAMES.size(), VALID_PASSWORDS.size());
+	private final String validUsername = VALID_USERNAMES.get(0);
 	
-	private final String validUsername1 = VALID_USERNAMES.get(0);
-	
-	private final String validPassword1 = VALID_PASSWORDS.get(0);
-	private final String validPassword2 = VALID_PASSWORDS.get(1);
+	private final String validPassword = VALID_PASSWORDS.get(0);
 	
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createWithNullThrowsTest(final Role role) {
+		/*
+		final String validUsername = ;
+		final String validPassword = ;
+		*/
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountCreatorService.create(
 				new AccountCreationDto(), role
 			),
 			"Creating account with uninitialized AccountCreationDto does not "
-			+ "throw a ConstraintViolationException"
+			+ "throw"
 		);
 		
 		assertThrows(
@@ -80,266 +80,222 @@ public class AccounCreatorServiceTest {
 			() -> accountCreatorService.create(
 				new AccountCreationDto(null, null), role
 			),
-			"Creating account with null parameters does not throw a "
-			+ "ConstraintViolationException"
+			"Creating account with null parameters does not throw"
 		);
 		
 		assertThrows(
 			IllegalArgumentException.class,
 			() -> accountCreatorService.create(null, role),
-			"Creating account with null AccountCreationDto does not throw a "
-			+ "IllegalArgumentException"
+			"Creating account with null AccountCreationDto does not throw"
 		);
 		
 		assertThrows(
 			IllegalArgumentException.class,
 			() -> accountCreatorService.create(
-				new AccountCreationDto(validUsername1, validPassword1), null
+				new AccountCreationDto(validUsername, validPassword), null
 			),
-			"Creating account with null Role does not throw a "
-			+ "IllegalArgumentException"
+			"Creating account with null Role does not throw"
 		);
 		
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountCreatorService.create(
-				new AccountCreationDto(null, validPassword1), role
+				new AccountCreationDto(null, validPassword), role
 			),
-			"Creating account with null username does not throw a "
-			+ "ConstraintViolationException"
+			"Creating account with null username does not throw"
 		);
 		
 		assertThrows(
 			ConstraintViolationException.class,
 			() -> accountCreatorService.create(
-				new AccountCreationDto(validUsername1, null), role
+				new AccountCreationDto(validUsername, null), role
 			),
-			"Creating account with null password does not throw a "
-			+ "ConstraintViolationException"
+			"Creating account with null password does not throw"
 		);
 	}
 	
-	@Test
-	public void createWithInvalidUsernameThrowsTest() {
-		for (final String username : INVALID_USERNAMES) {
-			for (final String password : VALID_PASSWORDS) {
-				assertThrows(
-					ConstraintViolationException.class,
-					() -> accountCreatorService.create(
-						new AccountCreationDto(username, password), Role.USER
-					),
-					"Creating an account with invalid username '" + username
-					+ "' does not throw a ConstraintViolationException"
-				);
-			}
-		}
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void createWithInvalidUsernameThrowsTest(final Role role) {
+		accountCreationDtoStream(false, true).forEach(accountCreationDto -> {
+			assertThrows(
+				ConstraintViolationException.class,
+				() -> accountCreatorService.create(
+					accountCreationDto, role
+				),
+				"Creating an " + accountInfo(accountCreationDto, role)
+				+ " does not throw"
+			);
+		});
 	}
 	
-	@Test
-	public void createWithInvalidPasswordThrowsTest() {
-		for (final String username : VALID_USERNAMES) {
-			for (final String password : INVALID_PASSWORDS) {
-				assertThrows(
-					ConstraintViolationException.class,
-					() -> accountCreatorService.create(
-						new AccountCreationDto(username, password), Role.USER
-					),
-					"Creating an account with invalid password '" + password
-					+ "' does not throw a ConstraintViolationException"
-				);
-			}
-		}
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void createWithInvalidPasswordThrowsTest(final Role role) {
+		accountCreationDtoStream(true, false).forEach(accountCreationDto -> {
+			assertThrows(
+				ConstraintViolationException.class,
+				() -> accountCreatorService.create(
+					accountCreationDto, role
+				),
+				"Creating an " + accountInfo(accountCreationDto, role)
+				+ " does not throw"
+			);
+		});
 	}
 	
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createWithValidUsernameAndPasswordAndRoleDoesNotThrowTest(final Role role) {
-		for (final String username : VALID_USERNAMES) {
-			for (final String password : VALID_PASSWORDS) {
-				assertDoesNotThrow(
-					() -> accountCreatorService.create(
-						new AccountCreationDto(username, password), role
-					),
-					"Creating an account with valid username '" + username
-					+ "', valid password '" + password + "' and valid role '"
-					+ role.getName() + "' throws an exception"
-				);
-			}
-		}
+		accountCreationDtoStream().forEach(accountCreationDto -> {
+			assertDoesNotThrow(
+				() -> accountCreatorService.create(
+					accountCreationDto, role
+				),
+				"Creating " + accountInfo(accountCreationDto, role) + " throws"
+			);
+		});
 	}
 	
 	@CartesianTest
 	public void createWithTakenUsernameAndWithoutTakenPasswordIsNotPresentTest(
 			@CartesianTest.Enum Role role1,	@CartesianTest.Enum Role role2) {
 		
-		int looped = 0;
-		for (int i = 2; i < MIN_LENGTH; i += 2) {
-			final String commonUsername = VALID_USERNAMES.get(i / 2 - 1);
-			final String password1 = VALID_PASSWORDS.get(i - 2);
-			final String password2 = VALID_PASSWORDS.get(i - 1);
-			
+		accountCreationDtoPairStream(true, false).forEach(pair -> {
 			assertOptionalAccountsWithParameters(
-				commonUsername, password1, role1,
-				commonUsername, password2, role2
+				pair.getFirst(), role1,
+				pair.getSecond(), role2
 			);
-			
-			++looped;
-		}
-		
-		assertTrue(looped > 0, "no tests were run!");
+		});
 	}
 	
 	@CartesianTest
 	public void createWithoutTakenUsernameAndWithTakenPasswordIsPresentTest(
 			@CartesianTest.Enum Role role1,	@CartesianTest.Enum Role role2) {
 		
-		int looped = 0;
-		for (int i = 2; i < MIN_LENGTH; i += 2) {
-			final String username1 = VALID_USERNAMES.get(i - 2);
-			final String username2 = VALID_USERNAMES.get(i - 1);
-			final String commonPassword = VALID_PASSWORDS.get(i / 2 - 1);
-			
+		accountCreationDtoPairStream(false, true).forEach(pair -> {
 			assertOptionalAccountsWithParameters(
-				username1, commonPassword, role1,
-				username2, commonPassword, role2
+				pair.getFirst(), role1,
+				pair.getSecond(), role2
 			);
-			
-			++looped;
-		}
-		
-		assertTrue(looped > 0, "no tests were run!");
+		});
 	}
 	
 	@CartesianTest
 	public void createWithoutTakenUsernameAndPasswordIsPresentTest(
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2) {
 		
-		int looped = 0;
-		for (int i = 2; i < MIN_LENGTH; i += 2) {
-			final String username1 = VALID_USERNAMES.get(i - 2);
-			final String username2 = VALID_USERNAMES.get(i - 1);
-			final String password1 = VALID_PASSWORDS.get(i - 2);
-			final String password2 = VALID_PASSWORDS.get(i - 1);
-			
+		accountCreationDtoPairStream(false, false).forEach(pair -> {
 			assertOptionalAccountsWithParameters(
-				username1, password1, role1,
-				username2, password2, role2
+				pair.getFirst(), role1,
+				pair.getSecond(), role2
 			);
-			
-			++looped;
-		}
-		
-		assertTrue(looped > 0, "no tests were run!");
+		});
 	}
 	
 	private void assertOptionalAccountsWithParameters(
-		String username1, String password1, Role role1,
-		String username2, String password2, Role role2) {
-		
-		final String account1Info = 
-			"Account with valid username " + username1 + ", valid "
-			+ "password " + password1 + " and Role " + role1.getName();
+		AccountCreationDto accountCreationDto1, Role role1,
+		AccountCreationDto accountCreationDto2, Role role2) {
 		
 		Optional<Account> opt1 = accountCreatorService.create(
-			new AccountCreationDto(username1, password1), role1
+			accountCreationDto1, role1
 		);
-		
-		//opt1.ifPresentOrElse(
-		//	(account) -> System.out.println("YES 1: " + account1Info), 
-		//	() -> System.out.println("NO 1: " + account1Info)
-		//);
 		
 		assertTrue(
 			opt1.isPresent(), 
-			"First Optional is not present when creating an " + account1Info
+			"First Optional is not present when creating an "
+				+ accountInfo(accountCreationDto1, role1)
 		);
 		
-		final String account2Info = 
-			"Account with valid username " + username2 + ", valid "
-			+ "password " + password2 + " and Role " + role2.getName();
-
 		Optional<Account> opt2 = accountCreatorService.create(
-			new AccountCreationDto(username2, password2), role2
+			accountCreationDto2, role2
 		);
-		
-		//opt2.ifPresentOrElse(
-		//	(account) -> System.out.println("YES 2: " + account2Info), 
-		//	() -> System.out.println("NO 2: " + account2Info)
-		//);
 		
 		assertEquals(
-			username1.equals(username2), opt2.isEmpty(),
+			accountCreationDto1.getUsername().equals(accountCreationDto2.getUsername()),
+			opt2.isEmpty(),
 			"Second Optional is " + (opt2.isEmpty() ? "not" : "")
-			+ " present when creating an " + account2Info + ", after "
-			+ "creating an " + account1Info
+			+ " present when creating an "
+			+ accountInfo(accountCreationDto2, role2) + ", after "
+			+ "creating an " + accountInfo(accountCreationDto1, role1)
 		);
 	}
 	
 	@Test
 	public void createWithTakenUsernameDoesNotChangeTheOrginalTest() {
-		final String commonUsername = validUsername1;
-		Optional<Account> opt = accountCreatorService.create(
-			new AccountCreationDto(commonUsername, validPassword1), Role.USER
-		);
-		
-		accountCreatorService.create(
-			new AccountCreationDto(commonUsername, validPassword2), Role.ADMIN
-		);
-		
-		assertEquals(
-			opt.get(), accountFinderService.findByUsername(commonUsername),
-			"After attempting to create an Account with taken username, "
-			+ "the orignal created Account with than username is changed"
-		);
+		final Role roleFirst = Role.USER;
+		final Role roleSecond = Role.ADMIN;
+		accountCreationDtoPairStream(true, false).forEach(pair -> {
+			final Account original = accountCreatorService.create(
+				pair.getFirst(), roleFirst
+			).get();
+			
+			accountCreatorService.create(pair.getSecond(), roleSecond);
+			
+			assertEquals(
+				original,
+				accountFinderService.findByUsername(original.getUsername()),
+				"After attempting to create an Account with taken username, "
+				+ "the original Account with than username is changed"
+			);
+		});
 	}
 	
 	@Test
 	public void createReturnedOptionalHasTheCreatedUsernameTest() {
-		final String username = validUsername1;
-		Optional<Account> opt = accountCreatorService.create(
-			new AccountCreationDto(username, validPassword1), Role.USER
-		);
-		
-		assertEquals(username, opt.get().getUsername());
+		final Role role = Role.USER;
+		accountCreationDtoStream().forEach(accountCreationDto -> {
+			Optional<Account> opt = accountCreatorService.create(
+				accountCreationDto, role
+			);
+
+			assertEquals(
+				accountCreationDto.getUsername(), opt.get().getUsername()
+			);
+		});
 	}
 	
 	@Test
 	public void createReturnedOptionalHasEncodedPasswordTest() {
-		final String password = validPassword1;
-		
-		Optional<Account> opt = accountCreatorService.create(
-			new AccountCreationDto(validUsername1, password), Role.USER
-		);
-		
-		final String returnedPassword = opt.get().getPassword();
-		
-		assertNotEquals(
-			password, returnedPassword,
-			"The returned Optional Account has password " + password
-			+ " saved in plain text"
-		);
-		
-		assertTrue(
-			accountCreatorService.getPasswordEncoder().matches(
-				password, returnedPassword
-			),
-			"The returned Optional Accounts password " + password
-			+ " is not encoded correctly"
-		);
+		final Role role = Role.USER;
+		accountCreationDtoStream().forEach(accountCreationDto -> {
+			Optional<Account> opt = accountCreatorService.create(
+				accountCreationDto, role
+			);
+
+			final String rawPassword = accountCreationDto.getPassword();
+			final String returnedPassword = opt.get().getPassword();
+
+			assertNotEquals(
+				rawPassword, returnedPassword,
+				"The returned Optional Account has password '" + rawPassword
+				+ "' saved in plain text"
+			);
+
+			assertTrue(
+				accountCreatorService.getPasswordEncoder().matches(
+					rawPassword, returnedPassword
+				),
+				"The returned Optional Accounts raw password '" + rawPassword
+				+ "' is not encoded correctly: '" + returnedPassword + "'"
+			);
+		});
 	}
 	
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createReturnedOptionalHasTheCreatedRoleTest(Role role) {
-		Optional<Account> opt = accountCreatorService.create(
-			new AccountCreationDto(validUsername1, validPassword1), role
-		);
-		
-		assertTrue(
-			opt.get().getRole() == role,
-			"The returned Optional Account has role "
-			+ opt.get().getRole().getName() + " when it is was created with "
-			+ "role " + role.getName()
-		);
+		accountCreationDtoStream().forEach(accountCreationDto -> {
+			Optional<Account> opt = accountCreatorService.create(
+				accountCreationDto, role
+			);
+
+			assertTrue(
+				opt.get().getRole() == role,
+				"The returned Optional Account has role "
+				+ opt.get().getRole().getName()
+				+ " when it is was created with role " + role.getName()
+			);
+		});
 	}
 }

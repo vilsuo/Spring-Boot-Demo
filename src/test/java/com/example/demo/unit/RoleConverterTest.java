@@ -37,8 +37,7 @@ public class RoleConverterTest {
 			assertThrows(
 				IllegalArgumentException.class, 
 				() -> roleConverter.convertToEntityAttribute(value),
-				"Converting String '" + value + "' to Role should throw "
-				+ "an IllegalArgumentException"
+				"Converting String '" + value + "' to Role should throw"
 			);
 		}
 	}

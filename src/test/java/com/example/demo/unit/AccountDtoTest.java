@@ -69,7 +69,6 @@ public class AccountDtoTest {
 	@Test
 	public void validUsernameTest() {
 		final Long id = 1l;
-		
 		for (String username : VALID_USERNAMES) {
 			Set<ConstraintViolation<AccountDto>> violations
 				= validator.validate(new AccountDto(id, username));
@@ -85,7 +84,6 @@ public class AccountDtoTest {
 	@Test
 	public void invalidUsernameTest() {
 		final Long id = 1l;
-		
 		for (String username : INVALID_USERNAMES) {
 			Set<ConstraintViolation<AccountDto>> violations
 				= validator.validate(new AccountDto(id, username));
