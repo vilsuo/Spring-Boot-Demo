@@ -4,25 +4,28 @@ package com.example.demo.testhelpers.tests;
 import com.example.demo.datatransfer.AccountCreationDto;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoPairStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoStream;
+import com.example.demo.validator.PasswordValidator;
+import com.example.demo.validator.UsernameValidator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-/*
-TODO
-- implement accountCreationDtoStreamParametersIndicateValidityOfUsernameAndPasswordTest
-*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class AccountCreationHelpersTest {
 	
-	//private static final UsernameValidator validator = new UsernameValidator();
+	@Autowired
+	private UsernameValidator usernameValidator;
+	
+	@Autowired
+	private PasswordValidator passwordValidator;
 	
 	@CartesianTest
 	public void accountCreationDtoPairStreamIsNotEmptyTest(
@@ -78,17 +81,32 @@ public class AccountCreationHelpersTest {
 	
 	@CartesianTest
 	public void accountCreationDtoStreamParametersIndicateValidityOfUsernameAndPasswordTest(
-			@Values(booleans = {true, false}) boolean sameUsernames,
-			@Values(booleans = {true, false}) boolean samePasswords) {
+			@Values(booleans = {true, false}) boolean validUsernames,
+			@Values(booleans = {true, false}) boolean validPasswords) {
 		
-		accountCreationDtoStream(sameUsernames, samePasswords)
+		accountCreationDtoStream(validUsernames, validPasswords)
 			.forEach(accountCreationDto -> {
-				//throw new UnsupportedOperationException("Method not implemented");
+				final String username = accountCreationDto.getUsername();
+				final boolean usernameIsValid = usernameValidator
+					.isValid(username, null);
 				
-				// validate username...
+				assertEquals(
+					validUsernames, usernameIsValid,
+					"Username '" + username + "' is supposed to "
+					+ (validUsernames ? "" : "not ") + "be valid but it is"
+					+ (usernameIsValid ? "" : " not")
+				);
 				
-				// validate password...
-				
+				final String password = accountCreationDto.getPassword();
+				final boolean passwordIsValid = passwordValidator
+					.isValid(password, null);
+						
+				assertEquals(
+					validPasswords, passwordIsValid,
+					"Password '" + password + "' is supposed to "
+					+ (validPasswords ? "" : "not ") + "be valid but it is"
+					+ (passwordIsValid ? "" : " not")
+				);
 			});
 	}
 }
