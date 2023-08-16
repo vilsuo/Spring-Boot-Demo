@@ -1,13 +1,13 @@
 
-package com.example.demo.testhelpers;
+package com.example.demo.testhelpers.helpers;
 
 import com.codepoetics.protonpack.StreamUtils;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.datatransfer.AccountDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
-import com.example.demo.unit.PasswordValidatorTest;
-import com.example.demo.unit.UsernameValidatorTest;
+import com.example.demo.unit.validator.PasswordValidatorTest;
+import com.example.demo.unit.validator.UsernameValidatorTest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -15,19 +15,15 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.data.util.Pair;
 
-/*
-TODO
-- write infos as toString in their own classes
-*/
 public final class AccountCreationHelpers {
 	
-	private static final List<String> VALID_USERNAMES = UsernameValidatorTest.VALID_USERNAMES;
-	private static final List<String> INVALID_USERNAMES = UsernameValidatorTest.INVALID_USERNAMES;
-	private static final List<String> VALID_PASSWORDS = PasswordValidatorTest.VALID_PASSWORDS;
-	private static final List<String> INVALID_PASSWORDS = PasswordValidatorTest.INVALID_PASSWORDS;
+	private static final List<String> VALID_USERNAMES = new ArrayList<>(UsernameValidatorTest.VALID_USERNAMES);
+	private static final List<String> INVALID_USERNAMES = new ArrayList<>(UsernameValidatorTest.INVALID_USERNAMES);
+	private static final List<String> VALID_PASSWORDS = new ArrayList<>(PasswordValidatorTest.VALID_PASSWORDS);
+	private static final List<String> INVALID_PASSWORDS = new ArrayList<>(PasswordValidatorTest.INVALID_PASSWORDS);
 	
 	public static Stream<Pair<AccountCreationDto, AccountCreationDto>> accountCreationDtoPairStream(
-			boolean sameUsername, boolean samePassword) {
+			final boolean sameUsername, final boolean samePassword) {
 		
 		List<Pair<AccountCreationDto, AccountCreationDto>> lst = new ArrayList<>();
 		for (int u_i = 0, p_i = 0;
@@ -49,6 +45,10 @@ public final class AccountCreationHelpers {
 			));
 		}
 		return lst.stream();
+	}
+	
+	public static Stream<Pair<AccountCreationDto, AccountCreationDto>> accountCreationDtoPairStream() {
+		return accountCreationDtoPairStream(false, false);
 	}
 	
 	public static Stream<AccountCreationDto> accountCreationDtoStream(
@@ -85,7 +85,7 @@ public final class AccountCreationHelpers {
 	}
 	
 	public static Stream<AccountWithSettableId> accountCreationWithIdAndRoleStream(
-			final Role role, Long skip) {
+			final Role role, final Long skip) {
 		
 		return StreamUtils.zipWithIndex(accountCreationDtoStream())
 			.skip(skip)
@@ -116,27 +116,22 @@ public final class AccountCreationHelpers {
 		
 		assertEquals(
 			account.getId(), accountDto.getId(),
-			"After converting Account with id " + account.getId() + " to "
-			+ "AccountDto, the AccountDto has id " + accountDto.getId()
+			"After converting Account with id '" + account.getId() + "' to "
+			+ "AccountDto, the AccountDto has 'id " + accountDto.getId() + "'"
 		);
 		
 		assertEquals(
 			account.getUsername(), accountDto.getUsername(),
-			"After converting Account with username " + account.getUsername()
-			+ " to AccountDto, the AccountDto has username "
-			+ accountDto.getUsername()
+			"After converting Account with username '" + account.getUsername()
+			+ "' to AccountDto, the AccountDto has username '"
+			+ accountDto.getUsername() + "'"
 		);
 	}
 	
-	public static String accountInfo(AccountCreationDto accountCreationDto, Role role) {
-		return "Account with username '" + accountCreationDto.getUsername()
+	public static String accountCreateInfo(AccountCreationDto accountCreationDto, Role role) {
+		return "AccountCreationDto with username '"
+			+ accountCreationDto.getUsername()
 			+ "', raw password '" + accountCreationDto.getPassword()
-			+ "' and role '" + role.getName() + "'";
-	}
-	
-	public static String accountInfo(Account account) {
-		return "Account with username '" + account.getUsername()
-			+ "', password '" + account.getPassword()
-			+ "' and role '" + account.getRole().getName() + "'";
+			+ "' and also Role '" + role.getName() + "'";
 	}
 }

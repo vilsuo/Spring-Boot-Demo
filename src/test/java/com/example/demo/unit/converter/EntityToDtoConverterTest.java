@@ -1,10 +1,10 @@
 
-package com.example.demo.unit;
+package com.example.demo.unit.converter;
 
-import static com.example.demo.testhelpers.AccountCreationHelpers.assertAccountDtoIsCreatedFromAccount;
-import static com.example.demo.testhelpers.RelationCreationHelpers.assertRelationDtoIsCreatedFromRelation;
-import com.example.demo.testhelpers.AccountWithSettableId;
-import com.example.demo.testhelpers.RelationWithSettableId;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.assertAccountDtoIsCreatedFromAccount;
+import static com.example.demo.testhelpers.helpers.RelationCreationHelpers.assertRelationDtoIsCreatedFromRelation;
+import com.example.demo.testhelpers.helpers.AccountWithSettableId;
+import com.example.demo.testhelpers.helpers.RelationWithSettableId;
 import com.example.demo.converter.EntityToDtoConverter;
 import com.example.demo.domain.Role;
 import com.example.demo.domain.Status;
@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.example.demo.testhelpers.AccountCreationHelpers.accountCreationWithIdAndRoleStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationWithIdAndRoleStream;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -72,9 +72,10 @@ public class EntityToDtoConverterTest {
 		accountCreationWithIdAndRoleStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
 				final Long relationId = accountWithSettableId.getId() + 1;
-				RelationWithSettableId relation = new RelationWithSettableId(
-					relationId, source, accountWithSettableId, status
-				);
+				final RelationWithSettableId relation
+					= new RelationWithSettableId(
+						relationId, source, accountWithSettableId, status
+					);
 
 				assertRelationDtoIsCreatedFromRelation(
 					entityToDtoConverter.convertRelation(relation),
@@ -104,7 +105,7 @@ public class EntityToDtoConverterTest {
 	public void convertingNonEmptyOptionalAccountReturnsNonEmptyOptionalTest(final Role role) {
 		accountCreationWithIdAndRoleStream(role)
 			.forEach(accountWithSettableId -> {
-				Optional<AccountWithSettableId> opt = Optional.of(
+				final Optional<AccountWithSettableId> opt = Optional.of(
 					accountWithSettableId
 				);
 
@@ -126,7 +127,7 @@ public class EntityToDtoConverterTest {
 		accountCreationWithIdAndRoleStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
 				final Long relationId = accountWithSettableId.getId() + 1;
-				Optional<RelationWithSettableId> opt = Optional.of(
+				final Optional<RelationWithSettableId> opt = Optional.of(
 					new RelationWithSettableId(
 						relationId, source, accountWithSettableId, status
 					)
@@ -165,9 +166,10 @@ public class EntityToDtoConverterTest {
 		accountCreationWithIdAndRoleStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
 				final Long relationId = accountWithSettableId.getId() + 1;
-				RelationWithSettableId relation = new RelationWithSettableId(
-					relationId, source, accountWithSettableId, status
-				);
+				final RelationWithSettableId relation =
+					new RelationWithSettableId(
+						relationId, source, accountWithSettableId, status
+					);
 
 				assertRelationDtoIsCreatedFromRelation(
 					entityToDtoConverter.convertOptionalRelation(

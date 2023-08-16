@@ -24,5 +24,4 @@ public class RoleConverter implements AttributeConverter<Role, String> {
 		}
 		return role;
 	}
-	
 }

@@ -1,5 +1,5 @@
 
-package com.example.demo.testhelpers;
+package com.example.demo.testhelpers.helpers;
 
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.domain.Account;

@@ -26,8 +26,8 @@ public class AccountFileObjectService {
 	private FileObjectService fileObjectService;
 	
 	@Transactional
-	public void createImageToAccount(String username, MultipartFile file) 
-			throws IOException {
+	public void createImageToAccount(final String username, 
+			final MultipartFile file) throws IOException {
 		
 		fileObjectService.create(
 			accountFinderService.findByUsername(username), file
@@ -35,7 +35,7 @@ public class AccountFileObjectService {
 	}
 	
 	@Transactional
-	public List<FileObject> getAccountImages(String username) {
+	public List<FileObject> getAccountImages(final String username) {
 		return fileObjectService.getAccountImages(
 			accountFinderService.findByUsername(username)
 		);

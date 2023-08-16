@@ -53,7 +53,7 @@ public class AccountCreatorService {
 	 */
 	@Transactional
 	public Optional<Account> create(
-			AccountCreationDto accountCreationDto, Role role) {
+			final AccountCreationDto accountCreationDto, final Role role) {
 		
 		if (accountCreationDto == null) {
 			throw new IllegalArgumentException(
@@ -67,18 +67,18 @@ public class AccountCreatorService {
 			);
 		}
 		
-		Set<ConstraintViolation<AccountCreationDto>> violations
+		final Set<ConstraintViolation<AccountCreationDto>> violations
 			= validator.validate(accountCreationDto);
 
         if (!violations.isEmpty()) {
 			throw new ConstraintViolationException(violations);
         }
 		
-		boolean usernameIsTaken = accountFinderService.existsByUsername(
-			accountCreationDto.getUsername()
-		);
+		final boolean usernameIsTaken = accountFinderService
+			.existsByUsername(accountCreationDto.getUsername());
+		
 		if (!usernameIsTaken) {
-			Account createdAccount = accountRepository.save(
+			final Account createdAccount = accountRepository.save(
 				makeAccount(accountCreationDto, role)
 			);
 			return Optional.of(createdAccount);
@@ -104,7 +104,7 @@ public class AccountCreatorService {
 	 * If AccountCreationDto is null or the password to be encoded is null.
 	 */
 	private Account makeAccount(
-			AccountCreationDto accountCreationDto, Role role) 
+			final AccountCreationDto accountCreationDto, final Role role) 
 			throws IllegalArgumentException {
 		
 		if (accountCreationDto == null) {
@@ -123,9 +123,11 @@ public class AccountCreatorService {
 		);
 	}
 	
-	public String encodePassword(String password) {
+	public String encodePassword(final String password) {
 		if (password == null) {
-			throw new IllegalArgumentException("Can not encode a null password");
+			throw new IllegalArgumentException(
+				"Can not encode a null password"
+			);
 		}
 		
 		return passwordEncoder.encode(password);

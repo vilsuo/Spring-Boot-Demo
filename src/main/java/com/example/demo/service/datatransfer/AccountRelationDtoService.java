@@ -20,14 +20,14 @@ public class AccountRelationDtoService {
 	@Autowired
 	private EntityToDtoConverter entityToDtoConverter;
 	
-	public List<RelationDto> getAccountRelationDtos(String username) {
+	public List<RelationDto> getAccountRelationDtos(final String username) {
 		return accountRelationService.getAccountRelations(username)
 				.stream()
 				.map(entityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
-	public List<RelationDto> getRelationDtosToAccount(String username) {
+	public List<RelationDto> getRelationDtosToAccount(final String username) {
 		return accountRelationService.getRelationsToAccount(username)
 				.stream()
 				.map(entityToDtoConverter::convertRelation)
@@ -35,8 +35,8 @@ public class AccountRelationDtoService {
 	}
 	
 	public boolean hasRelationStatus(
-			String sourceAccountUsername, String targetAccountUsername, 
-			Status status) {
+			final String sourceAccountUsername,
+			final String targetAccountUsername, final Status status) {
 		
 		return accountRelationService.hasRelationStatus(
 			sourceAccountUsername, targetAccountUsername, status
@@ -45,8 +45,8 @@ public class AccountRelationDtoService {
 	
 	@Transactional
     public Optional<RelationDto> createRelationToAccount(
-			String sourceAccountUsername, String targetAccountUsername, 
-			Status status) {
+			final String sourceAccountUsername,
+			final String targetAccountUsername, final Status status) {
 		
 		return entityToDtoConverter.convertOptionalRelation(
 			accountRelationService.createRelationToAccount(
@@ -57,8 +57,8 @@ public class AccountRelationDtoService {
 	
 	@Transactional
 	public void removeRelationFromAccount(
-			String sourceAccountUsername, String targetAccountUsername, 
-			Status status) {
+			final String sourceAccountUsername,
+			final String targetAccountUsername, final Status status) {
 		
 		accountRelationService.removeRelationFromAccount(
 			sourceAccountUsername, targetAccountUsername, status

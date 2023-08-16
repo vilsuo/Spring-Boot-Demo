@@ -1,9 +1,9 @@
 
-package com.example.demo.testhelpers;
+package com.example.demo.testhelpers.tests;
 
 import com.example.demo.datatransfer.AccountCreationDto;
-import static com.example.demo.testhelpers.AccountCreationHelpers.accountCreationDtoPairStream;
-import static com.example.demo.testhelpers.AccountCreationHelpers.accountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.extension.ExtendWith;

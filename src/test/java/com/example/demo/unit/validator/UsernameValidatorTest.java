@@ -1,22 +1,29 @@
 
-package com.example.demo.unit;
+package com.example.demo.unit.validator;
 
 import com.example.demo.validator.UsernameValidator;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-/*
-TODO
-- Make collection lists as sets to ensure there are no dublicates
-*/
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class UsernameValidatorTest {
 	
-	private static final UsernameValidator validator = new UsernameValidator();
+	@Autowired
+	private UsernameValidator validator;
 	
 	private static final String ALLOWED_USERNAME_CHARACTERS = "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 	private static final String UNALLOWED_USERNAME_CHARACTERS = "()[]{}<>|;,:._-*'^¨~`´?+\\/&%€¤$#£\"@!§½= ";
@@ -37,7 +44,7 @@ public class UsernameValidatorTest {
 		"vJdjk6t4m39F", "T68LhFKhWqDTpLz", "Uz0D44Sj7gHS3f"
 	);
 	
-	public static final List<String> VALID_USERNAMES = new ArrayList<>() {{
+	public static final Set<String> VALID_USERNAMES = new HashSet<>() {{
 		addAll(Arrays.asList(MIN_LENGTH_USERNAME, MAX_LENGTH_USERNAME));
 		addAll(VALID_WITH_UNDERSCORE);
 		addAll(RANDOM_VALID_USERNAMES);
@@ -60,7 +67,7 @@ public class UsernameValidatorTest {
 		"waytoolongusernameWAYTOOLONGUSERNAME"
 	);
 
-	public static final List<String> INVALID_USERNAMES = new ArrayList<>() {{
+	public static final Set<String> INVALID_USERNAMES = new HashSet<>() {{
 		addAll(Arrays.asList(null, ""));
 		addAll(Arrays.asList(TOO_SHORT_USERNAME, TOO_LONG_USERNAME));
 		addAll(INVALID_WITH_UNDERSCORE);
@@ -87,6 +94,7 @@ public class UsernameValidatorTest {
 		assertFalse(validator.isValid(TOO_LONG_USERNAME, null));
 	}
 	
+	@ParameterizedTest
 	@NullAndEmptySource
 	public void notAllowedNullOrEmptyTest(String value) {
 		assertFalse(validator.isValid(value, null));

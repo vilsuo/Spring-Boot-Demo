@@ -19,42 +19,54 @@ public class AccountRelationService {
 	@Autowired
 	private RelationService relationService;
 	
-	public List<Relation> getAccountRelations(String username) {
-		Account account = accountFinderService.findByUsername(username);
+	public List<Relation> getAccountRelations(final String username) {
+		final Account account = accountFinderService.findByUsername(username);
 		return relationService.getRelationsFrom(account);
 	}
 	
-	public List<Relation> getRelationsToAccount(String username) {
-		Account account = accountFinderService.findByUsername(username);
+	public List<Relation> getRelationsToAccount(final String username) {
+		final Account account = accountFinderService.findByUsername(username);
 		return relationService.getRelationsTo(account);
 	}
 	
 	public boolean hasRelationStatus(
-			String sourceAccountUsername, String targetAccountUsername, 
-			Status status) {
+			final String sourceAccountUsername,
+			final String targetAccountUsername, final Status status) {
 		
-		Account source = accountFinderService.findByUsername(sourceAccountUsername);
-		Account target = accountFinderService.findByUsername(targetAccountUsername);
+		final Account source = accountFinderService
+			.findByUsername(sourceAccountUsername);
+		
+		final Account target = accountFinderService
+			.findByUsername(targetAccountUsername);
+		
 		return relationService.relationExists(source, target, status);
 	}
 	
 	@Transactional
     public Optional<Relation> createRelationToAccount(
-			String sourceAccountUsername, String targetAccountUsername, 
-			Status status) {
+			final String sourceAccountUsername,
+			final String targetAccountUsername, final Status status) {
 		
-		Account source = accountFinderService.findByUsername(sourceAccountUsername);
-		Account target = accountFinderService.findByUsername(targetAccountUsername);
+		final Account source = accountFinderService
+			.findByUsername(sourceAccountUsername);
+		
+		final Account target = accountFinderService
+			.findByUsername(targetAccountUsername);
+		
 		return relationService.create(source, target, status);
     }
 	
 	@Transactional
 	public void removeRelationFromAccount(
-			String sourceAccountUsername, String targetAccountUsername, 
-			Status status) {
+			final String sourceAccountUsername,
+			final String targetAccountUsername, final Status status) {
 		
-		Account source = accountFinderService.findByUsername(sourceAccountUsername);
-		Account target = accountFinderService.findByUsername(targetAccountUsername);
+		final Account source = accountFinderService
+			.findByUsername(sourceAccountUsername);
+		
+		final Account target = accountFinderService
+			.findByUsername(targetAccountUsername);
+		
 		relationService.removeRelation(source, target, status);
 	}
 }

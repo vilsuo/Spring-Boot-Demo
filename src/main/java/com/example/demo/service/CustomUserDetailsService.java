@@ -17,13 +17,17 @@ public class CustomUserDetailsService implements UserDetailsService {
 	private AccountFinderService accountFinderService;
 	
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Account account = accountFinderService.findByUsername(username);
+    public UserDetails loadUserByUsername(final String username)
+			throws UsernameNotFoundException {
+		
+		final Account account = accountFinderService.findByUsername(username);
 
         return new org.springframework.security.core.userdetails.User(
                 account.getUsername(),
                 account.getPassword(),
-				Arrays.asList(new SimpleGrantedAuthority(account.getRole().getName()))
+				Arrays.asList(
+					new SimpleGrantedAuthority(account.getRole().getName())
+				)
 		);
     }
 }

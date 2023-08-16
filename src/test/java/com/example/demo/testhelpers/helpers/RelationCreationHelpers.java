@@ -1,7 +1,7 @@
 
-package com.example.demo.testhelpers;
+package com.example.demo.testhelpers.helpers;
 
-import static com.example.demo.testhelpers.AccountCreationHelpers.assertAccountDtoIsCreatedFromAccount;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.assertAccountDtoIsCreatedFromAccount;
 import com.example.demo.datatransfer.RelationDto;
 import com.example.demo.domain.Relation;
 import static org.junit.jupiter.api.Assertions.assertEquals;

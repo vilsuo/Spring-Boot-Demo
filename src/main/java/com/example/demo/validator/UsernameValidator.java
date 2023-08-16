@@ -6,7 +6,9 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UsernameValidator implements ConstraintValidator<Username, String> {
 
 	public final static int USERNAME_MIN_LENGTH = 1;

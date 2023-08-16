@@ -17,19 +17,19 @@ public class AccountDtoFinderService {
 	@Autowired
 	private EntityToDtoConverter entityToDtoConverter;
 	
-	public AccountDto findById(Long id) {
+	public AccountDto findById(final Long id) {
 		return entityToDtoConverter.convertAccount(
 			accountFinderService.findById(id)
 		);
 	}
 	
-	public AccountDto findByUsername(String username) {
+	public AccountDto findByUsername(final String username) {
 		return entityToDtoConverter.convertAccount(
 			accountFinderService.findByUsername(username)
 		);
 	}
 	
-	public boolean existsByUsername(String username) {
+	public boolean existsByUsername(final String username) {
 		return accountFinderService.existsByUsername(username);
 	}
 	

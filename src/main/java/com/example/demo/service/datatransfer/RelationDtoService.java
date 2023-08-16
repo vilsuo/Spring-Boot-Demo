@@ -20,14 +20,14 @@ public class RelationDtoService {
 	@Autowired
 	private EntityToDtoConverter entityToDtoConverter;
 	
-	public List<RelationDto> getRelationsFrom(Account account) {
+	public List<RelationDto> getRelationsFrom(final Account account) {
 		return relationService.getRelationsFrom(account)
 				.stream()
 				.map(entityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
-	public List<RelationDto> getRelationsTo(Account account) {
+	public List<RelationDto> getRelationsTo(final Account account) {
 		return relationService.getRelationsTo(account)
 				.stream()
 				.map(entityToDtoConverter::convertRelation)
@@ -35,20 +35,22 @@ public class RelationDtoService {
 	}
 	
 	public boolean relationExists(
-			Account source, Account target, Status status) {
+			final Account source, final Account target, final Status status) {
 		
 		return relationService.relationExists(source, target, status);
 	}
 	
 	public Optional<RelationDto> create(
-			Account source, Account target, Status status) {
+			final Account source, final Account target, final Status status) {
 		
 		return entityToDtoConverter.convertOptionalRelation(
 			relationService.create(source, target, status)
 		);
 	}
 	
-	public void removeRelation(Account source, Account target, Status status) {
+	public void removeRelation(final Account source, final Account target,
+			final Status status) {
+		
 		relationService.relationExists(source, target, status);
 	}
 }

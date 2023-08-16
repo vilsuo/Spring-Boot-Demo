@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
@@ -16,6 +17,9 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @EqualsAndHashCode(
 	exclude = {"relationsTo", "relationsFrom", "images"}, 
 	callSuper = false
+)
+@ToString(
+	exclude = {"relationsTo", "relationsFrom", "images"}
 )
 public class Account extends AbstractPersistable<Long> {
 	
@@ -31,5 +35,4 @@ public class Account extends AbstractPersistable<Long> {
 	
 	@OneToMany(mappedBy = "account")
 	private Set<FileObject> images = new HashSet<>();
-	
 }

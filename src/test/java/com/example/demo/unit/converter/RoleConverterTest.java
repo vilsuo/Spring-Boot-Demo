@@ -1,5 +1,5 @@
 
-package com.example.demo.unit;
+package com.example.demo.unit.converter;
 
 import com.example.demo.domain.Role;
 import com.example.demo.converter.RoleConverter;
@@ -9,6 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
+/*
+TODO
+- add RoleConverter as Bean?
+*/
 public class RoleConverterTest {
 	
 	private final RoleConverter roleConverter = new RoleConverter();

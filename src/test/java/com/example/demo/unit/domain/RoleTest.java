@@ -1,5 +1,5 @@
 
-package com.example.demo.unit;
+package com.example.demo.unit.domain;
 
 import com.example.demo.domain.Role;
 import org.junit.jupiter.api.Test;

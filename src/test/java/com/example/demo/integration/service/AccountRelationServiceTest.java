@@ -7,8 +7,8 @@ import com.example.demo.domain.Role;
 import com.example.demo.domain.Status;
 import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.AccountRelationService;
-import com.example.demo.unit.PasswordValidatorTest;
-import com.example.demo.unit.UsernameValidatorTest;
+import com.example.demo.unit.validator.PasswordValidatorTest;
+import com.example.demo.unit.validator.UsernameValidatorTest;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +39,7 @@ public class AccountRelationServiceTest {
 	@Autowired
 	private AccountRelationService accountRelationService;
 	
+	/*
 	private final List<String> VALID_USERNAMES = UsernameValidatorTest.VALID_USERNAMES;
 	private final List<String> VALID_PASSWORDS = PasswordValidatorTest.VALID_PASSWORDS;
 	
@@ -57,7 +58,6 @@ public class AccountRelationServiceTest {
 		accountCreatorService.create(new AccountCreationDto(username3, password2), Role.USER);
 	}
 	
-	/*
 	@Test
 	public void a() {
 		

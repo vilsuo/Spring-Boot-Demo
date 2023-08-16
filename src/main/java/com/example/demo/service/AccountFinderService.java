@@ -14,7 +14,7 @@ public class AccountFinderService {
 	@Autowired
 	private AccountRepository accountRepository;
 	
-	public Account findById(Long id) {
+	public Account findById(final Long id) {
 		if (id == null) {
 			throw new IllegalArgumentException(
 				"Can not check if Account with null id exists"
@@ -26,7 +26,7 @@ public class AccountFinderService {
 		);
 	}
 	
-	public Account findByUsername(String username) {
+	public Account findByUsername(final String username) {
 		if (username == null) {
 			throw new IllegalArgumentException(
 				"Can not check if Account with null username exists"
@@ -40,7 +40,7 @@ public class AccountFinderService {
 		);
 	}
 	
-	public boolean existsByUsername(String username) {
+	public boolean existsByUsername(final String username) {
 		if (username == null) {
 			throw new IllegalArgumentException(
 				"Tried to check if Account with null username exists"
@@ -49,7 +49,6 @@ public class AccountFinderService {
 		
 		return accountRepository.existsByUsername(username);
 	}
-	
 	
 	public List<Account> list() {
 		return accountRepository.findAll();

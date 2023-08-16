@@ -20,16 +20,16 @@ public class RelationService {
 	@Autowired
 	private RelationRepository relationRepository;
 	
-	public List<Relation> getRelationsFrom(Account account) {
+	public List<Relation> getRelationsFrom(final Account account) {
 		return relationRepository.findBySource(account);
 	}
 	
-	public List<Relation> getRelationsTo(Account account) {
+	public List<Relation> getRelationsTo(final Account account) {
 		return relationRepository.findByTarget(account);
 	}
 	
 	public boolean relationExists(
-			Account source, Account target, Status status) {
+			final Account source, final Account target, final Status status) {
 		
 		if (status == null) {
 			throw new IllegalArgumentException(
@@ -37,17 +37,17 @@ public class RelationService {
 			);
 		}
 		
-		return !relationRepository
+		return relationRepository
 				.findBySourceAndTarget(source, target)
 					.stream()
 					.filter(relation -> relation.getStatus() == status)
-					.toList()
-					.isEmpty();
+					.findAny()
+					.isPresent();
 	}
 	
 	@Transactional
 	public Optional<Relation> create(
-			Account source, Account target, Status status) {
+			final Account source, final Account target, final Status status) {
 		
 		if (status == null) {
 			throw new IllegalArgumentException(
@@ -56,9 +56,8 @@ public class RelationService {
 		}
 		
 		if (!relationExists(source, target, status)) {
-			Relation relation = relationRepository.save(
-				new Relation(source, target, status)
-			);
+			final Relation relation = relationRepository
+				.save(new Relation(source, target, status));
 			
 			// why are these needed? Service Tests does not pass otherwise
 			source.getRelationsTo().add(relation);
@@ -73,7 +72,9 @@ public class RelationService {
 	
 	// Removes all relations with 'status' from source to target
 	@Transactional
-	public void removeRelation(Account source, Account target, Status status) {
+	public void removeRelation(
+			final Account source, final Account target, final Status status) {
+		
 		if (status == null) {
 			throw new IllegalArgumentException("Can not remove a null Status");
 		}

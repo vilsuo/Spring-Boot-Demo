@@ -1,25 +1,32 @@
 
-package com.example.demo.unit;
+package com.example.demo.unit.validator;
 
 import com.example.demo.validator.PasswordValidator;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
-TODO
-- Make collection lists as sets to ensure there are no dublicates
-
-
 Tests assumes that all characters are allowed in a password
 */
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class PasswordValidatorTest {
 	
-	private static final PasswordValidator validator = new PasswordValidator();
+	@Autowired
+	private PasswordValidator validator;
 	
 	private static final String MIN_LENGTH_PASSWORD = "1".repeat(PasswordValidator.PASSWORD_MIN_LENGTH);
 	private static final String MAX_LENGTH_PASSWORD = "1".repeat(PasswordValidator.PASSWORD_MAX_LENGTH);
@@ -40,7 +47,7 @@ public class PasswordValidatorTest {
 		"45H2F8ITq++#03sR'6fa@", "I862+V017@x7D}xH]exSi7iCr[iL("
 	);
 	
-	public static final List<String> VALID_PASSWORDS = new ArrayList<>() {{
+	public static final Set<String> VALID_PASSWORDS = new HashSet<>() {{
 		addAll(Arrays.asList(MIN_LENGTH_PASSWORD, MAX_LENGTH_PASSWORD));
 		addAll(RANDOM_PASSWORDS);
 	}};
@@ -48,7 +55,7 @@ public class PasswordValidatorTest {
 	private static final String TOO_SHORT_PASSWORD = MIN_LENGTH_PASSWORD.substring(0, MIN_LENGTH_PASSWORD.length() - 1);
 	private static final String TOO_LONG_PASSWORD = MAX_LENGTH_PASSWORD + "1";
 	
-	public static final List<String> INVALID_PASSWORDS = new ArrayList<>() {{
+	public static final Set<String> INVALID_PASSWORDS = new HashSet<>() {{
 		addAll(Arrays.asList(null, ""));
 		addAll(Arrays.asList(TOO_SHORT_PASSWORD, TOO_LONG_PASSWORD));
 	}};
@@ -73,6 +80,7 @@ public class PasswordValidatorTest {
 		assertFalse(validator.isValid(TOO_LONG_PASSWORD, null));
 	}
 	
+	@ParameterizedTest
 	@NullAndEmptySource
 	public void notAllowedNullOrEmptyTest(String value) {
 		assertFalse(validator.isValid(value, null));

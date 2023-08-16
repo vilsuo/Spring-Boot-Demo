@@ -6,7 +6,9 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PasswordValidator implements ConstraintValidator<Password, String> {
 
 	public final static int PASSWORD_MIN_LENGTH = 1;

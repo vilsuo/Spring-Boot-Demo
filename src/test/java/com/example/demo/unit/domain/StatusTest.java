@@ -1,5 +1,5 @@
 
-package com.example.demo.unit;
+package com.example.demo.unit.domain;
 
 import com.example.demo.domain.Status;
 import static org.junit.jupiter.api.Assertions.assertEquals;
