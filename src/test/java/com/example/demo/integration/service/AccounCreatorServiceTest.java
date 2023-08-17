@@ -1,7 +1,8 @@
 package com.example.demo.integration.service;
 
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreateInfo;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
@@ -23,17 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreateInfo;
-
-/*
-TODO
-- change assertOptionalAccountsWithParameters
-
-make class for AccountCreatorDtoService
-- test
-	- createAndGetDto
-	- encodePassword
-*/
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -111,9 +101,11 @@ public class AccounCreatorServiceTest {
 	public void createWithInvalidUsernameThrowsTest(final Role role) {
 		accountCreationDtoStream(false, true)
 			.forEach(accountCreationDto -> {
-				assertThrows(ConstraintViolationException.class,
+				assertThrows(
+					ConstraintViolationException.class,
 					() -> accountCreatorService.create(accountCreationDto, role),
-					"Creating an " + accountCreateInfo(accountCreationDto, role)
+					"Creating an Account from "
+					+ accountCreateInfo(accountCreationDto, role)
 					+ " does not throw"
 				);
 			});
@@ -124,7 +116,8 @@ public class AccounCreatorServiceTest {
 	public void createWithInvalidPasswordThrowsTest(final Role role) {
 		accountCreationDtoStream(true, false)
 			.forEach(accountCreationDto -> {
-				assertThrows(ConstraintViolationException.class,
+				assertThrows(
+					ConstraintViolationException.class,
 					() -> accountCreatorService.create(accountCreationDto, role),
 					"Creating an Account from "
 					+ accountCreateInfo(accountCreationDto, role)
@@ -138,7 +131,8 @@ public class AccounCreatorServiceTest {
 	public void createWithValidUsernameAndPasswordAndRoleDoesNotThrowTest(final Role role) {
 		accountCreationDtoStream()
 			.forEach(accountCreationDto -> {
-				assertDoesNotThrow(() -> accountCreatorService.create(accountCreationDto, role),
+				assertDoesNotThrow(
+					() -> accountCreatorService.create(accountCreationDto, role),
 					"Creating an Account from "
 					+ accountCreateInfo(accountCreationDto, role) + " throws"
 				);
@@ -151,9 +145,8 @@ public class AccounCreatorServiceTest {
 		
 		accountCreationDtoPairStream(true, false)
 			.forEach(pair -> {
-				assertOptionalAccountPairsPresenceWithParameters(
-					pair.getFirst(), role1,
-					pair.getSecond(), role2
+				createAndAssertOptionalAccountPairsPresenceWithParameters(
+					pair.getFirst(), role1, pair.getSecond(), role2
 				);
 			});
 	}
@@ -164,34 +157,33 @@ public class AccounCreatorServiceTest {
 		
 		accountCreationDtoPairStream(false, true)
 			.forEach(pair -> {
-				assertOptionalAccountPairsPresenceWithParameters(
-					pair.getFirst(), role1,
-					pair.getSecond(), role2
+				createAndAssertOptionalAccountPairsPresenceWithParameters(
+					pair.getFirst(), role1, pair.getSecond(), role2
 				);
 			});
 	}
 	
 	@CartesianTest
-	public void createWithoutTakenUsernameAndPasswordIsPresentTest(
+	public void createWithoutTakenUsernameAndWithoutTakenPasswordIsPresentTest(
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2) {
 		
 		accountCreationDtoPairStream(false, false)
 			.forEach(pair -> {
-				assertOptionalAccountPairsPresenceWithParameters(
-					pair.getFirst(), role1,
-					pair.getSecond(), role2
+				createAndAssertOptionalAccountPairsPresenceWithParameters(
+					pair.getFirst(), role1, pair.getSecond(), role2
 				);
 			});
 	}
 	
-	private void assertOptionalAccountPairsPresenceWithParameters(
-			AccountCreationDto accountCreationDto1, Role role1,
-			AccountCreationDto accountCreationDto2, Role role2) {
+	private void createAndAssertOptionalAccountPairsPresenceWithParameters(
+			final AccountCreationDto accountCreationDto1, final Role role1,
+			final AccountCreationDto accountCreationDto2, final Role role2) {
 		
 		final Optional<Account> opt1 = accountCreatorService
 			.create(accountCreationDto1, role1);
 		
-		assertTrue(opt1.isPresent(), 
+		assertTrue(
+			opt1.isPresent(), 
 			"First Optional is not present when creating an Account from "
 			+ accountCreateInfo(accountCreationDto1, role1)
 		);
@@ -199,13 +191,14 @@ public class AccounCreatorServiceTest {
 		final Optional<Account> opt2 = accountCreatorService
 			.create(accountCreationDto2, role2);
 		
-		assertEquals(accountCreationDto1.getUsername()
+		assertEquals(
+			accountCreationDto1.getUsername()
 				.equals(accountCreationDto2.getUsername()),
 			opt2.isEmpty(),
 			"Second Optional is " + (opt2.isEmpty() ? "not" : "")
-			+ " present when creating an Account with "
+			+ " present when creating an Account from "
 			+ accountCreateInfo(accountCreationDto2, role2) + ", after "
-			+ "creating an Account with "
+			+ "creating an Account from "
 			+ accountCreateInfo(accountCreationDto1, role1)
 		);
 	}
@@ -269,8 +262,9 @@ public class AccounCreatorServiceTest {
 					accountCreatorService
 						.getPasswordEncoder()
 						.matches(rawPassword, returnedPassword),
-					"The returned Optional Accounts raw password '" + rawPassword
-					+ "' is not encoded correctly: '" + returnedPassword + "'"
+					"The returned Optional Accounts raw password '"
+					+ rawPassword + "' is not encoded correctly: '"
+					+ returnedPassword + "'"
 				);
 			});
 	}
@@ -286,8 +280,8 @@ public class AccounCreatorServiceTest {
 				assertTrue(
 					account.getRole() == role,
 					"The returned Optional Account has role "
-					+ account.getRole().getName()
-					+ " when it is was created with role " + role.getName()
+					+ account.getRole().getName() + " when it is was created "
+					+ "with role " + role.getName()
 				);
 			});
 	}

@@ -1,16 +1,13 @@
 
 package com.example.demo.integration.service;
 
-import com.codepoetics.protonpack.StreamUtils;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Relation;
-import com.example.demo.domain.Role;
 import com.example.demo.domain.Status;
 import com.example.demo.service.RelationService;
 import com.example.demo.service.AccountCreatorService;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.RelationCreationHelper.accountCreationPairWithAllRoleCombinationsStream;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +31,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 TODO
-- test init method better!!!
 - rewrite error messages
 */
 @ActiveProfiles("test")
@@ -50,20 +45,55 @@ public class RelationServiceTest {
 	@Autowired
 	private AccountCreatorService accountCreatorService;
 	
-	final static int TOTAL_ROLES = Role.values().length;
 	private Stream<Pair<Account, Account>> accountPairStream;
 	
-	@BeforeAll
-	public static void assertInitCanCreateAllValues() {
-		final long accountCreationDtoPairs
-			= accountCreationDtoPairStream().count();
-		
-		assertTrue(TOTAL_ROLES <= accountCreationDtoPairs);
+	/*
+	private Optional<Relation> createRelation(final RelationCreationObject obj) {
+		return relationService.create(
+			obj.getSource(), obj.getTarget(), obj.getStatus()
+		);
+	}
+	
+	private boolean relationExists(final RelationCreationObject obj) {
+		return relationService.relationExists(
+			obj.getSource(), obj.getTarget(), obj.getStatus()
+		);
+	}
+	*/
+	
+	private boolean relationExists(final Relation relation) {
+		return relationService.relationExists(
+			relation.getSource(), relation.getTarget(), relation.getStatus()
+		);
+	}
+	
+	private void removeRelation(final Relation relation) {
+		relationService.removeRelation(
+			relation.getSource(), relation.getTarget(), relation.getStatus()
+		);
 	}
 	
 	@BeforeEach
-	public void init() {
-		// create two Accounts for each Role
+	public void initAccountPairStream() {
+		// create a Stream of Account Pair with every possible Role combination
+		accountPairStream = accountCreationPairWithAllRoleCombinationsStream()
+			.map(pairOfPairs -> {
+				final Account account1 = accountCreatorService
+					.create(
+						pairOfPairs.getFirst().getFirst(),
+						pairOfPairs.getFirst().getSecond()
+					).get();
+				
+				final Account account2 = accountCreatorService
+					.create(
+						pairOfPairs.getSecond().getFirst(),
+						pairOfPairs.getSecond().getSecond()
+					).get();
+				
+				return Pair.of(account1, account2);
+			});
+		/*
+		// 1) create a Account Pair for each Role
 		final List<Pair<Account, Account>> accountPairList = StreamUtils
 			.zipWithIndex(accountCreationDtoPairStream())
 			.limit(TOTAL_ROLES)
@@ -79,7 +109,7 @@ public class RelationServiceTest {
 				return Pair.of(account1, account2);
 			}).toList();
 		
-		// create a list of Account pairs with all possible combinations of Roles
+		// 2) create Account Pairs with all possible combinations of Roles
 		List<Pair<Account, Account>> lst = new ArrayList<>();
 		for (int x = 0; x < accountPairList.size(); ++x) {
 			for (int y = 0; y < accountPairList.size(); ++y) {
@@ -94,6 +124,7 @@ public class RelationServiceTest {
 		
 		assertEquals(TOTAL_ROLES * TOTAL_ROLES, lst.size());
 		accountPairStream = lst.stream();
+		*/
 	}
 	
 	@Test
@@ -110,18 +141,20 @@ public class RelationServiceTest {
 		});
 	}
 	
-	// has dublicate asserts
+	// has dublicate checks
 	@ParameterizedTest
 	@EnumSource(Status.class)
 	public void relationsToSelfDoesNotExistTest(final Status status) {
 		accountPairStream.forEach(pair -> {
 			final Account sourceAndTarget = pair.getFirst();
+			
 			assertFalse(
 				relationService.relationExists(
 					sourceAndTarget, sourceAndTarget, status
 				),
-				"Account has Relation with Status '" + status.getName()
-				+ "' with itself when no Relations has been created"
+				sourceAndTarget + " has Relation with Status '"
+				+ status.getName()+ "' with itself when no Relations has been "
+				+ "created"
 			);
 		});
 	}
@@ -146,6 +179,7 @@ public class RelationServiceTest {
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
+			
 			relationService.create(source, target, status);
 			
 			assertTrue(
@@ -217,8 +251,8 @@ public class RelationServiceTest {
 			
 			assertTrue(
 				opt.isPresent(),
-				"The Optional should be present when creating a Relation that does "
-				+ "not exist with Status " + status.getName()
+				"The Optional should be present when creating a Relation that"
+				+ " does not exist with Status " + status.getName()
 			);
 		});
 	}
@@ -255,8 +289,8 @@ public class RelationServiceTest {
 			
 			assertTrue(
 				opt.isEmpty(),
-				"The Optional should be not present when creating a Relation that "
-				+ "does exist with Status not" + status.getName()
+				"The Optional should be not present when creating a Relation "
+				+ "that does exist with Status not" + status.getName()
 			);
 		});
 	}
@@ -319,18 +353,6 @@ public class RelationServiceTest {
 				+ "not exist"
 			);
 		});
-	}
-	
-	private boolean relationExists(final Relation relation) {
-		return relationService.relationExists(
-			relation.getSource(), relation.getTarget(), relation.getStatus()
-		);
-	}
-	
-	private void removeRelation(final Relation relation) {
-		relationService.removeRelation(
-			relation.getSource(), relation.getTarget(), relation.getStatus()
-		);
 	}
 	
 	@ParameterizedTest

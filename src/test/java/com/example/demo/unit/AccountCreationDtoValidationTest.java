@@ -2,7 +2,7 @@
 package com.example.demo.unit;
 
 import com.example.demo.datatransfer.AccountCreationDto;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import java.util.Arrays;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,10 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
 public class FileObject extends AbstractPersistable<Long> {
+	
+	public static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(
+		"image/gif", "image/jpeg"
+	);
 	
 	private String name;
     private String mediaType;

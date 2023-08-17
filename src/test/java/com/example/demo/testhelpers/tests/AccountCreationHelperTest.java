@@ -2,8 +2,8 @@
 package com.example.demo.testhelpers.tests;
 
 import com.example.demo.datatransfer.AccountCreationDto;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class AccountCreationHelpersTest {
+public class AccountCreationHelperTest {
 	
 	@Autowired
 	private UsernameValidator usernameValidator;
@@ -29,51 +29,51 @@ public class AccountCreationHelpersTest {
 	
 	@CartesianTest
 	public void accountCreationDtoPairStreamIsNotEmptyTest(
-			@Values(booleans = {true, false}) boolean sameUsernames,
-			@Values(booleans = {true, false}) boolean samePasswords) {
+			@Values(booleans = {true, false}) boolean setSameUsernameToPair,
+			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
 		assertTrue(
-			accountCreationDtoPairStream(sameUsernames, samePasswords)
+			accountCreationDtoPairStream(setSameUsernameToPair, setSamePasswordToPair)
 				.findFirst().isPresent()
 		);
 	}
 	
 	@CartesianTest
 	public void accountCreationDtoStreamIsNotEmptyTestTest(
-			@Values(booleans = {true, false}) boolean sameUsernames,
-			@Values(booleans = {true, false}) boolean samePasswords) {
+			@Values(booleans = {true, false}) boolean setSameUsernameToPair,
+			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
 		assertTrue(
-			accountCreationDtoStream(sameUsernames, samePasswords)
+			accountCreationDtoStream(setSameUsernameToPair, setSamePasswordToPair)
 				.findFirst().isPresent()
 		);
 	}
 	
 	@CartesianTest
 	public void accountCreationDtoPairStreamParametersIndicateSamenessOfUsernameAndPasswordTest(
-			@Values(booleans = {true, false}) boolean sameUsernames,
-			@Values(booleans = {true, false}) boolean samePasswords) {
+			@Values(booleans = {true, false}) boolean setSameUsernameToPair,
+			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
-		accountCreationDtoPairStream(sameUsernames, samePasswords)
+		accountCreationDtoPairStream(setSameUsernameToPair, setSamePasswordToPair)
 			.forEach(pair -> {
 				final AccountCreationDto first = pair.getFirst();
 				final AccountCreationDto second = pair.getSecond();
 
 				assertEquals(
-					sameUsernames,
+					setSameUsernameToPair,
 					first.getUsername().equals(second.getUsername()),
 					"Usernames of the AccountCreationDtos "
-					+ first.toString() + " and " + second.toString()
-					+ " were supposed to " + (sameUsernames ? "" : "not")
+					+ first.toString() + " and " + second.toString() + " were "
+					+ "supposed to " + (setSameUsernameToPair ? "" : "not")
 					+ " be equal"
 				);
 
 				assertEquals(
-					samePasswords,
+					setSamePasswordToPair,
 					first.getPassword().equals(second.getPassword()),
 					"Passwords of the AccountCreationDtos "
-					+ first.toString() + " and " + second.toString()
-					+ " were supposed to " + (samePasswords ? "" : "not ")
+					+ first.toString() + " and " + second.toString() + " were "
+					+ "supposed to " + (setSamePasswordToPair ? "" : "not ")
 					+ "be equal"
 				);
 			});
@@ -81,19 +81,19 @@ public class AccountCreationHelpersTest {
 	
 	@CartesianTest
 	public void accountCreationDtoStreamParametersIndicateValidityOfUsernameAndPasswordTest(
-			@Values(booleans = {true, false}) boolean validUsernames,
-			@Values(booleans = {true, false}) boolean validPasswords) {
+			@Values(booleans = {true, false}) boolean setValidUsernames,
+			@Values(booleans = {true, false}) boolean setValidPasswords) {
 		
-		accountCreationDtoStream(validUsernames, validPasswords)
+		accountCreationDtoStream(setValidUsernames, setValidPasswords)
 			.forEach(accountCreationDto -> {
 				final String username = accountCreationDto.getUsername();
 				final boolean usernameIsValid = usernameValidator
 					.isValid(username, null);
 				
 				assertEquals(
-					validUsernames, usernameIsValid,
+					setValidUsernames, usernameIsValid,
 					"Username '" + username + "' is supposed to "
-					+ (validUsernames ? "" : "not ") + "be valid but it is"
+					+ (setValidUsernames ? "" : "not ") + "be valid but it is"
 					+ (usernameIsValid ? "" : " not")
 				);
 				
@@ -102,9 +102,9 @@ public class AccountCreationHelpersTest {
 					.isValid(password, null);
 						
 				assertEquals(
-					validPasswords, passwordIsValid,
+					setValidPasswords, passwordIsValid,
 					"Password '" + password + "' is supposed to "
-					+ (validPasswords ? "" : "not ") + "be valid but it is"
+					+ (setValidPasswords ? "" : "not ") + "be valid but it is"
 					+ (passwordIsValid ? "" : " not")
 				);
 			});

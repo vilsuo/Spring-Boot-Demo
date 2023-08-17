@@ -48,10 +48,13 @@ public class FileObjectService {
 	}
 	
 	private boolean isSupportedContentType(final String contentType) {
+		return FileObject.SUPPORTED_CONTENT_TYPES.contains(contentType);
+		/*
 		final boolean isGif = "image/gif".equals(contentType);
 		final boolean isJpg = "image/jpeg".equals(contentType);
 		
 		return (isGif || isJpg);
+		*/
 	}
 	
 	public List<FileObject> getAccountImages(final Account account) {

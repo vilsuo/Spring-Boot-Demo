@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.data.util.Pair;
 
-public final class AccountCreationHelpers {
+public final class AccountCreationHelper {
 	
 	private static final List<String> VALID_USERNAMES = new ArrayList<>(UsernameValidatorTest.VALID_USERNAMES);
 	private static final List<String> INVALID_USERNAMES = new ArrayList<>(UsernameValidatorTest.INVALID_USERNAMES);
@@ -23,7 +23,8 @@ public final class AccountCreationHelpers {
 	private static final List<String> INVALID_PASSWORDS = new ArrayList<>(PasswordValidatorTest.INVALID_PASSWORDS);
 	
 	public static Stream<Pair<AccountCreationDto, AccountCreationDto>> accountCreationDtoPairStream(
-			final boolean sameUsername, final boolean samePassword) {
+			final boolean setSameUsernameToPair,
+			final boolean setSamePasswordToPair) {
 		
 		List<Pair<AccountCreationDto, AccountCreationDto>> lst = new ArrayList<>();
 		for (int u_i = 0, p_i = 0;
@@ -33,8 +34,8 @@ public final class AccountCreationHelpers {
 			final String username1 = VALID_USERNAMES.get(u_i);
 			final String password1 = VALID_PASSWORDS.get(p_i);
 			
-			if (!sameUsername) { ++u_i; }
-			if (!samePassword) { ++p_i; }
+			if (!setSameUsernameToPair) { ++u_i; }
+			if (!setSamePasswordToPair) { ++p_i; }
 			
 			final String username2 = VALID_USERNAMES.get(u_i);
 			final String password2 = VALID_PASSWORDS.get(p_i);
@@ -52,20 +53,20 @@ public final class AccountCreationHelpers {
 	}
 	
 	public static Stream<AccountCreationDto> accountCreationDtoStream(
-			final boolean validUsernames, final boolean validPasswords) {
+			final boolean setValidUsernames, final boolean setValidPasswords) {
 		
-		final int nUsernames = validUsernames
+		final int nUsernames = setValidUsernames
 			? VALID_USERNAMES.size() : INVALID_USERNAMES.size();
 		
-		final int nPasswords = validPasswords
+		final int nPasswords = setValidPasswords
 			? VALID_PASSWORDS.size() : INVALID_PASSWORDS.size();
 		
 		return IntStream.range(0, Math.min(nUsernames, nPasswords))
 			.mapToObj(i -> {
-				final String username = validUsernames
+				final String username = setValidUsernames
 						? VALID_USERNAMES.get(i) : INVALID_USERNAMES.get(i);
 				
-				final String password = validPasswords
+				final String password = setValidPasswords
 					? VALID_PASSWORDS.get(i) : INVALID_PASSWORDS.get(i);
 				
 				return new AccountCreationDto(username, password);
@@ -91,9 +92,9 @@ public final class AccountCreationHelpers {
 			.skip(skip)
 			.map(indexed -> {
 				return new AccountWithSettableId(
-					indexed.getIndex(),
-					indexed.getValue(),
-					role
+					indexed.getIndex(),	// Id
+					indexed.getValue(), // AccountCreationDto
+					role				// Role
 				);
 			});
 	}
@@ -129,9 +130,9 @@ public final class AccountCreationHelpers {
 	}
 	
 	public static String accountCreateInfo(AccountCreationDto accountCreationDto, Role role) {
-		return "AccountCreationDto with username '"
+		return "Account created with username '"
 			+ accountCreationDto.getUsername()
 			+ "', raw password '" + accountCreationDto.getPassword()
-			+ "' and also Role '" + role.getName() + "'";
+			+ "' and Role '" + role.getName() + "'";
 	}
 }

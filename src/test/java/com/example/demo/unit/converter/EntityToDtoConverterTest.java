@@ -1,8 +1,9 @@
 
 package com.example.demo.unit.converter;
 
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.assertAccountDtoIsCreatedFromAccount;
-import static com.example.demo.testhelpers.helpers.RelationCreationHelpers.assertRelationDtoIsCreatedFromRelation;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationWithIdAndRoleStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.assertAccountDtoIsCreatedFromAccount;
+import static com.example.demo.testhelpers.helpers.RelationCreationHelper.assertRelationDtoIsCreatedFromRelation;
 import com.example.demo.testhelpers.helpers.AccountWithSettableId;
 import com.example.demo.testhelpers.helpers.RelationWithSettableId;
 import com.example.demo.converter.EntityToDtoConverter;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationWithIdAndRoleStream;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)

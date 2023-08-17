@@ -8,12 +8,11 @@ import com.example.demo.domain.Role;
 import com.example.demo.error.validation.ResourceNotFoundException;
 import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.AccountFinderService;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreateInfo;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelpers.accountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreateInfo;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
-import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,6 +30,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+/*
+TODO
+- check equals
+*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -59,7 +62,8 @@ public class AccountFinderServiceTest {
 		assertThrows(
 			ResourceNotFoundException.class,
 			() -> accountFinderService.findById(initiallyNotTakenId),
-			"Searching Account by id that has not been taken does not throw"
+			"Searching Account by id that has not been taken in a empty "
+			+ "database does not throw"
 		);	
 	}
 	
@@ -82,9 +86,9 @@ public class AccountFinderServiceTest {
 	@CartesianTest
 	public void findingAccountsByDifferentIdsFindUnEqualAccountsTest(
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2,
-			@Values(booleans = {true, false}) boolean samePasswords) {
+			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
-		accountCreationDtoPairStream(false, samePasswords)
+		accountCreationDtoPairStream(false, setSamePasswordToPair)
 			.forEach(pair -> {
 				final Account account1 = accountCreatorService
 					.create(pair.getFirst(), role1).get();
@@ -100,9 +104,8 @@ public class AccountFinderServiceTest {
 				
 				assertNotEquals(
 					accountFound1, accountFound2, 
-					"Finding Accounts by the ids of Accounts created "
-					+ "from " + account1 + " and " + account2
-					+ " results in finding equal Accounts "
+					"Finding Accounts by the ids of Accounts " + account1
+					+ " and " + account2 + " results in finding equal Accounts "
 					+ accountFound1 + " and " + accountFound2
 				);
 			});
@@ -128,7 +131,7 @@ public class AccountFinderServiceTest {
 	}
 	
 	@Test
-	public void findingAccountByUsernameThrowsTest() {
+	public void findingAccountByNullUsernameThrowsTest() {
 		assertThrows(
 			IllegalArgumentException.class,
 			() -> accountFinderService.findByUsername(null),
@@ -136,6 +139,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	// with or without pair?
 	@Test
 	public void findingAccountByUsernameThatDoesNotExistThrows() {
 		accountCreationDtoStream()
@@ -153,8 +157,8 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void findingAccountByCreatedAccountsUsernameDoesNotThrowTest(final Role role) {
-		accountCreationDtoStream().forEach(
-			accountCreationDto -> {
+		accountCreationDtoStream()
+			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();
 
@@ -170,9 +174,9 @@ public class AccountFinderServiceTest {
 	@CartesianTest
 	public void findingAccountsByDifferentUsernamesFindUnEqualAccountsTest(
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2,
-			@Values(booleans = {true, false}) boolean samePasswords) {
+			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
-		accountCreationDtoPairStream(false, samePasswords)
+		accountCreationDtoPairStream(false, setSamePasswordToPair)
 			.forEach(pair -> {
 				final Account account1 = accountCreatorService
 					.create(pair.getFirst(), role1).get();
@@ -224,6 +228,7 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
+	// with or without pair?
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void ifThereNoAccountsCreatedWithGivenUsernameThenThatUsernameDoesNotExistTest(final Role role) {
@@ -277,7 +282,7 @@ public class AccountFinderServiceTest {
 				assertEquals(
 					created, accountFinderService.list().size(),
 					"After creating " + account + " the list size was not "
-					+ "incremented. Total Accounts created " + created
+					+ "incremented"
 				);
 			});
 	}
@@ -285,10 +290,10 @@ public class AccountFinderServiceTest {
 	@CartesianTest
 	public void creatingAccountsWithUsernamesThatAreAlreadyTakenDoesNotIncrementTheAccountListSizeTest(
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2,
-			@Values(booleans = {true, false}) boolean samePassword) {
+			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
 		StreamUtils
-			.zipWithIndex(accountCreationDtoPairStream(true, samePassword))
+			.zipWithIndex(accountCreationDtoPairStream(true, setSamePasswordToPair))
 			.forEach(indexed -> {
 				final Account account1 = accountCreatorService
 					.create(indexed.getValue().getFirst(), role1).get();
@@ -296,8 +301,8 @@ public class AccountFinderServiceTest {
 				final Long created = indexed.getIndex() + 1;
 				assertEquals(
 					created, accountFinderService.list().size(),
-					"After creating the first " + account1
-					+ " the list size was not incremented"
+					"After creating the first " + account1 + " the list size "
+					+ "was not incremented"
 				);
 				
 				final AccountCreationDto accountCreationDto2
@@ -307,10 +312,9 @@ public class AccountFinderServiceTest {
 				assertEquals(
 					created, accountFinderService.list().size(),
 					"The list size should not change after creating the "
-					+ "second Account with the same name. "
-					+ "The first Account was " + account1
-					+ " and the second Account was created from "
-					+ accountCreateInfo(accountCreationDto2, role2)
+					+ "second Account with the same name. The first Account "
+					+ "was " + account1 + " and the second Account was created "
+					+ "from " + accountCreateInfo(accountCreationDto2, role2)
 				);
 			});
 	}
@@ -325,7 +329,8 @@ public class AccountFinderServiceTest {
 
 				assertTrue(
 					accountFinderService.list().contains(account),
-					"Account " + account + " can not be found in the list"
+					"After creating " + account + ", it can not be found in "
+					+ "the list"
 				);
 			});
 	}
