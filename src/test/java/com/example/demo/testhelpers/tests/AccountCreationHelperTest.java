@@ -1,14 +1,21 @@
 
 package com.example.demo.testhelpers.tests;
 
+import com.codepoetics.protonpack.StreamUtils;
 import com.example.demo.datatransfer.AccountCreationDto;
+import com.example.demo.domain.Role;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoPairStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationWithIdAndRoleStream;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
+import java.util.Arrays;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +41,7 @@ public class AccountCreationHelperTest {
 		
 		assertTrue(
 			accountCreationDtoPairStream(setSameUsernameToPair, setSamePasswordToPair)
-				.findFirst().isPresent()
+				.findAny().isPresent()
 		);
 	}
 	
@@ -45,7 +52,15 @@ public class AccountCreationHelperTest {
 		
 		assertTrue(
 			accountCreationDtoStream(setSameUsernameToPair, setSamePasswordToPair)
-				.findFirst().isPresent()
+				.findAny().isPresent()
+		);
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void accountCreationWithIdAndRoleStreamIsNotEmptyTest(final Role role) {
+		assertTrue(
+			accountCreationWithIdAndRoleStream(role, 0l).findAny().isPresent()
 		);
 	}
 	
@@ -108,5 +123,62 @@ public class AccountCreationHelperTest {
 					+ (passwordIsValid ? "" : " not")
 				);
 			});
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void accountCreationWithIdAndRoleStreamHasCorrectRoleTest(final Role role) {
+		accountCreationWithIdAndRoleStream(role).forEach(accountWithSettableIdAndRole -> {
+			final Role resultedRole = accountWithSettableIdAndRole.getRole();
+			assertEquals(
+				role, resultedRole,
+				accountWithSettableIdAndRole + " is supposed to have Role '"
+				+ role + "', but it has Role '" + resultedRole + "'"
+			);
+		});
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void accountCreationWithIdAndRoleStreamCountIsCorrectAfterSkippingTest(final Role role) {
+		final Long totalSize = accountCreationWithIdAndRoleStream(role).count();
+		for (final Long skip : getSkips(totalSize)) {
+			final long sizeWithSkip
+				= accountCreationWithIdAndRoleStream(role, skip).count();
+		
+			if (totalSize < skip) {
+				assertEquals(0, sizeWithSkip);
+			} else {
+				assertEquals(totalSize - skip, sizeWithSkip);
+			}
+		}
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void accountCreationWithIdAndRoleStreamIdIsCorrectAfterSkippingTest(final Role role) {
+		final Long totalSize = accountCreationWithIdAndRoleStream(role).count();
+		for (final Long skip : getSkips(totalSize)) {
+			StreamUtils
+				.zipWithIndex(accountCreationWithIdAndRoleStream(role, skip))
+				.forEach(indexed -> {
+					final Long correctId = indexed.getIndex() + skip;
+					final Long idWithSkip = indexed.getValue().getId();
+					
+					assertEquals(
+						correctId, idWithSkip,
+						"The AccountWithSettableId in index position "
+						+ correctId + " of the Stream has index "
+						+ idWithSkip + ", when skipping " + skip + " values"
+					);
+				}
+			);
+		}
+	}
+	
+	private static List<Long> getSkips(final Long totalSize) {
+		return Arrays.asList(
+			0l, 1l, 2l, 3l, totalSize - 1l, totalSize, totalSize + 1
+		);
 	}
 }
