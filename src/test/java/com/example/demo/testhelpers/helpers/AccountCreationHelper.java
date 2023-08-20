@@ -25,13 +25,14 @@ public final class AccountCreationHelper {
 	/**
 	 * Stream of {@link AccountCreationDto AccountCreationDto} {@link Pair Pairs} 
 	 * used for creating {@link Account Accounts}. The usernames and passwords
-	 * of the AccountCreationDto objects are unique Pair-wise.
+	 * of the {@code AccountCreationDto} objects are unique {@code Pair}-wise.
 	 * 
 	 * @param setSameUsernameToPair whether to set the same username for both
 	 *								{@link AccountCreationDto} of the {@link Pair}
 	 * @param setSamePasswordToPair whether to set the same password for both
 	 *								{@link AccountCreationDto} of the {@link Pair}
-	 * @return	the created Stream of {@link AccountCreationDto} {@link Pair Pairs}
+	 * @return	the created {@code Stream} of {@link AccountCreationDto} 
+	 * {@link Pair Pairs}
 	 */
 	public static Stream<Pair<AccountCreationDto, AccountCreationDto>> accountCreationDtoPairStream(
 			final boolean setSameUsernameToPair,
@@ -63,7 +64,7 @@ public final class AccountCreationHelper {
 	 * Shortcut for method {@link #accountCreationDtoPairStream(boolean, boolean)} 
 	 * call with both parameters set to {@code false}
 	 * 
-	 * @return the created Stream of {@link Pair Pairs}
+	 * @return the created {@code Stream} of {@link Pair Pairs}
 	 */
 	public static Stream<Pair<AccountCreationDto, AccountCreationDto>> accountCreationDtoPairStream() {
 		return accountCreationDtoPairStream(false, false);
@@ -71,14 +72,14 @@ public final class AccountCreationHelper {
 	
 	/**
 	 * Stream of {@link AccountCreationDto} objects used for creating 
-	 * {@link Account Accounts}. Each AccountCreationDto object has unique 
-	 * username and password.
+	 * {@link Account Accounts}. Each {@code AccountCreationDto} object has 
+	 * unique username and password.
 	 * 
 	 * @param setValidUsernames whether to set valid or invalid username for 
 	 *							each {@link AccountCreationDto}
 	 * @param setValidPasswords whether to set valid or invalid password for 
 	 *							each {@link AccountCreationDto}
-	 * @return the created Stream of {@link AccountCreationDto} objects
+	 * @return the created {@code Stream} of {@link AccountCreationDto} objects
 	 */
 	public static Stream<AccountCreationDto> accountCreationDtoStream(
 			final boolean setValidUsernames, final boolean setValidPasswords) {
@@ -105,7 +106,7 @@ public final class AccountCreationHelper {
 	 * Shortcut for method {@link #accountCreationDtoStream(boolean, boolean)} 
 	 * call with both parameters set to {@code true}
 	 * 
-	 * @return the created Stream of {@link AccountCreationDto} objects
+	 * @return the created {@code Stream} of {@link AccountCreationDto} objects
 	 */
 	public static Stream<AccountCreationDto> accountCreationDtoStream() {
 		return accountCreationDtoStream(true, true);
@@ -115,15 +116,17 @@ public final class AccountCreationHelper {
 	 * Stream of {@link AccountWithSettableId} objects used for testing 
 	 * {@link Account} objects without any database operations.
 	 * 
-	 * Transforms the Stream of {@link #accountCreationDtoStream()} to
-	 * a Stream of {@link AccountWithSettableId}. This transform includes 
-	 * setting the id to the index of appearance in the Stream and {@link Role} 
-	 * to the {@code role}.
+	 * Transforms the {@code Stream} of {@link #accountCreationDtoStream()} to
+	 * a {@code Stream} of {@code AccountWithSettableId}. This transform 
+	 * includes setting the id to the index of appearance in the {@code Stream} 
+	 * and {@link Role} to the {@code role}.
 	 * 
 	 * @param role	the {@link Role} to be set for each 
 	 *				{@link AccountWithSettableId}
-	 * @param skip	the number of values to skip from the start of the Stream
-	 * @return		the created Stream of {@link AccountWithSettableId} objects
+	 * @param skip	the number of values to skip from the start of the
+	 *				{@code Stream}
+	 * @return		the created {@code Stream} of {@code AccountWithSettableId} 
+	 *				objects
 	 */
 	public static Stream<AccountWithSettableId> accountCreationWithIdAndRoleStream(
 			final Role role, final Long skip){
@@ -144,7 +147,8 @@ public final class AccountCreationHelper {
 	 * call with zero skipped values.
 	 * 
 	 * @param	role
-	 * @return	the created Stream of {@link AccountWithSettableId} objects
+	 * @return	the created {@code Stream} of {@link AccountWithSettableId} 
+	 *			objects
 	 */
 	public static Stream<AccountWithSettableId> accountCreationWithIdAndRoleStream(
 			final Role role) {
@@ -153,8 +157,8 @@ public final class AccountCreationHelper {
 	}
 	
 	/**
-	 * Asserts that ids and usernames of the {@code accountDto} and
-	 * {@code account} are equal.
+	 * Asserts that ids and usernames of the {@link AccountDto} and
+	 * {@link Account} objects are equal.
 	 * 
 	 * @param accountDto
 	 * @param account 

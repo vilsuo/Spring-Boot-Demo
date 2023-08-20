@@ -47,32 +47,6 @@ public class RelationServiceTest {
 	
 	private Stream<Pair<Account, Account>> accountPairStream;
 	
-	/*
-	private Optional<Relation> createRelation(final RelationCreationObject obj) {
-		return relationService.create(
-			obj.getSource(), obj.getTarget(), obj.getStatus()
-		);
-	}
-	
-	private boolean relationExists(final RelationCreationObject obj) {
-		return relationService.relationExists(
-			obj.getSource(), obj.getTarget(), obj.getStatus()
-		);
-	}
-	*/
-	
-	private boolean relationExists(final Relation relation) {
-		return relationService.relationExists(
-			relation.getSource(), relation.getTarget(), relation.getStatus()
-		);
-	}
-	
-	private void removeRelation(final Relation relation) {
-		relationService.removeRelation(
-			relation.getSource(), relation.getTarget(), relation.getStatus()
-		);
-	}
-	
 	@BeforeEach
 	public void initAccountPairStream() {
 		// create a Stream of Account Pair with every possible Role combination
@@ -623,5 +597,17 @@ public class RelationServiceTest {
 				+ "Accounts " + target + " Relation list after removal"
 			);
 		});
+	}
+	
+	private boolean relationExists(final Relation relation) {
+		return relationService.relationExists(
+			relation.getSource(), relation.getTarget(), relation.getStatus()
+		);
+	}
+	
+	private void removeRelation(final Relation relation) {
+		relationService.removeRelation(
+			relation.getSource(), relation.getTarget(), relation.getStatus()
+		);
 	}
 }

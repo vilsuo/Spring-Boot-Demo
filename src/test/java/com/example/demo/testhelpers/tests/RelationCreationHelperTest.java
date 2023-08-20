@@ -42,8 +42,8 @@ public class RelationCreationHelperTest {
 				
 				assertEquals(
 					1, rolePairCount,
-					"Expected Role combination " + roleFirst.getName() + ", "
-					+ roleSecond.getName() + " to appear once in the Stream, "
+					"Expected Role combination (" + roleFirst.getName() + ", "
+					+ roleSecond.getName() + ") to appear once in the Stream, "
 					+ "but it appeared " + rolePairCount + " times"
 				);
 			}

@@ -30,10 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-/*
-TODO
-- check equals
-*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -228,7 +224,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	// with or without pair?
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void ifThereNoAccountsCreatedWithGivenUsernameThenThatUsernameDoesNotExistTest(final Role role) {

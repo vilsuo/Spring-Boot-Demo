@@ -19,15 +19,13 @@ public final class RelationCreationHelper {
 	private final static int TOTAL_ROLES = Role.values().length;
 	
 	/**
+	 * Creates a Stream of {@link AccountCreationDto} and {@link Role} object
+	 * {@link Pair Pairs}. Each {@code Pair} has unique combination of 
+	 * {@code Roles}. All possible combinations of {@code Roles} are in the 
+	 * {@code Stream}. All {@code AccountCreationDto} objects are picked from 
+	 * the {@link AccountCreationHelper#accountCreationDtoPairStream()}.
 	 * 
-	 * @return The Stream has as many elements as there are possible combination
-	 *	of Roles. Each Pair of the Stream has the following properties:
-	 * 
-	 *	1)	each AccounCreationDto has valid and unique username and password
-	 *	2)	the combination of Roles of first and second Pair is unique. This
-	 *		means that there are no other Pairs in the Stream that has the same
-	 *		first Role AND second Role.
-	 * 
+	 * @return the created {@code Stream}
 	 */
 	public static Stream<Pair<Pair<AccountCreationDto, Role>, Pair<AccountCreationDto, Role>>>
 			accountCreationPairWithAllRoleCombinationsStream() {
@@ -57,10 +55,11 @@ public final class RelationCreationHelper {
 	}
 	
 	/**
-	 * Asserts two things:
-	 * 1.	that ids and Statuses of the two parameters are equal
-	 * 2.	source and target Account/AccountDto are equal based on the method
-	 *		assertAccountDtoIsCreatedFromAccount
+	 * Asserts that {@code RelationDto} is created from {@code Relation}. This
+	 * checks two things: 1) the id and the {@link Status} between these two are
+	 * equal 2) the source and the target {@link AccountDto} objects of 
+	 * {@code RelationDto} are created from the corresponding {@link Account} 
+	 * objects of {@code Relation}.
 	 * 
 	 * @param relationDto
 	 * @param relation 
