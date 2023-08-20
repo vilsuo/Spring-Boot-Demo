@@ -22,6 +22,17 @@ public final class AccountCreationHelper {
 	private static final List<String> VALID_PASSWORDS = new ArrayList<>(PasswordValidatorTest.VALID_PASSWORDS);
 	private static final List<String> INVALID_PASSWORDS = new ArrayList<>(PasswordValidatorTest.INVALID_PASSWORDS);
 	
+	/**
+	 * Stream of {@link AccountCreationDto AccountCreationDto} {@link Pair Pairs} 
+	 * used for creating {@link Account Accounts}. The usernames and passwords
+	 * of the AccountCreationDto objects are unique Pair-wise.
+	 * 
+	 * @param setSameUsernameToPair whether to set the same username for both
+	 *								{@link AccountCreationDto} of the {@link Pair}
+	 * @param setSamePasswordToPair whether to set the same password for both
+	 *								{@link AccountCreationDto} of the {@link Pair}
+	 * @return	the created Stream of {@link AccountCreationDto} {@link Pair Pairs}
+	 */
 	public static Stream<Pair<AccountCreationDto, AccountCreationDto>> accountCreationDtoPairStream(
 			final boolean setSameUsernameToPair,
 			final boolean setSamePasswordToPair) {
@@ -48,10 +59,27 @@ public final class AccountCreationHelper {
 		return lst.stream();
 	}
 	
+	/**
+	 * Shortcut for method {@link #accountCreationDtoPairStream(boolean, boolean)} 
+	 * call with both parameters set to {@code false}
+	 * 
+	 * @return the created Stream of {@link Pair Pairs}
+	 */
 	public static Stream<Pair<AccountCreationDto, AccountCreationDto>> accountCreationDtoPairStream() {
 		return accountCreationDtoPairStream(false, false);
 	}
 	
+	/**
+	 * Stream of {@link AccountCreationDto} objects used for creating 
+	 * {@link Account Accounts}. Each AccountCreationDto object has unique 
+	 * username and password.
+	 * 
+	 * @param setValidUsernames whether to set valid or invalid username for 
+	 *							each {@link AccountCreationDto}
+	 * @param setValidPasswords whether to set valid or invalid password for 
+	 *							each {@link AccountCreationDto}
+	 * @return the created Stream of {@link AccountCreationDto} objects
+	 */
 	public static Stream<AccountCreationDto> accountCreationDtoStream(
 			final boolean setValidUsernames, final boolean setValidPasswords) {
 		
@@ -74,19 +102,31 @@ public final class AccountCreationHelper {
 	}
 	
 	/**
-	 * @return Stream of AccountCreationDto objects. Each username is valid and 
-	 * unique. Each password is valid and unique
+	 * Shortcut for method {@link #accountCreationDtoStream(boolean, boolean)} 
+	 * call with both parameters set to {@code true}
 	 * 
-	 * I:th Object has i:th username from VALID_USERNAMES and i:th password from 
-	 * VALID_PASSWORDS
-	 * 
+	 * @return the created Stream of {@link AccountCreationDto} objects
 	 */
 	public static Stream<AccountCreationDto> accountCreationDtoStream() {
 		return accountCreationDtoStream(true, true);
 	}
 	
+	/**
+	 * Stream of {@link AccountWithSettableId} objects used for testing 
+	 * {@link Account} objects without any database operations.
+	 * 
+	 * Transforms the Stream of {@link #accountCreationDtoStream()} to
+	 * a Stream of {@link AccountWithSettableId}. This transform includes 
+	 * setting the id to the index of appearance in the Stream and {@link Role} 
+	 * to the {@code role}.
+	 * 
+	 * @param role	the {@link Role} to be set for each 
+	 *				{@link AccountWithSettableId}
+	 * @param skip	the number of values to skip from the start of the Stream
+	 * @return		the created Stream of {@link AccountWithSettableId} objects
+	 */
 	public static Stream<AccountWithSettableId> accountCreationWithIdAndRoleStream(
-			final Role role, final Long skip) {
+			final Role role, final Long skip){
 		
 		return StreamUtils.zipWithIndex(accountCreationDtoStream())
 			.skip(skip)
@@ -99,15 +139,22 @@ public final class AccountCreationHelper {
 			});
 	}
 	
+	/**
+	 * Shortcut for method {@link #accountCreationWithIdAndRoleStream(Role, Long)}
+	 * call with zero skipped values.
+	 * 
+	 * @param	role
+	 * @return	the created Stream of {@link AccountWithSettableId} objects
+	 */
 	public static Stream<AccountWithSettableId> accountCreationWithIdAndRoleStream(
 			final Role role) {
 		
 		return accountCreationWithIdAndRoleStream(role, 0l);
 	}
 	
-	// implement Role here in the future?
 	/**
-	 * Asserts that ids and usernames of the two parameters are equal
+	 * Asserts that ids and usernames of the {@code accountDto} and
+	 * {@code account} are equal.
 	 * 
 	 * @param accountDto
 	 * @param account 
@@ -117,20 +164,30 @@ public final class AccountCreationHelper {
 		
 		assertEquals(
 			account.getId(), accountDto.getId(),
-			"After converting Account with id '" + account.getId() + "' to "
-			+ "AccountDto, the AccountDto has 'id " + accountDto.getId() + "'"
+			"After creating AccountDto from Account, the id is supposed be "
+			+ account.getId() + ", not " + accountDto.getId()
 		);
 		
 		assertEquals(
 			account.getUsername(), accountDto.getUsername(),
-			"After converting Account with username '" + account.getUsername()
-			+ "' to AccountDto, the AccountDto has username '"
-			+ accountDto.getUsername() + "'"
+			"After creating AccountDto from Account, the username is supposed"
+			+ " be " + account.getUsername() + ", not "
+			+ accountDto.getUsername()
 		);
 	}
 	
-	public static String accountCreateInfo(AccountCreationDto accountCreationDto, Role role) {
-		return "Account created with username '"
+	/**
+	 * Creates an info message about the parameters of 
+	 * {@link AccountCreationService#create}.
+	 * 
+	 * @param	accountCreationDto
+	 * @param	role
+	 * @return	the info message
+	 */
+	public static String accountCreateInfo(
+			final AccountCreationDto accountCreationDto, final Role role) {
+		
+		return "Account creation parameters with username '"
 			+ accountCreationDto.getUsername()
 			+ "', raw password '" + accountCreationDto.getPassword()
 			+ "' and Role '" + role.getName() + "'";
