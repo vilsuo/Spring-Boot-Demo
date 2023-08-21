@@ -1,8 +1,6 @@
 package com.example.demo.integration.service;
 
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreateInfo;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
@@ -24,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -40,7 +42,7 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createWithNullThrowsTest(final Role role) {
-		AccountCreationDto first = accountCreationDtoStream().findFirst().get();
+		AccountCreationDto first = validAndUniqueAccountCreationDtoStream().findFirst().get();
 		final String validUsername = first.getUsername();
 		final String validPassword = first.getPassword();
 		
@@ -99,7 +101,7 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createWithInvalidUsernameThrowsTest(final Role role) {
-		accountCreationDtoStream(false, true)
+		uniqueAccountCreationDtoStream(false, true)
 			.forEach(accountCreationDto -> {
 				assertThrows(
 					ConstraintViolationException.class,
@@ -114,7 +116,7 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createWithInvalidPasswordThrowsTest(final Role role) {
-		accountCreationDtoStream(true, false)
+		uniqueAccountCreationDtoStream(true, false)
 			.forEach(accountCreationDto -> {
 				assertThrows(
 					ConstraintViolationException.class,
@@ -129,7 +131,7 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createWithValidUsernameAndPasswordAndRoleDoesNotThrowTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				assertDoesNotThrow(
 					() -> accountCreatorService.create(accountCreationDto, role),
@@ -143,7 +145,7 @@ public class AccounCreatorServiceTest {
 	public void createWithTakenUsernameAndWithoutTakenPasswordIsNotPresentTest(
 			@CartesianTest.Enum Role role1,	@CartesianTest.Enum Role role2) {
 		
-		accountCreationDtoPairStream(true, false)
+		validAndUniqueAccountCreationDtoPairStream(true, false)
 			.forEach(pair -> {
 				createAndAssertOptionalAccountPairsPresenceWithParameters(
 					pair.getFirst(), role1, pair.getSecond(), role2
@@ -155,7 +157,7 @@ public class AccounCreatorServiceTest {
 	public void createWithoutTakenUsernameAndWithTakenPasswordIsPresentTest(
 			@CartesianTest.Enum Role role1,	@CartesianTest.Enum Role role2) {
 		
-		accountCreationDtoPairStream(false, true)
+		validAndUniqueAccountCreationDtoPairStream(false, true)
 			.forEach(pair -> {
 				createAndAssertOptionalAccountPairsPresenceWithParameters(
 					pair.getFirst(), role1, pair.getSecond(), role2
@@ -167,7 +169,7 @@ public class AccounCreatorServiceTest {
 	public void createWithoutTakenUsernameAndWithoutTakenPasswordIsPresentTest(
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2) {
 		
-		accountCreationDtoPairStream(false, false)
+		validAndUniqueAccountCreationDtoPairStream(false, false)
 			.forEach(pair -> {
 				createAndAssertOptionalAccountPairsPresenceWithParameters(
 					pair.getFirst(), role1, pair.getSecond(), role2
@@ -207,7 +209,7 @@ public class AccounCreatorServiceTest {
 	public void createWithTakenUsernameDoesNotChangeTheOrginalTest(
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2) {
 		
-		accountCreationDtoPairStream(true, false)
+		validAndUniqueAccountCreationDtoPairStream(true, false)
 			.forEach(pair -> {
 				final Account original = accountCreatorService
 					.create(pair.getFirst(), role1).get();
@@ -227,7 +229,7 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createReturnedOptionalHasTheCreatedUsernameTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -244,7 +246,7 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createReturnedOptionalHasEncodedPasswordTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -272,7 +274,7 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createReturnedOptionalHasTheCreatedRoleTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();

@@ -4,9 +4,6 @@ package com.example.demo.testhelpers.tests;
 import com.codepoetics.protonpack.StreamUtils;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.domain.Role;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationWithIdAndRoleStream;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
 import java.util.Arrays;
@@ -22,6 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationPairForAllRoleCombinationsStream;
+import java.util.HashMap;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -34,14 +39,55 @@ public class AccountCreationHelperTest {
 	@Autowired
 	private PasswordValidator passwordValidator;
 	
+	private final int TOTAL_ROLES = Role.values().length;
+	
+	@Test
+	public void accountCreationPairWithAllRoleCombinationsStreamSizeTest() {
+		assertEquals(
+			TOTAL_ROLES * TOTAL_ROLES,
+			validAndUniqueAccountCreationPairForAllRoleCombinationsStream().count()
+		);
+	}
+	
+	@Test
+	public void accountCreationPairWithAllRoleCombinationsStreamHasExactlyOneCombinationOfEachRoleTest() {
+		final Map<Role, Map<Role, Integer>> rolePairCounts = new HashMap<>();
+		validAndUniqueAccountCreationPairForAllRoleCombinationsStream()
+			.forEach(pairOfPairs -> {
+				final Role roleFirst = pairOfPairs.getFirst().getSecond();
+				final Role roleSecond = pairOfPairs.getSecond().getSecond();
+				
+				rolePairCounts.putIfAbsent(roleFirst, new HashMap<>());
+				
+				final Map<Role, Integer> inner = rolePairCounts.get(roleFirst);
+				inner.put(roleSecond, inner.getOrDefault(roleSecond, 0) + 1);
+			});
+		
+		for (final Role roleFirst : Role.values()) {
+			for (final Role roleSecond : Role.values()) {
+				final int rolePairCount = rolePairCounts
+						.getOrDefault(roleFirst, new HashMap<>())
+						.getOrDefault(roleSecond, 0);
+				
+				assertEquals(
+					1, rolePairCount,
+					"Expected Role combination (" + roleFirst.getName() + ", "
+					+ roleSecond.getName() + ") to appear once in the Stream, "
+					+ "but it appeared " + rolePairCount + " times"
+				);
+			}
+		}
+	}
+	
 	@CartesianTest
 	public void accountCreationDtoPairStreamIsNotEmptyTest(
 			@Values(booleans = {true, false}) boolean setSameUsernameToPair,
 			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
 		assertTrue(
-			accountCreationDtoPairStream(setSameUsernameToPair, setSamePasswordToPair)
-				.findAny().isPresent()
+			validAndUniqueAccountCreationDtoPairStream(setSameUsernameToPair, setSamePasswordToPair)
+				.findAny()
+				.isPresent()
 		);
 	}
 	
@@ -51,8 +97,9 @@ public class AccountCreationHelperTest {
 			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
 		assertTrue(
-			accountCreationDtoStream(setSameUsernameToPair, setSamePasswordToPair)
-				.findAny().isPresent()
+			uniqueAccountCreationDtoStream(setSameUsernameToPair, setSamePasswordToPair)
+				.findAny()
+				.isPresent()
 		);
 	}
 	
@@ -60,7 +107,9 @@ public class AccountCreationHelperTest {
 	@EnumSource(Role.class)
 	public void accountCreationWithIdAndRoleStreamIsNotEmptyTest(final Role role) {
 		assertTrue(
-			accountCreationWithIdAndRoleStream(role, 0l).findAny().isPresent()
+			validAndUniqueAccountWithSettableIdStream(role, 0l)
+				.findAny()
+				.isPresent()
 		);
 	}
 	
@@ -69,7 +118,7 @@ public class AccountCreationHelperTest {
 			@Values(booleans = {true, false}) boolean setSameUsernameToPair,
 			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
-		accountCreationDtoPairStream(setSameUsernameToPair, setSamePasswordToPair)
+		validAndUniqueAccountCreationDtoPairStream(setSameUsernameToPair, setSamePasswordToPair)
 			.forEach(pair -> {
 				final AccountCreationDto first = pair.getFirst();
 				final AccountCreationDto second = pair.getSecond();
@@ -99,7 +148,7 @@ public class AccountCreationHelperTest {
 			@Values(booleans = {true, false}) boolean setValidUsernames,
 			@Values(booleans = {true, false}) boolean setValidPasswords) {
 		
-		accountCreationDtoStream(setValidUsernames, setValidPasswords)
+		uniqueAccountCreationDtoStream(setValidUsernames, setValidPasswords)
 			.forEach(accountCreationDto -> {
 				final String username = accountCreationDto.getUsername();
 				final boolean usernameIsValid = usernameValidator
@@ -128,23 +177,24 @@ public class AccountCreationHelperTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void accountCreationWithIdAndRoleStreamHasCorrectRoleTest(final Role role) {
-		accountCreationWithIdAndRoleStream(role).forEach(accountWithSettableIdAndRole -> {
-			final Role resultedRole = accountWithSettableIdAndRole.getRole();
-			assertEquals(
-				role, resultedRole,
-				accountWithSettableIdAndRole + " is supposed to have Role '"
-				+ role + "', but it has Role '" + resultedRole + "'"
-			);
-		});
+		validAndUniqueAccountWithSettableIdStream(role)
+			.forEach(accountWithSettableIdAndRole -> {
+				final Role resultedRole = accountWithSettableIdAndRole.getRole();
+				assertEquals(
+					role, resultedRole,
+					accountWithSettableIdAndRole + " is supposed to have Role '"
+					+ role + "', but it has Role '" + resultedRole + "'"
+				);
+			});
 	}
 	
 	@ParameterizedTest
 	@EnumSource(Role.class)
-	public void accountCreationWithIdAndRoleStreamCountIsCorrectAfterSkippingTest(final Role role) {
-		final Long totalSize = accountCreationWithIdAndRoleStream(role).count();
+	public void accountWithSettableIdAndRoleStreamCountIsCorrectAfterSkippingTest(final Role role) {
+		final Long totalSize = validAndUniqueAccountWithSettableIdStream(role).count();
 		for (final Long skip : getSkips(totalSize)) {
 			final long sizeWithSkip
-				= accountCreationWithIdAndRoleStream(role, skip).count();
+				= validAndUniqueAccountWithSettableIdStream(role, skip).count();
 		
 			if (totalSize < skip) {
 				assertEquals(0, sizeWithSkip);
@@ -156,11 +206,11 @@ public class AccountCreationHelperTest {
 	
 	@ParameterizedTest
 	@EnumSource(Role.class)
-	public void accountCreationWithIdAndRoleStreamIdIsCorrectAfterSkippingTest(final Role role) {
-		final Long totalSize = accountCreationWithIdAndRoleStream(role).count();
+	public void accountWithSettableIdAndRoleStreamIdIsCorrectAfterSkippingTest(final Role role) {
+		final Long totalSize = validAndUniqueAccountWithSettableIdStream(role).count();
 		for (final Long skip : getSkips(totalSize)) {
 			StreamUtils
-				.zipWithIndex(accountCreationWithIdAndRoleStream(role, skip))
+				.zipWithIndex(validAndUniqueAccountWithSettableIdStream(role, skip))
 				.forEach(indexed -> {
 					final Long correctId = indexed.getIndex() + skip;
 					final Long idWithSkip = indexed.getValue().getId();

@@ -6,7 +6,6 @@ import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
 import com.example.demo.service.RelationService;
 import com.example.demo.service.AccountCreatorService;
-import static com.example.demo.testhelpers.helpers.RelationCreationHelper.accountCreationPairWithAllRoleCombinationsStream;
 import jakarta.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationPairForAllRoleCombinationsStream;
 
 /*
 TODO
@@ -50,7 +50,7 @@ public class RelationServiceTest {
 	@BeforeEach
 	public void initAccountPairStream() {
 		// create a Stream of Account Pair with every possible Role combination
-		accountPairStream = accountCreationPairWithAllRoleCombinationsStream()
+		accountPairStream = validAndUniqueAccountCreationPairForAllRoleCombinationsStream()
 			.map(pairOfPairs -> {
 				final Account account1 = accountCreatorService
 					.create(
@@ -69,7 +69,7 @@ public class RelationServiceTest {
 		/*
 		// 1) create a Account Pair for each Role
 		final List<Pair<Account, Account>> accountPairList = StreamUtils
-			.zipWithIndex(accountCreationDtoPairStream())
+			.zipWithIndex(validAndUniqueAccountCreationDtoPairStream())
 			.limit(TOTAL_ROLES)
 			.map(indexed -> {
 				final Role role = Role.values()[(int) indexed.getIndex()];

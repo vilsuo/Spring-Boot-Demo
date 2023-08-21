@@ -9,8 +9,6 @@ import com.example.demo.error.validation.ResourceNotFoundException;
 import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.AccountFinderService;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreateInfo;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -29,6 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -66,7 +68,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void findingAccountByCreatedAccountsIdDoesNotThrowTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -84,7 +86,7 @@ public class AccountFinderServiceTest {
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2,
 			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
-		accountCreationDtoPairStream(false, setSamePasswordToPair)
+		validAndUniqueAccountCreationDtoPairStream(false, setSamePasswordToPair)
 			.forEach(pair -> {
 				final Account account1 = accountCreatorService
 					.create(pair.getFirst(), role1).get();
@@ -110,7 +112,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void findingAccountByCreatedAccountsIdFindsTheCreatedAccountTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account accountCreated = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -138,7 +140,7 @@ public class AccountFinderServiceTest {
 	// with or without pair?
 	@Test
 	public void findingAccountByUsernameThatDoesNotExistThrows() {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final String username = accountCreationDto.getUsername();
 				assertThrows(
@@ -153,7 +155,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void findingAccountByCreatedAccountsUsernameDoesNotThrowTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -172,7 +174,7 @@ public class AccountFinderServiceTest {
 			@CartesianTest.Enum Role role1, @CartesianTest.Enum Role role2,
 			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
-		accountCreationDtoPairStream(false, setSamePasswordToPair)
+		validAndUniqueAccountCreationDtoPairStream(false, setSamePasswordToPair)
 			.forEach(pair -> {
 				final Account account1 = accountCreatorService
 					.create(pair.getFirst(), role1).get();
@@ -199,7 +201,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void findingAccountByCreatedAccountsUsernameFindsTheCreatedAccountTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account accountCreated = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -227,7 +229,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void ifThereNoAccountsCreatedWithGivenUsernameThenThatUsernameDoesNotExistTest(final Role role) {
-		accountCreationDtoPairStream(false, true)
+		validAndUniqueAccountCreationDtoPairStream(false, true)
 			.forEach(pair -> {
 				accountCreatorService.create(pair.getFirst(), role);
 				
@@ -244,7 +246,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void ifAccountIsCreatedWithGivenUsernameThenThatUsernameExistsTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -268,7 +270,7 @@ public class AccountFinderServiceTest {
 	@EnumSource(Role.class)
 	public void creatingAccountsWithUsernamesThatAreNotTakenIncrementsTheAccountListSizeTest(final Role role) {
 		StreamUtils
-			.zipWithIndex(accountCreationDtoStream())
+			.zipWithIndex(validAndUniqueAccountCreationDtoStream())
 			.forEach(indexed -> {
 				final Account account = accountCreatorService
 					.create(indexed.getValue(), role).get();
@@ -288,7 +290,7 @@ public class AccountFinderServiceTest {
 			@Values(booleans = {true, false}) boolean setSamePasswordToPair) {
 		
 		StreamUtils
-			.zipWithIndex(accountCreationDtoPairStream(true, setSamePasswordToPair))
+			.zipWithIndex(validAndUniqueAccountCreationDtoPairStream(true, setSamePasswordToPair))
 			.forEach(indexed -> {
 				final Account account1 = accountCreatorService
 					.create(indexed.getValue().getFirst(), role1).get();
@@ -317,7 +319,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void afterCreatingAccountThatAccountCanBeFoundFromTheAccountsListTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
 					.create(accountCreationDto, role).get();
@@ -333,7 +335,7 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void ifAccountIsNotCreatedThenThatAccountCanNotBeFoundFromTheAccountListTest(final Role role) {
-		accountCreationDtoStream()
+		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = new Account(
 					accountCreationDto.getUsername(),

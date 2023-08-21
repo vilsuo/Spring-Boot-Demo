@@ -1,7 +1,6 @@
 
 package com.example.demo.unit.converter;
 
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationWithIdAndRoleStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.assertAccountDtoIsCreatedFromAccount;
 import static com.example.demo.testhelpers.helpers.RelationCreationHelper.assertRelationDtoIsCreatedFromRelation;
 import com.example.demo.testhelpers.helpers.AccountWithSettableId;
@@ -22,6 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -51,7 +54,7 @@ public class EntityToDtoConverterTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void convertsAccountToMatchingAccountDtoTest(final Role role) {
-		accountCreationWithIdAndRoleStream(role)
+		validAndUniqueAccountWithSettableIdStream(role)
 			.forEach(accountWithSettableId -> {
 				assertAccountDtoIsCreatedFromAccount(
 					entityToDtoConverter.convertAccount(accountWithSettableId),
@@ -67,9 +70,9 @@ public class EntityToDtoConverterTest {
 			@CartesianTest.Enum Role roleTarget) {
 		
 		final AccountWithSettableId source
-			= accountCreationWithIdAndRoleStream(roleSource).findFirst().get();
+			= validAndUniqueAccountWithSettableIdStream(roleSource).findFirst().get();
 		
-		accountCreationWithIdAndRoleStream(roleTarget, 1l)
+		validAndUniqueAccountWithSettableIdStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
 				final Long relationId = accountWithSettableId.getId() + 1;
 				final RelationWithSettableId relation
@@ -103,7 +106,7 @@ public class EntityToDtoConverterTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void convertingNonEmptyOptionalAccountReturnsNonEmptyOptionalTest(final Role role) {
-		accountCreationWithIdAndRoleStream(role)
+		validAndUniqueAccountWithSettableIdStream(role)
 			.forEach(accountWithSettableId -> {
 				final Optional<AccountWithSettableId> opt = Optional.of(
 					accountWithSettableId
@@ -122,9 +125,9 @@ public class EntityToDtoConverterTest {
 			@CartesianTest.Enum Role roleTarget) {
 		
 		final AccountWithSettableId source
-			= accountCreationWithIdAndRoleStream(roleSource).findFirst().get();
+			= validAndUniqueAccountWithSettableIdStream(roleSource).findFirst().get();
 		
-		accountCreationWithIdAndRoleStream(roleTarget, 1l)
+		validAndUniqueAccountWithSettableIdStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
 				final Long relationId = accountWithSettableId.getId() + 1;
 				final Optional<RelationWithSettableId> opt = Optional.of(
@@ -143,7 +146,7 @@ public class EntityToDtoConverterTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void convertingNonEmptyOptionalAccountReturnsNonEmptyOptionalWithMatchingAccountDtoTest(final Role role) {
-		accountCreationWithIdAndRoleStream(role)
+		validAndUniqueAccountWithSettableIdStream(role)
 			.forEach(accountWithSettableId -> {
 				assertAccountDtoIsCreatedFromAccount(
 					entityToDtoConverter.convertOptionalAccount(
@@ -161,9 +164,9 @@ public class EntityToDtoConverterTest {
 			@CartesianTest.Enum Role roleTarget) {
 		
 		final AccountWithSettableId source
-			= accountCreationWithIdAndRoleStream(roleSource).findFirst().get();
+			= validAndUniqueAccountWithSettableIdStream(roleSource).findFirst().get();
 		
-		accountCreationWithIdAndRoleStream(roleTarget, 1l)
+		validAndUniqueAccountWithSettableIdStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
 				final Long relationId = accountWithSettableId.getId() + 1;
 				final RelationWithSettableId relation =

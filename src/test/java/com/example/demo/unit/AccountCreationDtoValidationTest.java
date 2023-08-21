@@ -2,7 +2,6 @@
 package com.example.demo.unit;
 
 import com.example.demo.datatransfer.AccountCreationDto;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoStream;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,6 +9,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
 
 /* 
 TODO
@@ -36,7 +37,7 @@ public class AccountCreationDtoValidationTest {
 	}
 	
 	private void usernameAndPasswordValidationHelper(boolean validUsernames, boolean validPasswords) {
-		accountCreationDtoStream(validUsernames, validPasswords)
+		uniqueAccountCreationDtoStream(validUsernames, validPasswords)
 			.forEach(accountCreationDto -> {
 			
 				final Set<ConstraintViolation<AccountCreationDto>> violations
