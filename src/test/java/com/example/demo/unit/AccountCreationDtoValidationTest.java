@@ -10,12 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
 
-/* 
-TODO
-- move equals test to somewhere else
-*/
 public class AccountCreationDtoValidationTest {
 	
 	private final Validator validator
@@ -36,7 +31,9 @@ public class AccountCreationDtoValidationTest {
 		usernameAndPasswordValidationHelper(true, true);
 	}
 	
-	private void usernameAndPasswordValidationHelper(boolean validUsernames, boolean validPasswords) {
+	private void usernameAndPasswordValidationHelper(
+			boolean validUsernames, boolean validPasswords) {
+		
 		uniqueAccountCreationDtoStream(validUsernames, validPasswords)
 			.forEach(accountCreationDto -> {
 			
@@ -48,8 +45,8 @@ public class AccountCreationDtoValidationTest {
 				if (validUsernames && validPasswords) {
 					assertTrue(
 						violations.isEmpty(),
-						"Username '" + username + "' and password '" + password + "' "
-						+ "should be valid and not cause a validation error"
+						"Username '" + username + "' and password '" + password 
+						+ "' should be valid and not cause a validation error"
 					);
 				} else {
 					assertFalse(
