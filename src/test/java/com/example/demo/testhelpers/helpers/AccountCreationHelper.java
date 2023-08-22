@@ -15,11 +15,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.data.util.Pair;
 
-/*
-TODO
-- rename tests
-- move tests from RelationCreationHelper
-*/
 public final class AccountCreationHelper {
 	
 	private static final List<String> VALID_USERNAMES
@@ -80,10 +75,13 @@ public final class AccountCreationHelper {
 		return uniqueAccountCreationDtoStream(true, true);
 	}
 	
-	// TODO COMMENT
 	/**
+	 * Creates a {@code Stream} of {@link AccountCreationDto} and {@link Role}
+	 * {code Pairs}. The {@code Stream} contains exactly one {@code Pair} for
+	 * each {@code Role}. Each {@code AccountCreationDto} has valid and unique
+	 * usernames and password.
 	 * 
-	 * @return 
+	 * @return the created {@code Stream}
 	 */
 	public static Stream<Pair<AccountCreationDto, Role>> 
 			accountCreationDtoForOneOfEachRoleStream() {
@@ -93,8 +91,8 @@ public final class AccountCreationHelper {
 			.limit(TOTAL_ROLES)
 			.map(indexed -> {
 				return Pair.of(
-					indexed.getValue(),
-					Role.values()[(int) indexed.getIndex()]
+					indexed.getValue(),	// AccountCreationDto
+					Role.values()[(int) indexed.getIndex()] // Role
 				);
 			});
 	}
@@ -208,7 +206,8 @@ public final class AccountCreationHelper {
 	 * 
 	 * @return the created {@code Stream}
 	 */
-	public static Stream<Pair<Pair<AccountCreationDto, Role>, Pair<AccountCreationDto, Role>>>
+	public static Stream<Pair<Pair<AccountCreationDto, Role>, 
+							  Pair<AccountCreationDto, Role>>>
 			validAndUniqueAccountCreationPairForAllRoleCombinationsStream() {
 		
 		return StreamUtils
@@ -219,12 +218,12 @@ public final class AccountCreationHelper {
 				
 				return Pair.of(
 					Pair.of(
-						indexed.getValue().getFirst(),
-						Role.values()[index / TOTAL_ROLES]
+						indexed.getValue().getFirst(), // AccountCreationDto
+						Role.values()[index / TOTAL_ROLES] // Role
 					),
 					Pair.of(
-						indexed.getValue().getSecond(),
-						Role.values()[index % TOTAL_ROLES]
+						indexed.getValue().getSecond(), // AccountCreationDto
+						Role.values()[index % TOTAL_ROLES] // Role
 					)
 				);
 			});

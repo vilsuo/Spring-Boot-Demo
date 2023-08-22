@@ -22,9 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -63,6 +60,8 @@ public class EntityToDtoConverterTest {
 			});
 	}
 	
+	// implement this method with pair stream
+	// remove skip-method from helper class?
 	@CartesianTest
 	public void convertsRelationToMatchingRelationDtoTest(
 			@CartesianTest.Enum Status status,
@@ -70,7 +69,9 @@ public class EntityToDtoConverterTest {
 			@CartesianTest.Enum Role roleTarget) {
 		
 		final AccountWithSettableId source
-			= validAndUniqueAccountWithSettableIdStream(roleSource).findFirst().get();
+			= validAndUniqueAccountWithSettableIdStream(roleSource)
+				.findFirst()
+				.get();
 		
 		validAndUniqueAccountWithSettableIdStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
@@ -113,11 +114,14 @@ public class EntityToDtoConverterTest {
 				);
 
 				assertTrue(
-					entityToDtoConverter.convertOptionalAccount(opt).isPresent()
+					entityToDtoConverter.convertOptionalAccount(opt)
+						.isPresent()
 				);
 			});
 	}
 	
+	// implement this method with pair stream
+	// remove skip-method from helper class?
 	@CartesianTest
 	public void convertingNonEmptyOptionalRelationReturnsNonEmptyOptionalTest(
 			@CartesianTest.Enum Status status,
@@ -125,7 +129,9 @@ public class EntityToDtoConverterTest {
 			@CartesianTest.Enum Role roleTarget) {
 		
 		final AccountWithSettableId source
-			= validAndUniqueAccountWithSettableIdStream(roleSource).findFirst().get();
+			= validAndUniqueAccountWithSettableIdStream(roleSource)
+				.findFirst()
+				.get();
 		
 		validAndUniqueAccountWithSettableIdStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
@@ -157,6 +163,8 @@ public class EntityToDtoConverterTest {
 			});
 	}
 	
+	// implement this method with pair stream
+	// remove skip-method from helper class?
 	@CartesianTest
 	public void convertingNonEmptyOptionalRelationReturnsNonEmptyOptionalWithMatchingRelationDtoTest(
 			@CartesianTest.Enum Status status,
@@ -164,7 +172,9 @@ public class EntityToDtoConverterTest {
 			@CartesianTest.Enum Role roleTarget) {
 		
 		final AccountWithSettableId source
-			= validAndUniqueAccountWithSettableIdStream(roleSource).findFirst().get();
+			= validAndUniqueAccountWithSettableIdStream(roleSource)
+				.findFirst()
+				.get();
 		
 		validAndUniqueAccountWithSettableIdStream(roleTarget, 1l)
 			.forEach(accountWithSettableId -> {
