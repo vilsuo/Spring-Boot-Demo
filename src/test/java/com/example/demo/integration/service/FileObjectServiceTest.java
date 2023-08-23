@@ -7,6 +7,7 @@ import com.example.demo.domain.FileObject;
 import com.example.demo.domain.Role;
 import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.FileObjectService;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoForOneOfEachRoleStream;
 import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
 
 @ActiveProfiles("test")
@@ -42,12 +42,11 @@ public class FileObjectServiceTest {
 	// create Account for each role
 	@BeforeEach
 	public void init() {
-		accountStream = StreamUtils
-			.zipWithIndex(validAndUniqueAccountCreationDtoStream())
-			.limit(Role.values().length)
-			.map(indexed -> {
+		accountStream = accountCreationDtoForOneOfEachRoleStream()
+			.map(accountCreationDtoRolePair -> {
 				return accountCreatorService.create(
-					indexed.getValue(), Role.values()[(int) indexed.getIndex()]
+					accountCreationDtoRolePair.getFirst(),
+					accountCreationDtoRolePair.getSecond()
 				).get();
 			});
 	}

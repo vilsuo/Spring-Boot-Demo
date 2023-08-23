@@ -154,7 +154,9 @@ public class AccountCreationHelperTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void validAndUniqueAccountWithSettableIdStreamIdIsCorrectAfterSkippingTest(final Role role) {
-		final Long totalSize = validAndUniqueAccountWithSettableIdStream(role).count();
+		final Long totalSize = validAndUniqueAccountWithSettableIdStream(role)
+									.count();
+		
 		for (final Long skip : getSkips(totalSize)) {
 			StreamUtils
 				.zipWithIndex(validAndUniqueAccountWithSettableIdStream(role, skip))
@@ -219,7 +221,8 @@ public class AccountCreationHelperTest {
 	public void validAndUniqueAccountCreationPairForAllRoleCombinationsStreamSizeTest() {
 		assertEquals(
 			TOTAL_ROLES * TOTAL_ROLES,
-			validAndUniqueAccountCreationPairForAllRoleCombinationsStream().count()
+			validAndUniqueAccountCreationPairForAllRoleCombinationsStream()
+				.count()
 		);
 	}
 	
