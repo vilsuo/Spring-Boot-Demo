@@ -41,7 +41,8 @@ public class FileObjectController {
     public String images(
 			Model model, @PathVariable String username, Principal principal) {
 		
-		AccountDto accountDto = accountDtoFinderService.findByUsername(username);
+		final AccountDto accountDto = accountDtoFinderService
+			.findByUsername(username);
 		
 		model.addAttribute("accountDto", accountDto);
 		model.addAttribute(
@@ -51,7 +52,7 @@ public class FileObjectController {
 		
 		if (principal != null) {
 			// implement this in a private method?
-			String loggedInUsername = principal.getName();
+			final String loggedInUsername = principal.getName();
 			model.addAttribute(
 				"hasFriend",
 				accountRelationService.hasRelationStatus(
@@ -77,15 +78,17 @@ public class FileObjectController {
 			Principal principal) 
 			throws IOException, IllegalAccessException {
 		
-		String loggedInAccountUsername = principal.getName();
+		final String loggedInAccountUsername = principal.getName();
 		if (!username.equals(loggedInAccountUsername)) {
 			throw new IllegalAccessException(
 				"Account " + loggedInAccountUsername 
 				+ " can not add images to account " + username
 			);
 		}
-		
-		accountFileObjectService.createImageToAccount(principal.getName(), file);
+
+		accountFileObjectService.createImageToAccount(
+			loggedInAccountUsername, file
+		);
 
 		return "redirect:/accounts/" + username + "/images";
 	}

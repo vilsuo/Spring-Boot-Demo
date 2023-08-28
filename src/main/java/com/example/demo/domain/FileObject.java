@@ -17,10 +17,6 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @AllArgsConstructor @NoArgsConstructor @Data
 public class FileObject extends AbstractPersistable<Long> {
 	
-	public static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(
-		"image/gif", "image/jpeg"
-	);
-	
 	private String name;
     private String mediaType;
     private Long size;
@@ -31,4 +27,12 @@ public class FileObject extends AbstractPersistable<Long> {
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	private byte[] content;
+	
+	private static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(
+		"image/gif", "image/jpeg", "image/png"
+	);
+	
+	public static boolean isSupportedContentType(final String contentType) {
+		return SUPPORTED_CONTENT_TYPES.contains(contentType);
+	}
 }

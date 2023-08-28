@@ -4,6 +4,7 @@ package com.example.demo.service;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.FileObject;
 import com.example.demo.service.repository.FileObjectRepository;
+import com.example.demo.utility.FileUtility;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,37 +25,34 @@ public class FileObjectService {
 			throws IOException {
 		
 		if (file == null) {
-			throw new NullPointerException(
+			throw new IllegalArgumentException(
 				"Can not create a FileObject from null MultipartFile"
 			);
 		}
 		
-		final String contentType = file.getContentType();
-		if (!isSupportedContentType(contentType)) {
+		final String mimeType = FileUtility.getRealMimeType(file);
+		
+		System.out.println(
+			"file: '" + file.getName()
+			+ "' has contentType '" + file.getContentType()
+			+ "', detected true type: '" + mimeType + "'"
+		);
+		
+		if (!FileObject.isSupportedContentType(mimeType)) {
 			throw new IllegalArgumentException(
-				"Illegal file content type: " + contentType
+				"Illegal file content type: " + mimeType
 			);
 		}
 		
 		final FileObject fileObject = new FileObject(
-			file.getOriginalFilename(),
-			contentType,
-			file.getSize(),
-			account,
-			file.getBytes()
+			file.getOriginalFilename(),	// name
+			mimeType,					// mediatype
+			file.getSize(),				// size
+			account,					// account
+			file.getBytes()				// content
 		);
 		
 		fileObjectRepository.save(fileObject);
-	}
-	
-	private boolean isSupportedContentType(final String contentType) {
-		return FileObject.SUPPORTED_CONTENT_TYPES.contains(contentType);
-		/*
-		final boolean isGif = "image/gif".equals(contentType);
-		final boolean isJpg = "image/jpeg".equals(contentType);
-		
-		return (isGif || isJpg);
-		*/
 	}
 	
 	public List<FileObject> getAccountImages(final Account account) {
