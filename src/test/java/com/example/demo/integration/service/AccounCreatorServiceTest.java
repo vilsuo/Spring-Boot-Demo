@@ -25,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -37,6 +38,9 @@ public class AccounCreatorServiceTest {
 	
 	@Autowired
 	private AccountFinderService accountFinderService;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@ParameterizedTest
 	@EnumSource(Role.class)
@@ -260,8 +264,7 @@ public class AccounCreatorServiceTest {
 				);
 
 				assertTrue(
-					accountCreatorService
-						.getPasswordEncoder()
+					passwordEncoder
 						.matches(rawPassword, returnedPassword),
 					"The returned Optional Accounts raw password '"
 					+ rawPassword + "' is not encoded correctly: '"

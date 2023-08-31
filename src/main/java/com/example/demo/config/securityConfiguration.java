@@ -27,6 +27,11 @@ public class SecurityConfiguration {
    	private boolean csrfEnabled;
 	
 	@Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+	
+	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		if (!csrfEnabled) {
 			http
@@ -96,11 +101,6 @@ public class SecurityConfiguration {
 			
 		return authenticationConfiguration.getAuthenticationManager();
 	}
-	
-	@Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 	
 	/*
 	// source: https://www.baeldung.com/role-and-privilege-for-spring-security-registration

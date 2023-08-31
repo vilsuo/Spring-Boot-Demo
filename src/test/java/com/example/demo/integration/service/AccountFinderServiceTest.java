@@ -10,7 +10,6 @@ import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.AccountFinderService;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreateInfo;
 import jakarta.transaction.Transactional;
-import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,10 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -318,7 +316,7 @@ public class AccountFinderServiceTest {
 	
 	@ParameterizedTest
 	@EnumSource(Role.class)
-	public void afterCreatingAccountThatAccountCanBeFoundFromTheAccountsListTest(final Role role) {
+	public void afterCreatingAccountItCanBeFoundFromTheAccountsListTest(final Role role) {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
@@ -335,6 +333,21 @@ public class AccountFinderServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void ifAccountIsNotCreatedThenThatAccountCanNotBeFoundFromTheAccountListTest(final Role role) {
+		validAndUniqueAccountWithSettableIdStream(role)
+			.forEach(accountWithSettableId -> {
+				assertFalse(
+					accountFinderService.list().contains(accountWithSettableId),
+					accountWithSettableId + " that has not been saved to the "
+					+ "database can be found in the list"
+				);
+			});
+	}
+	
+	// use with settable id or not?
+	/*
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void ifAccountIsNotCreatedThenThatAccountCanNotBeFoundFromTheAccountListTest(final Role role) {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = new Account(
@@ -342,8 +355,7 @@ public class AccountFinderServiceTest {
 					accountCreatorService.encodePassword(
 						accountCreationDto.getPassword()
 					),
-					role,
-					new HashSet<>(), new HashSet<>(), new HashSet<>()
+					role
 				);
 
 				assertFalse(
@@ -353,4 +365,5 @@ public class AccountFinderServiceTest {
 				);
 			});
 	}
+	*/
 }

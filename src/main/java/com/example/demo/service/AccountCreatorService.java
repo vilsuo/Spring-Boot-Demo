@@ -8,7 +8,6 @@ import com.example.demo.service.repository.AccountRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +33,6 @@ public class AccountCreatorService {
 	
 	@Autowired
     private Validator validator;
-	
-	public PasswordEncoder getPasswordEncoder() {
-		return passwordEncoder;
-	}
 	
 	/**
 	 * Create an Account in the Database
@@ -116,14 +111,11 @@ public class AccountCreatorService {
 		return new Account(
 				accountCreationDto.getUsername(),
 				encodePassword(accountCreationDto.getPassword()),
-				role,
-				new HashSet<>(),
-				new HashSet<>(),
-				new HashSet<>()
+				role
 		);
 	}
 	
-	public String encodePassword(final String password) {
+	private String encodePassword(final String password) {
 		if (password == null) {
 			throw new IllegalArgumentException(
 				"Can not encode a null password"

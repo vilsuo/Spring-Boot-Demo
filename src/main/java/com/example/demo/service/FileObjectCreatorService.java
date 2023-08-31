@@ -3,25 +3,35 @@ package com.example.demo.service;
 
 import com.example.demo.domain.Account;
 import com.example.demo.domain.FileObject;
+import com.example.demo.error.validation.IllegalFileContentTypeException;
 import com.example.demo.service.repository.FileObjectRepository;
 import com.example.demo.utility.FileUtility;
 import java.io.IOException;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /*
 TODO
-- make create throw descriptive (custom) exception if not supported file format
+- can not add a fileobject with the same name per account?
+	- change create return value to Optional?
+
+functionality to implement:
+- remove single image
+	- by name?
+	- by id?
+- like system for images
+	- one like/account
+	- can unlike
+
 */
 @Service
-public class FileObjectService {
+public class FileObjectCreatorService {
 	
 	@Autowired
 	private FileObjectRepository fileObjectRepository;
 	
-	public void create(final Account account, final MultipartFile file)
+	public FileObject create(final Account account, final MultipartFile file)
 			throws IOException {
 		
 		if (file == null) {
@@ -30,32 +40,35 @@ public class FileObjectService {
 			);
 		}
 		
-		final String mimeType = FileUtility.getRealMimeType(file);
+		final String detectedMimeType = FileUtility.getRealMimeType(file);
 		
+		/*
 		System.out.println(
 			"file: '" + file.getName()
 			+ "' has contentType '" + file.getContentType()
 			+ "', detected true type: '" + mimeType + "'"
 		);
+		*/
 		
-		if (!FileObject.isSupportedContentType(mimeType)) {
-			throw new IllegalArgumentException(
-				"Illegal file content type: " + mimeType
+		if (!FileObject.isSupportedContentType(detectedMimeType)) {
+			throw new IllegalFileContentTypeException(
+				file.getName(), detectedMimeType
 			);
 		}
-		
+		/*
 		final FileObject fileObject = new FileObject(
-			file.getOriginalFilename(),	// name
+			file.getName(),				// name
 			mimeType,					// mediatype
 			file.getSize(),				// size
 			account,					// account
 			file.getBytes()				// content
 		);
+		*/
 		
-		fileObjectRepository.save(fileObject);
-	}
-	
-	public List<FileObject> getAccountImages(final Account account) {
-		return fileObjectRepository.findByAccount(account);
+		final FileObject fileObject = new FileObject(
+			account, file, detectedMimeType
+		);
+		
+		return fileObjectRepository.save(fileObject);
 	}
 }

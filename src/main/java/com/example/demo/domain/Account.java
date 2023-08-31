@@ -35,4 +35,10 @@ public class Account extends AbstractPersistable<Long> {
 	
 	@OneToMany(mappedBy = "account")
 	private Set<FileObject> images = new HashSet<>();
+
+	public Account(String username, String password, Role role) {
+		this.username = username;
+		this.password = password;
+		this.role = role;
+	}
 }

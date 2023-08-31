@@ -23,20 +23,23 @@ public class AccountFileObjectService {
 	private AccountFinderService accountFinderService;
 	
 	@Autowired
-	private FileObjectService fileObjectService;
+	private FileObjectCreatorService fileObjectCreatorService;
+	
+	@Autowired
+	private FileObjectFinderService fileObjectFinderService;
 	
 	@Transactional
 	public void createImageToAccount(final String username, 
 			final MultipartFile file) throws IOException {
 		
-		fileObjectService.create(
+		fileObjectCreatorService.create(
 			accountFinderService.findByUsername(username), file
 		);
 	}
 	
 	@Transactional
-	public List<FileObject> getAccountImages(final String username) {
-		return fileObjectService.getAccountImages(
+	public List<FileObject> getAccountsFileObjects(final String username) {
+		return fileObjectFinderService.getAccountsFileObjects(
 			accountFinderService.findByUsername(username)
 		);
 	}

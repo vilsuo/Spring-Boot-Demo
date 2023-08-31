@@ -13,6 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 /*
 Assumes Account parameters are non null
+
+TODO
+- common relations between accounts?
+
+- make separate relation creator/finder services?
 */
 @Service
 public class RelationService {

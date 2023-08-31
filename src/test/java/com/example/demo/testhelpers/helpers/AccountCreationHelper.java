@@ -13,9 +13,24 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.util.Pair;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
+/*
+TODO
+- remove password encoder
+*/
+@Component
+@Profile("test")
 public final class AccountCreationHelper {
+	
+	/*
+	@Autowired
+	private static PasswordEncoder passwordEncoder;
+	*/
 	
 	private static final List<String> VALID_USERNAMES
 		= new ArrayList<>(UsernameValidatorTest.VALID_USERNAMES);
@@ -91,15 +106,16 @@ public final class AccountCreationHelper {
 			.limit(TOTAL_ROLES)
 			.map(indexed -> {
 				return Pair.of(
-					indexed.getValue(),	// AccountCreationDto
-					Role.values()[(int) indexed.getIndex()] // Role
+					indexed.getValue(),
+					Role.values()[(int) indexed.getIndex()]
 				);
 			});
 	}
 	
 	/**
 	 * Stream of {@link AccountWithSettableId} objects used for testing 
-	 * {@link Account} objects without any database operations. Transforms the 
+	 * {@link Account} objects without any database operations. The passwords 
+	 * of the {@code Account Accounts} are NOT encoded. Transforms the 
 	 * {@code Stream} of {@link #validAndUniqueAccountCreationDtoStream()} to a 
 	 * {@code Stream} of {@code AccountWithSettableId}. This transform includes 
 	 * setting the id to the index of appearance in the {@code Stream} and 
@@ -119,10 +135,16 @@ public final class AccountCreationHelper {
 			.zipWithIndex(validAndUniqueAccountCreationDtoStream())
 			.skip(skip)
 			.map(indexed -> {
+				/*
+				final String encodedPassword = passwordEncoder
+					.encode(indexed.getValue().getPassword());
+				*/
 				return new AccountWithSettableId(
-					indexed.getIndex(),	// Id
-					indexed.getValue(), // AccountCreationDto
-					role				// Role
+					indexed.getIndex(),
+					indexed.getValue().getUsername(), 
+					indexed.getValue().getPassword(), 
+					//encodedPassword,
+					role
 				);
 			});
 	}

@@ -6,8 +6,11 @@ import static com.example.demo.testhelpers.helpers.RelationCreationHelper.assert
 import com.example.demo.testhelpers.helpers.AccountWithSettableId;
 import com.example.demo.testhelpers.helpers.RelationWithSettableId;
 import com.example.demo.converter.EntityToDtoConverter;
+import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
 import com.example.demo.domain.Status;
+import com.example.demo.service.AccountCreatorService;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoForOneOfEachRoleStream;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,8 +25,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
+/*
+write with creating accounts
+*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -33,7 +41,24 @@ public class EntityToDtoConverterTest {
 	@Autowired
 	private EntityToDtoConverter entityToDtoConverter;
 	
+	/*
+	@Autowired
+	private AccountCreatorService accountCreatorService;
+	
+	private Stream<Account> accountStream;
+	*/
 	private final static Long SKIP = 1l;
+	
+	/*
+	@BeforeEach
+	public void initAccounts() {
+		accountStream = accountCreationDtoForOneOfEachRoleStream()
+			.map(pair -> {
+				return accountCreatorService
+					.create(pair.getFirst(), pair.getSecond()).get();
+			});
+	}
+	*/
 	
 	@BeforeAll
 	public static void ensureStreamIsNotEmptyAfterSkipping() {

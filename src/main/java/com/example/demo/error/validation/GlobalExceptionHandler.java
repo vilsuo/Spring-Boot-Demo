@@ -13,6 +13,20 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 	
+	@ExceptionHandler(IllegalFileContentTypeException.class)
+    public ResponseEntity<ErrorDetails> handleIllegalFileContentTypeException(
+			ResourceNotFoundException exception, WebRequest webRequest) {
+		
+        ErrorDetails error
+			= new ErrorDetails(
+				LocalDateTime.now(), 
+				exception.getMessage(),
+                webRequest.getDescription(false)
+			);
+		
+        return new ResponseEntity<>(error, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+	
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDetails> handleResourceNotFoundException(
 			ResourceNotFoundException exception, WebRequest webRequest) {

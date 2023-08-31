@@ -47,7 +47,7 @@ public class FileObjectController {
 		model.addAttribute("accountDto", accountDto);
 		model.addAttribute(
 			"totalAccountImages", 
-			accountFileObjectService.getAccountImages(username).size()
+			accountFileObjectService.getAccountsFileObjects(username).size()
 		);
 		
 		if (principal != null) {
