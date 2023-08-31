@@ -1,18 +1,13 @@
 
 package com.example.demo.testhelpers.tests;
 
-import com.codepoetics.protonpack.StreamUtils;
 import com.example.demo.datatransfer.AccountCreationDto;
 import com.example.demo.domain.Role;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoForOneOfEachRoleStream;
 import com.example.demo.validator.PasswordValidator;
 import com.example.demo.validator.UsernameValidator;
-import java.util.Arrays;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationPairForAllRoleCombinationsStream;
 import java.util.HashMap;
@@ -111,70 +105,6 @@ public class AccountCreationHelperTest {
 		}
 	}
 	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void validAndUniqueAccountWithSettableIdStreamIsNotEmptyTest(final Role role) {
-		assertTrue(
-			validAndUniqueAccountWithSettableIdStream(role, 0l)
-				.findAny()
-				.isPresent()
-		);
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void validAndUniqueAccountWithSettableIdStreamHasCorrectRoleTest(final Role role) {
-		validAndUniqueAccountWithSettableIdStream(role)
-			.forEach(accountWithSettableIdAndRole -> {
-				final Role resultedRole = accountWithSettableIdAndRole.getRole();
-				assertEquals(
-					role, resultedRole,
-					accountWithSettableIdAndRole + " is supposed to have Role '"
-					+ role + "', but it has Role '" + resultedRole + "'"
-				);
-			});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void validAndUniqueAccountWithSettableIdStreamCountIsCorrectAfterSkippingTest(final Role role) {
-		final Long totalSize = validAndUniqueAccountWithSettableIdStream(role).count();
-		for (final Long skip : getSkips(totalSize)) {
-			final long sizeWithSkip
-				= validAndUniqueAccountWithSettableIdStream(role, skip).count();
-		
-			if (totalSize < skip) {
-				assertEquals(0, sizeWithSkip);
-			} else {
-				assertEquals(totalSize - skip, sizeWithSkip);
-			}
-		}
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void validAndUniqueAccountWithSettableIdStreamIdIsCorrectAfterSkippingTest(final Role role) {
-		final Long totalSize = validAndUniqueAccountWithSettableIdStream(role)
-									.count();
-		
-		for (final Long skip : getSkips(totalSize)) {
-			StreamUtils
-				.zipWithIndex(validAndUniqueAccountWithSettableIdStream(role, skip))
-				.forEach(indexed -> {
-					final Long correctId = indexed.getIndex() + skip;
-					final Long idWithSkip = indexed.getValue().getId();
-					
-					assertEquals(
-						correctId, idWithSkip,
-						"The AccountWithSettableId in index position "
-						+ correctId + " of the Stream has index "
-						+ idWithSkip + ", when skipping " + skip + " values"
-					);
-				}
-			);
-		}
-	}
-	
 	@CartesianTest
 	public void validAndUniqueAccountCreationDtoPairStreamIsNotEmptyTest(
 			@Values(booleans = {true, false}) boolean setSameUsernameToPair,
@@ -254,11 +184,5 @@ public class AccountCreationHelperTest {
 				);
 			}
 		}
-	}
-	
-	private static List<Long> getSkips(final Long totalSize) {
-		return Arrays.asList(
-			0l, 1l, 2l, 3l, totalSize - 1l, totalSize, totalSize + 1
-		);
 	}
 }

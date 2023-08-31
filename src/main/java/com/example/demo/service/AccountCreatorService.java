@@ -73,9 +73,9 @@ public class AccountCreatorService {
 			.existsByUsername(accountCreationDto.getUsername());
 		
 		if (!usernameIsTaken) {
-			final Account createdAccount = accountRepository.save(
-				makeAccount(accountCreationDto, role)
-			);
+			final Account createdAccount = accountRepository
+				.save(makeAccount(accountCreationDto, role));
+			
 			return Optional.of(createdAccount);
 		}
 		return Optional.empty();
@@ -108,21 +108,17 @@ public class AccountCreatorService {
 			);
 		}
 		
-		return new Account(
-				accountCreationDto.getUsername(),
-				encodePassword(accountCreationDto.getPassword()),
-				role
-		);
-	}
-	
-	private String encodePassword(final String password) {
-		if (password == null) {
+		final String rawPassword = accountCreationDto.getPassword();
+		if (rawPassword == null) {
 			throw new IllegalArgumentException(
 				"Can not encode a null password"
 			);
 		}
 		
-		return passwordEncoder.encode(password);
+		return new Account(
+			accountCreationDto.getUsername(),
+			passwordEncoder.encode(rawPassword),
+			role
+		);
 	}
-	
 }

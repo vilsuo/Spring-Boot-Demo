@@ -11,7 +11,6 @@ import static com.example.demo.testhelpers.helpers.AccountCreationHelper.account
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationPairForAllRoleCombinationsStream;
 import com.example.demo.testhelpers.helpers.FileObjectCreationHelper;
 import static com.example.demo.testhelpers.helpers.FileObjectCreationHelper.fileObjectCreateInfo;
-import com.example.demo.testhelpers.helpers.FileObjectWithSettableId;
 import com.example.demo.utility.FileUtility;
 import jakarta.transaction.Transactional;
 import java.io.FileNotFoundException;
@@ -38,8 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 /*
 TODO
 - test list method
-
-- use with settable id or not?
 */
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -66,14 +63,10 @@ public class FileObjectFinderServiceTest {
 		supportedFiles = FileObjectCreationHelper.loadSupportedFiles();
 		unsupportedFiles = FileObjectCreationHelper.loadUnsupportedFiles();
 	}
-		
+	
 	@Nested
 	public class SingleAccounts {
 		
-		/**
-		 * Create one {@link Account} for each
-		 * {@link com.example.demo.domain.Role Role}
-		 */
 		@BeforeEach
 		public void initAccounts() {
 			accountStream = accountCreationDtoForOneOfEachRoleStream()
@@ -113,7 +106,8 @@ public class FileObjectFinderServiceTest {
 					}
 
 					final int fileObjectsFound = fileObjectFinderService
-						.getAccountsFileObjects(account).size();
+						.getAccountsFileObjects(account)
+						.size();
 
 					assertEquals(
 						createdFileObjects, fileObjectsFound,
@@ -137,7 +131,8 @@ public class FileObjectFinderServiceTest {
 					);
 
 					final int images = fileObjectFinderService
-						.getAccountsFileObjects(account).size();
+						.getAccountsFileObjects(account)
+						.size();
 
 					assertEquals(
 						0, images,
@@ -158,7 +153,8 @@ public class FileObjectFinderServiceTest {
 							.create(account, file);
 
 						assertTrue(
-							fileObjectFinderService.getAccountsFileObjects(account)
+							fileObjectFinderService
+								.getAccountsFileObjects(account)
 								.contains(fileObject),
 							fileObjectCreateInfo(account, file) + " can not be "
 							+ "found from the " + account + " FileObject list"
@@ -170,21 +166,18 @@ public class FileObjectFinderServiceTest {
 				}
 			});
 		}
-
-		// use with settable id or not?
+		
+		// FileObject Id is null...
 		@Test
 		public void notCreatedFileObjectsCanNotBeFoundFromTheAccountsFileObjectListTest() {
 			accountStream.forEach(account -> {
 				for (final MultipartFile file : supportedFiles) {
 					try {
-						final Long id = 0l;
 						final String mediaType
 							= FileUtility.getRealMimeType(file);
 						
 						final FileObject fileObject
-							= new FileObjectWithSettableId(
-								id, account, file, mediaType
-							);
+							= new FileObject(account, file, mediaType);
 
 						assertFalse(
 							fileObjectFinderService
@@ -207,10 +200,6 @@ public class FileObjectFinderServiceTest {
 		
 		private List<Pair<Account, Account>> accountPairList;
 		
-		/**
-		 * Create one {@link Account} {@code Pair} for each
-		 * {@link com.example.demo.domain.Role Role} combination
-		 */
 		@BeforeEach
 		public void initAccountPairs() {
 			accountPairList 

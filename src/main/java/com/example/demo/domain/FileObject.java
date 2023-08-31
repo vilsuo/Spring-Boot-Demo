@@ -15,6 +15,16 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.web.multipart.MultipartFile;
 
+/*
+TODO
+
+- implement
+	- who can see other Accounts FileObjects
+		- create Enum Class
+			- ALL, SIGNED_IN FOLLOWERS, PRIVATE(NONE)
+			- also consider if the viewer Account is the target of a
+			  Relation with Status.BLOCKED by the FileObject owner Account
+*/
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
 public class FileObject extends AbstractPersistable<Long> {

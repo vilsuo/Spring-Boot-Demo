@@ -30,8 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 /*
 TODO
-- make created method to return Optional
+- if created method returns Optional
 	- test presentness and not presentness
+	- implment the commented test method "canCreateTheSameFileTwiceTest"
 */
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -147,8 +148,9 @@ public class FileObjectCreatorServiceTest {
 		});	
 	}
 	
-	// TODO
 	/*
+	TODO
+	- make create method return Optional?
 	@Test
 	public void canCreateTheSameFileTwiceTest() {
 		accountStream.forEach(account -> {

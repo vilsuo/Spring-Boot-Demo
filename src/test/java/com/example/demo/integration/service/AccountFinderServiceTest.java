@@ -28,7 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -41,6 +41,9 @@ public class AccountFinderServiceTest {
 	
 	@Autowired
 	private AccountCreatorService accountCreatorService;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	private final Long initiallyNotTakenId = 1l;
 	
@@ -69,7 +72,8 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				assertDoesNotThrow(
 					() -> accountFinderService.findById(account.getId()),
@@ -87,10 +91,12 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoPairStream(false, setSamePasswordToPair)
 			.forEach(pair -> {
 				final Account account1 = accountCreatorService
-					.create(pair.getFirst(), role1).get();
+					.create(pair.getFirst(), role1)
+					.get();
 				
 				final Account account2 = accountCreatorService
-					.create(pair.getSecond(), role2).get();
+					.create(pair.getSecond(), role2)
+					.get();
 				
 				final Account accountFound1 = accountFinderService
 					.findById(account1.getId());
@@ -113,7 +119,8 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account accountCreated = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				final Account accountFound = accountFinderService
 					.findById(accountCreated.getId());
@@ -135,7 +142,6 @@ public class AccountFinderServiceTest {
 		);
 	}
 	
-	// with or without pair?
 	@Test
 	public void findingAccountByUsernameThatDoesNotExistThrows() {
 		validAndUniqueAccountCreationDtoStream()
@@ -156,7 +162,8 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				final String username = account.getUsername();
 				assertDoesNotThrow(
@@ -175,10 +182,12 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoPairStream(false, setSamePasswordToPair)
 			.forEach(pair -> {
 				final Account account1 = accountCreatorService
-					.create(pair.getFirst(), role1).get();
+					.create(pair.getFirst(), role1)
+					.get();
 				
 				final Account account2 = accountCreatorService
-					.create(pair.getSecond(), role2).get();
+					.create(pair.getSecond(), role2)
+					.get();
 				
 				final Account accountFound1 = accountFinderService
 					.findByUsername(account1.getUsername());
@@ -202,7 +211,8 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account accountCreated = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				final Account accountFound = accountFinderService
 					.findByUsername(accountCreated.getUsername());
@@ -247,10 +257,12 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				assertTrue(
-					accountFinderService.existsByUsername(account.getUsername()),
+					accountFinderService
+						.existsByUsername(account.getUsername()),
 					"Username of the created " + account + " does not exist"
 				);
 			});
@@ -271,7 +283,8 @@ public class AccountFinderServiceTest {
 			.zipWithIndex(validAndUniqueAccountCreationDtoStream())
 			.forEach(indexed -> {
 				final Account account = accountCreatorService
-					.create(indexed.getValue(), role).get();
+					.create(indexed.getValue(), role)
+					.get();
 				
 				final Long created = indexed.getIndex() + 1;
 				assertEquals(
@@ -291,7 +304,8 @@ public class AccountFinderServiceTest {
 			.zipWithIndex(validAndUniqueAccountCreationDtoPairStream(true, setSamePasswordToPair))
 			.forEach(indexed -> {
 				final Account account1 = accountCreatorService
-					.create(indexed.getValue().getFirst(), role1).get();
+					.create(indexed.getValue().getFirst(), role1)
+					.get();
 
 				final Long created = indexed.getIndex() + 1;
 				assertEquals(
@@ -320,7 +334,8 @@ public class AccountFinderServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				assertTrue(
 					accountFinderService.list().contains(account),
@@ -330,21 +345,7 @@ public class AccountFinderServiceTest {
 			});
 	}
 	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void ifAccountIsNotCreatedThenThatAccountCanNotBeFoundFromTheAccountListTest(final Role role) {
-		validAndUniqueAccountWithSettableIdStream(role)
-			.forEach(accountWithSettableId -> {
-				assertFalse(
-					accountFinderService.list().contains(accountWithSettableId),
-					accountWithSettableId + " that has not been saved to the "
-					+ "database can be found in the list"
-				);
-			});
-	}
-	
-	// use with settable id or not?
-	/*
+	// Account id is null...
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void ifAccountIsNotCreatedThenThatAccountCanNotBeFoundFromTheAccountListTest(final Role role) {
@@ -352,7 +353,7 @@ public class AccountFinderServiceTest {
 			.forEach(accountCreationDto -> {
 				final Account account = new Account(
 					accountCreationDto.getUsername(),
-					accountCreatorService.encodePassword(
+					passwordEncoder.encode(
 						accountCreationDto.getPassword()
 					),
 					role
@@ -365,5 +366,4 @@ public class AccountFinderServiceTest {
 				);
 			});
 	}
-	*/
 }

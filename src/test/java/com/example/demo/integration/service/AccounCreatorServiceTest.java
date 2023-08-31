@@ -45,15 +45,17 @@ public class AccounCreatorServiceTest {
 	@ParameterizedTest
 	@EnumSource(Role.class)
 	public void createWithNullThrowsTest(final Role role) {
-		AccountCreationDto first = validAndUniqueAccountCreationDtoStream().findFirst().get();
+		final AccountCreationDto first
+			= validAndUniqueAccountCreationDtoStream()
+				.findFirst()
+				.get();
+		
 		final String validUsername = first.getUsername();
 		final String validPassword = first.getPassword();
 		
 		assertThrows(
 			ConstraintViolationException.class,
-			() -> accountCreatorService.create(
-				new AccountCreationDto(), role
-			),
+			() -> accountCreatorService.create(new AccountCreationDto(), role),
 			"Creating an Account from default constructed AccountCreationDto "
 			+ "does not throw"
 		);
@@ -84,18 +86,16 @@ public class AccounCreatorServiceTest {
 		
 		assertThrows(
 			ConstraintViolationException.class,
-			() -> accountCreatorService.create(
-				new AccountCreationDto(null, validPassword), role
-			),
+			() -> accountCreatorService
+				.create(new AccountCreationDto(null, validPassword), role),
 			"Creating an Account from AccountCreationDto with null username "
 			+ "does not throw"
 		);
 		
 		assertThrows(
 			ConstraintViolationException.class,
-			() -> accountCreatorService.create(
-				new AccountCreationDto(validUsername, null), role
-			),
+			() -> accountCreatorService
+				.create(new AccountCreationDto(validUsername, null), role),
 			"Creating an Account from AccountCreationDto with null password "
 			+ "does not throw"
 		);
@@ -108,7 +108,8 @@ public class AccounCreatorServiceTest {
 			.forEach(accountCreationDto -> {
 				assertThrows(
 					ConstraintViolationException.class,
-					() -> accountCreatorService.create(accountCreationDto, role),
+					() -> accountCreatorService
+						.create(accountCreationDto, role),
 					"Creating an Account from "
 					+ accountCreateInfo(accountCreationDto, role)
 					+ " does not throw"
@@ -123,7 +124,8 @@ public class AccounCreatorServiceTest {
 			.forEach(accountCreationDto -> {
 				assertThrows(
 					ConstraintViolationException.class,
-					() -> accountCreatorService.create(accountCreationDto, role),
+					() -> accountCreatorService
+						.create(accountCreationDto, role),
 					"Creating an Account from "
 					+ accountCreateInfo(accountCreationDto, role)
 					+ " does not throw"
@@ -137,7 +139,8 @@ public class AccounCreatorServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				assertDoesNotThrow(
-					() -> accountCreatorService.create(accountCreationDto, role),
+					() -> accountCreatorService
+						.create(accountCreationDto, role),
 					"Creating an Account from "
 					+ accountCreateInfo(accountCreationDto, role) + " throws"
 				);
@@ -215,7 +218,8 @@ public class AccounCreatorServiceTest {
 		validAndUniqueAccountCreationDtoPairStream(true, false)
 			.forEach(pair -> {
 				final Account original = accountCreatorService
-					.create(pair.getFirst(), role1).get();
+					.create(pair.getFirst(), role1)
+					.get();
 
 				accountCreatorService.create(pair.getSecond(), role2);
 
@@ -235,7 +239,8 @@ public class AccounCreatorServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				assertEquals(
 					accountCreationDto.getUsername(), account.getUsername(),
@@ -252,7 +257,8 @@ public class AccounCreatorServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				final String rawPassword = accountCreationDto.getPassword();
 				final String returnedPassword = account.getPassword();
@@ -279,7 +285,8 @@ public class AccounCreatorServiceTest {
 		validAndUniqueAccountCreationDtoStream()
 			.forEach(accountCreationDto -> {
 				final Account account = accountCreatorService
-					.create(accountCreationDto, role).get();
+					.create(accountCreationDto, role)
+					.get();
 
 				assertTrue(
 					account.getRole() == role,

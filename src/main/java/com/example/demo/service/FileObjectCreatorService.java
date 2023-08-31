@@ -14,7 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 /*
 TODO
 - can not add a fileobject with the same name per account?
-	- change create return value to Optional?
+
+- make created method return Optional
 
 functionality to implement:
 - remove single image
@@ -55,15 +56,6 @@ public class FileObjectCreatorService {
 				file.getName(), detectedMimeType
 			);
 		}
-		/*
-		final FileObject fileObject = new FileObject(
-			file.getName(),				// name
-			mimeType,					// mediatype
-			file.getSize(),				// size
-			account,					// account
-			file.getBytes()				// content
-		);
-		*/
 		
 		final FileObject fileObject = new FileObject(
 			account, file, detectedMimeType

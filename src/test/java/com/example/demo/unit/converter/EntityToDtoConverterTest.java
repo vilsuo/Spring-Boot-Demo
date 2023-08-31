@@ -3,16 +3,17 @@ package com.example.demo.unit.converter;
 
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.assertAccountDtoIsCreatedFromAccount;
 import static com.example.demo.testhelpers.helpers.RelationCreationHelper.assertRelationDtoIsCreatedFromRelation;
-import com.example.demo.testhelpers.helpers.AccountWithSettableId;
-import com.example.demo.testhelpers.helpers.RelationWithSettableId;
 import com.example.demo.converter.EntityToDtoConverter;
 import com.example.demo.domain.Account;
-import com.example.demo.domain.Role;
+import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
 import com.example.demo.service.AccountCreatorService;
+import com.example.demo.service.RelationService;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoForOneOfEachRoleStream;
+import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationPairForAllRoleCombinationsStream;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
+import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -24,14 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountWithSettableIdStream;
-import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.springframework.data.util.Pair;
 
-/*
-write with creating accounts
-*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -41,188 +38,187 @@ public class EntityToDtoConverterTest {
 	@Autowired
 	private EntityToDtoConverter entityToDtoConverter;
 	
-	/*
 	@Autowired
 	private AccountCreatorService accountCreatorService;
 	
-	private Stream<Account> accountStream;
-	*/
-	private final static Long SKIP = 1l;
-	
-	/*
-	@BeforeEach
-	public void initAccounts() {
-		accountStream = accountCreationDtoForOneOfEachRoleStream()
-			.map(pair -> {
-				return accountCreatorService
-					.create(pair.getFirst(), pair.getSecond()).get();
-			});
-	}
-	*/
-	
-	@BeforeAll
-	public static void ensureStreamIsNotEmptyAfterSkipping() {
-		for (final Role role : Role.values()) {
-			assertTrue(
-				validAndUniqueAccountWithSettableIdStream(role, SKIP)
-					.findAny()
-					.isPresent()
+	@Autowired
+	private RelationService relationService;
+
+	@Nested
+	public class Accounts {
+		
+		private Stream<Account> accountStream;
+
+		@BeforeEach
+		public void initAccounts() {
+			accountStream = accountCreationDtoForOneOfEachRoleStream()
+				.map(pair -> {
+					return accountCreatorService
+						.create(pair.getFirst(), pair.getSecond())
+						.get();
+				});
+		}
+
+		@Test
+		public void convertingNullAccountThrowsTest() {
+			assertThrows(
+				NullPointerException.class,
+				() -> entityToDtoConverter.convertAccount(null)
 			);
 		}
-	}
-	
-	@Test
-	public void convertingNullAccountThrowsTest() {
-		assertThrows(
-			NullPointerException.class,
-			() -> entityToDtoConverter.convertAccount(null)
-		);
-	}
-	
-	@Test
-	public void convertingNullRelationThrowsTest() {
-		assertThrows(
-			NullPointerException.class,
-			() -> entityToDtoConverter.convertRelation(null)
-		);
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void convertsAccountToMatchingAccountDtoTest(final Role role) {
-		validAndUniqueAccountWithSettableIdStream(role)
-			.forEach(accountWithSettableId -> {
+
+		@Test
+		public void convertsAccountToMatchingAccountDtoTest() {
+			accountStream.forEach(account -> {
 				assertAccountDtoIsCreatedFromAccount(
-					entityToDtoConverter.convertAccount(accountWithSettableId),
-					accountWithSettableId
+					entityToDtoConverter.convertAccount(account),
+					account
 				);
 			});
+		}
+
+		@Test
+		public void convertingEmptyOptionalAccountReturnsEmptyOptionalTest() {
+			assertTrue(
+				entityToDtoConverter
+					.convertOptionalAccount(Optional.empty())
+					.isEmpty()
+			);
+		}
+
+		@Test
+		public void convertingNonEmptyOptionalAccountReturnsNonEmptyOptionalTest() {
+			accountStream.forEach(account -> {
+				assertTrue(
+					entityToDtoConverter
+						.convertOptionalAccount(Optional.of(account))
+						.isPresent()
+				);
+			});
+		}
+
+		@Test
+		public void convertingNonEmptyOptionalAccountReturnsNonEmptyOptionalWithMatchingAccountDtoTest() {
+			accountStream.forEach(account -> {
+				assertAccountDtoIsCreatedFromAccount(
+					entityToDtoConverter
+						.convertOptionalAccount(Optional.of(account))
+						.get(),
+					account
+				);
+			});
+		}
+
 	}
 	
-	@CartesianTest
-	public void convertsRelationToMatchingRelationDtoTest(
-			@CartesianTest.Enum Status status,
-			@CartesianTest.Enum Role roleSource,
-			@CartesianTest.Enum Role roleTarget) {
+	@Nested
+	public class Relations {
 		
-		final AccountWithSettableId source
-			= validAndUniqueAccountWithSettableIdStream(roleSource)
-				.findFirst()
-				.get();
+		private Stream<Pair<Account, Account>> accountPairStream;
 		
-		validAndUniqueAccountWithSettableIdStream(roleTarget, SKIP)
-			.forEach(accountWithSettableId -> {
-				final Long relationId = accountWithSettableId.getId() + 1;
-				final RelationWithSettableId relation
-					= new RelationWithSettableId(
-						relationId, source, accountWithSettableId, status
-					);
+		@BeforeEach
+		public void initAccountPairs() {
+			accountPairStream
+				= validAndUniqueAccountCreationPairForAllRoleCombinationsStream()
+					.map(pairOfPairs -> {
+						final Account source = accountCreatorService
+							.create(
+								pairOfPairs.getFirst().getFirst(),
+								pairOfPairs.getFirst().getSecond()
+							).get();
 
+						final Account target = accountCreatorService
+							.create(
+								pairOfPairs.getSecond().getFirst(),
+								pairOfPairs.getSecond().getSecond()
+							).get();
+
+						return Pair.of(source, target);
+					});
+		}
+
+		@Test
+		public void convertingNullRelationThrowsTest() {
+			assertThrows(
+				NullPointerException.class,
+				() -> entityToDtoConverter.convertRelation(null)
+			);
+		}
+		
+		@ParameterizedTest
+		@EnumSource(Status.class)
+		public void convertsRelationToMatchingRelationDtoTest(
+				@CartesianTest.Enum Status status) {
+
+			accountPairStream.forEach(pair -> {
+				final Account source = pair.getFirst();
+				final Account target = pair.getSecond();
+				
+				final Relation relation = relationService
+					.create(source, target, status)
+					.get();
+				
 				assertRelationDtoIsCreatedFromRelation(
 					entityToDtoConverter.convertRelation(relation),
 					relation
 				);
 			});
-	}
-	
-	@Test
-	public void convertingEmptyOptionalAccountReturnsEmptyOptionalTest() {
-		assertTrue(
-			entityToDtoConverter.convertOptionalAccount(Optional.empty())
-				.isEmpty()
-		);
-	}
-	
-	@Test
-	public void convertingEmptyOptionalRelationReturnsEmptyOptionalTest() {
-		assertTrue(
-			entityToDtoConverter.convertOptionalRelation(Optional.empty())
-				.isEmpty()
-		);
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void convertingNonEmptyOptionalAccountReturnsNonEmptyOptionalTest(final Role role) {
-		validAndUniqueAccountWithSettableIdStream(role)
-			.forEach(accountWithSettableId -> {
-				final Optional<AccountWithSettableId> opt = Optional.of(
-					accountWithSettableId
-				);
+		}
 
+		@Test
+		public void convertingEmptyOptionalRelationReturnsEmptyOptionalTest() {
+			assertTrue(
+				entityToDtoConverter
+					.convertOptionalRelation(Optional.empty())
+					.isEmpty()
+			);
+		}
+
+		@ParameterizedTest
+		@EnumSource(Status.class)
+		public void convertingNonEmptyOptionalRelationReturnsNonEmptyOptionalTest(
+				@CartesianTest.Enum Status status) {
+
+			accountPairStream.forEach(pair -> {
+				final Account source = pair.getFirst();
+				final Account target = pair.getSecond();
+				
+				final Optional<Relation> opt = relationService
+					.create(source, target, status);
+				
 				assertTrue(
-					entityToDtoConverter.convertOptionalAccount(opt)
+					entityToDtoConverter
+						.convertOptionalRelation(opt)
 						.isPresent()
 				);
 			});
-	}
-	
-	@CartesianTest
-	public void convertingNonEmptyOptionalRelationReturnsNonEmptyOptionalTest(
-			@CartesianTest.Enum Status status,
-			@CartesianTest.Enum Role roleSource,
-			@CartesianTest.Enum Role roleTarget) {
-		
-		final AccountWithSettableId source
-			= validAndUniqueAccountWithSettableIdStream(roleSource)
-				.findFirst()
-				.get();
-		
-		validAndUniqueAccountWithSettableIdStream(roleTarget, SKIP)
-			.forEach(accountWithSettableId -> {
-				final Long relationId = accountWithSettableId.getId() + 1;
-				final Optional<RelationWithSettableId> opt = Optional.of(
-					new RelationWithSettableId(
-						relationId, source, accountWithSettableId, status
-					)
-				);
+		}
 
+		@ParameterizedTest
+		@EnumSource(Status.class)
+		public void convertingNonEmptyOptionalRelationReturnsNonEmptyOptionalWithMatchingRelationDtoTest(
+				@CartesianTest.Enum Status status) {
+
+			accountPairStream.forEach(pair -> {
+				final Account source = pair.getFirst();
+				final Account target = pair.getSecond();
+				
+				final Optional<Relation> opt = relationService
+					.create(source, target, status);
+				
 				assertTrue(
-					entityToDtoConverter.convertOptionalRelation(opt)
+					entityToDtoConverter
+						.convertOptionalRelation(opt)
 						.isPresent()
 				);
-			});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Role.class)
-	public void convertingNonEmptyOptionalAccountReturnsNonEmptyOptionalWithMatchingAccountDtoTest(final Role role) {
-		validAndUniqueAccountWithSettableIdStream(role)
-			.forEach(accountWithSettableId -> {
-				assertAccountDtoIsCreatedFromAccount(
-					entityToDtoConverter.convertOptionalAccount(
-						Optional.of(accountWithSettableId)
-					).get(),
-					accountWithSettableId
-				);
-			});
-	}
-	
-	@CartesianTest
-	public void convertingNonEmptyOptionalRelationReturnsNonEmptyOptionalWithMatchingRelationDtoTest(
-			@CartesianTest.Enum Status status,
-			@CartesianTest.Enum Role roleSource,
-			@CartesianTest.Enum Role roleTarget) {
-		
-		final AccountWithSettableId source
-			= validAndUniqueAccountWithSettableIdStream(roleSource)
-				.findFirst()
-				.get();
-		
-		validAndUniqueAccountWithSettableIdStream(roleTarget, SKIP)
-			.forEach(accountWithSettableId -> {
-				final Long relationId = accountWithSettableId.getId() + 1;
-				final RelationWithSettableId relation =
-					new RelationWithSettableId(
-						relationId, source, accountWithSettableId, status
-					);
-
+				
 				assertRelationDtoIsCreatedFromRelation(
-					entityToDtoConverter.convertOptionalRelation(
-						Optional.of(relation)
-					).get(),
-					relation
+					entityToDtoConverter
+						.convertOptionalRelation(opt)
+						.get(),
+					opt.get()
 				);
 			});
+		}
 	}
 }

@@ -25,7 +25,7 @@ public class EntityToDtoConverter {
 	}
 	
 	public Optional<AccountDto> convertOptionalAccount(
-			final Optional<? extends Account> opt) {
+			final Optional<Account> opt) {
 		
 		if (opt.isPresent()) {
 			return Optional.ofNullable(
@@ -47,7 +47,7 @@ public class EntityToDtoConverter {
 	}
 	
 	public Optional<RelationDto> convertOptionalRelation(
-			final Optional<? extends Relation> opt) {
+			final Optional<Relation> opt) {
 		
 		if (opt.isPresent()) {
 			return Optional.ofNullable(

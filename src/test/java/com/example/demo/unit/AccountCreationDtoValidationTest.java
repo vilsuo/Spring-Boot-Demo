@@ -38,7 +38,7 @@ public class AccountCreationDtoValidationTest {
 			.forEach(accountCreationDto -> {
 			
 				final Set<ConstraintViolation<AccountCreationDto>> violations
-				= validator.validate(accountCreationDto);
+					= validator.validate(accountCreationDto);
 			
 				final String username = accountCreationDto.getUsername();
 				final String password = accountCreationDto.getPassword();
