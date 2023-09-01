@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 TODO
 - make it so that other users (also anonymous users) can not post images and can
 	not see the option to post images
+
+- add Privacy option for post method
 */
 
 @Controller

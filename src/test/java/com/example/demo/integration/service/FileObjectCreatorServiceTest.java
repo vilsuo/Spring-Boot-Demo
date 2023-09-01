@@ -11,7 +11,6 @@ import static com.example.demo.testhelpers.helpers.AccountCreationHelper.account
 import com.example.demo.testhelpers.helpers.FileObjectCreationHelper;
 import static com.example.demo.testhelpers.helpers.FileObjectCreationHelper.assertFileObjectIsCreatedFromAccountAndMultipartFile;
 import static com.example.demo.testhelpers.helpers.FileObjectCreationHelper.fileObjectCreateInfo;
-import com.example.demo.utility.FileUtility;
 import jakarta.transaction.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,8 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -32,8 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 /*
 TODO
-- remove temporary PLACEHOLDER_PRIVACY value
-
 - if created method returns Optional
 	- test presentness and not presentness
 	- implment the commented test method "canCreateTheSameFileTwiceTest"
@@ -43,9 +41,6 @@ TODO
 @Transactional
 @SpringBootTest
 public class FileObjectCreatorServiceTest {
-	
-	// REMOVE THIS!!
-	private final Privacy PLACEHOLDER_PRIVACY = FileUtility.PLACEHOLDER_PRIVACY;
 	
 	@Autowired
 	private AccountCreatorService accountCreatorService;
@@ -85,10 +80,9 @@ public class FileObjectCreatorServiceTest {
 			});
 	}
 	
-	@Test
-	public void creatingFileObjectWithNullFileThrowsTest() {
-		final Privacy privacy = PLACEHOLDER_PRIVACY;
-		
+	@ParameterizedTest
+	@EnumSource(Privacy.class)
+	public void creatingFileObjectWithNullFileThrowsTest(final Privacy privacy) {
 		accountStream.forEach(account -> {
 			for (final MultipartFile file : supportedFiles) {
 				assertThrows(
@@ -102,9 +96,10 @@ public class FileObjectCreatorServiceTest {
 		});
 	}
 
-	@Test
-	public void creatingFileObjecstWithSupportedContentTypeDoesNotThrowTest() {
-		final Privacy privacy = PLACEHOLDER_PRIVACY;
+	@ParameterizedTest
+	@EnumSource(Privacy.class)
+	public void creatingFileObjecstWithSupportedContentTypeDoesNotThrowTest(
+			final Privacy privacy) {
 		
 		accountStream.forEach(account -> {
 			for (final MultipartFile file : supportedFiles) {
@@ -117,9 +112,10 @@ public class FileObjectCreatorServiceTest {
 		});
 	}
 
-	@Test
-	public void creatingFileObjecstWithTrueExtensionAndUnsupportedContentTypeThrowsTest() {
-		final Privacy privacy = PLACEHOLDER_PRIVACY;
+	@ParameterizedTest
+	@EnumSource(Privacy.class)
+	public void creatingFileObjecstWithTrueExtensionAndUnsupportedContentTypeThrowsTest(
+			final Privacy privacy) {
 		
 		accountStream.forEach(account -> {
 			for (final MultipartFile file : unsupportedTrueExtensionFiles) {
@@ -134,9 +130,10 @@ public class FileObjectCreatorServiceTest {
 		});
 	}
 
-	@Test
-	public void creatingFileObjectsWithFakeExtensionAndUnsupportedContentTypeThrowsTest() {
-		final Privacy privacy = PLACEHOLDER_PRIVACY;
+	@ParameterizedTest
+	@EnumSource(Privacy.class)
+	public void creatingFileObjectsWithFakeExtensionAndUnsupportedContentTypeThrowsTest(
+			final Privacy privacy) {
 		
 		accountStream.forEach(account -> {
 			for (final MultipartFile file : unsupportedFakeExtensionFiles) {
@@ -151,9 +148,10 @@ public class FileObjectCreatorServiceTest {
 		});
 	}
 
-	@Test
-	public void createMethodsReturnedValueTakesItsValuesFromTheMethodParametersTest() {
-		final Privacy privacy = PLACEHOLDER_PRIVACY;
+	@ParameterizedTest
+	@EnumSource(Privacy.class)
+	public void createMethodsReturnedValueTakesItsValuesFromTheMethodParametersTest(
+			final Privacy privacy) {
 		
 		accountStream.forEach(account -> {
 			for (final MultipartFile file : supportedFiles) {

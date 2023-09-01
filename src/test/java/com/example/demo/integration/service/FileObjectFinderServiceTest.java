@@ -27,6 +27,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
@@ -37,8 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 /*
 TODO
-- remove temporary PLACEHOLDER_PRIVACY value
-
 - test list method
 */
 @ActiveProfiles("test")
@@ -46,9 +46,6 @@ TODO
 @Transactional
 @SpringBootTest
 public class FileObjectFinderServiceTest {
-	
-	// REMOVE THIS!!
-	private final Privacy PLACEHOLDER_PRIVACY = FileUtility.PLACEHOLDER_PRIVACY;
 	
 	@Autowired
 	private FileObjectFinderService fileObjectFinderService;
@@ -98,9 +95,10 @@ public class FileObjectFinderServiceTest {
 			});
 		}
 
-		@Test
-		public void creatingFileObjectsWithSupportedContentTypeIncrementsTheAccountsFileObjectListSizeTest() {
-			final Privacy privacy = PLACEHOLDER_PRIVACY;
+		@ParameterizedTest
+		@EnumSource(Privacy.class)
+		public void creatingFileObjectsWithSupportedContentTypeIncrementsTheAccountsFileObjectListSizeTest(
+				final Privacy privacy) {
 			
 			accountStream.forEach(account -> {
 				int createdFileObjects = 0;
@@ -129,9 +127,10 @@ public class FileObjectFinderServiceTest {
 			});
 		}
 
-		@Test
-		public void creatingFileObjectsWithUnsupportedContentTypeDoesNotIncrementTheAccountsFileObjectListSizeTest() {
-			final Privacy privacy = PLACEHOLDER_PRIVACY;
+		@ParameterizedTest
+		@EnumSource(Privacy.class)
+		public void creatingFileObjectsWithUnsupportedContentTypeDoesNotIncrementTheAccountsFileObjectListSizeTest(
+				final Privacy privacy) {
 			
 			accountStream.forEach(account -> {
 				int fileObjectCreationAttempts = 0;
@@ -157,9 +156,10 @@ public class FileObjectFinderServiceTest {
 			});
 		}
 
-		@Test
-		public void createdFileObjectsCanBeFoundFromTheAccountsFileObjectListTest() {
-			final Privacy privacy = PLACEHOLDER_PRIVACY;
+		@ParameterizedTest
+		@EnumSource(Privacy.class)
+		public void createdFileObjectsCanBeFoundFromTheAccountsFileObjectListTest(
+				final Privacy privacy) {
 			
 			accountStream.forEach(account -> {
 				for (final MultipartFile file : supportedFiles) {
@@ -183,9 +183,10 @@ public class FileObjectFinderServiceTest {
 			});
 		}
 		
-		@Test
-		public void notCreatedFileObjectsCanNotBeFoundFromTheAccountsFileObjectListTest() {
-			final Privacy privacy = PLACEHOLDER_PRIVACY;
+		@ParameterizedTest
+		@EnumSource(Privacy.class)
+		public void notCreatedFileObjectsCanNotBeFoundFromTheAccountsFileObjectListTest(
+				final Privacy privacy) {
 			
 			accountStream.forEach(account -> {
 				for (final MultipartFile file : supportedFiles) {
@@ -244,9 +245,10 @@ public class FileObjectFinderServiceTest {
 					}).toList();
 		}
 		
-		@Test
-		public void createdFileObjectsCanNotBeFoundFromOtherAccountsFileObjectListTest() {
-			final Privacy privacy = PLACEHOLDER_PRIVACY;
+		@ParameterizedTest
+		@EnumSource(Privacy.class)
+		public void createdFileObjectsCanNotBeFoundFromOtherAccountsFileObjectListTest(
+				final Privacy privacy) {
 			
 			for (final MultipartFile file : supportedFiles) {
 				for (final Pair<Account, Account> pair : accountPairList) {
