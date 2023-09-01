@@ -18,8 +18,6 @@ TODO
 - common relations between accounts?
 
 - make separate relation creator/finder services?
-
-- test mutualRelationExists
 */
 @Service
 public class RelationService {
@@ -51,7 +49,14 @@ public class RelationService {
 			.isPresent();
 	}
 	
-	public boolean mutualRelationExists(final Account first, 
+	public boolean relationExistsAtleastOneWay(final Account first, 
+			final Account second, final Status status) {
+		
+		return relationExists(first, second, status)
+			|| relationExists(second, first, status);
+	}
+	
+	public boolean relationExistsBothWays(final Account first, 
 			final Account second, final Status status) {
 		
 		return relationExists(first, second, status)

@@ -31,6 +31,10 @@ import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAn
 import static com.example.demo.testhelpers.helpers.RelationCreationHelper.getRelationInfo;
 import java.util.ArrayList;
 
+/*
+TODO
+- test method relationExistsAtleastOneWay
+*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -47,7 +51,6 @@ public class RelationServiceTest {
 	
 	@BeforeEach
 	public void initAccountPairStream() {
-		// create a Stream of Account Pairs with every possible Role combination
 		accountPairStream
 			= validAndUniqueAccountCreationPairForAllRoleCombinationsStream()
 				.map(pairOfPairs -> {
@@ -100,10 +103,18 @@ public class RelationServiceTest {
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
+			
 			assertFalse(
 				relationService.relationExists(source, target, status),
 				getRelationInfo(source, target, status)
 				+ " exists when no Relations have been created"
+			);
+			
+			assertFalse(
+				relationService
+					.relationExistsAtleastOneWay(source, target, status),
+				getRelationInfo(source, target, status)
+				+ " exists at least one way when no Relations have been created"
 			);
 		});
 	}
@@ -122,6 +133,13 @@ public class RelationServiceTest {
 			assertTrue(
 				relationExists(relation), 
 				relation + " does not exists after it was created"
+			);
+			
+			assertTrue(
+				relationService
+					.relationExistsAtleastOneWay(source, target, status),
+				getRelationInfo(source, target, status) + " does not exist at "
+				+ "least one way"
 			);
 		});
 	}
@@ -143,7 +161,7 @@ public class RelationServiceTest {
 			);
 			
 			assertFalse(
-				relationService.mutualRelationExists(source, target, status),
+				relationService.relationExistsBothWays(source, target, status),
 				"Relation exists mutually, when the Relation was created only "
 				+ "one way: " + relation
 			);
@@ -322,8 +340,15 @@ public class RelationServiceTest {
 
 			assertFalse(
 				relationExists(relation),
-				"Created " + getRelationInfo(source, target, status)
-				+ " exists even after it has been removed"
+				relation + " exists even after it has been removed"
+			);
+			
+			assertFalse(
+				relationService
+					.relationExistsAtleastOneWay(source, target, status),
+				getRelationInfo(source, target, status) + " exists atleast one "
+				+ "way even after it has been removed and the other way has "
+				+ "not even been created"
 			);
 		});
 	}
@@ -347,7 +372,7 @@ public class RelationServiceTest {
 			assertTrue(relationExists(relation2));
 			
 			assertTrue(
-				relationService.mutualRelationExists(source, target, status),
+				relationService.relationExistsBothWays(source, target, status),
 				"Relation does not exist mutually after creating the Relation "
 				+ "both ways. The created Relations: " + relation1 + " and "
 				+ relation2
@@ -364,7 +389,7 @@ public class RelationServiceTest {
 			);
 			
 			assertFalse(
-				relationService.mutualRelationExists(source, target, status),
+				relationService.relationExistsBothWays(source, target, status),
 				"Relation still exists mutually after " + relation1 + " was "
 				+ "removed"
 			);

@@ -3,15 +3,16 @@ package com.example.demo.domain;
 
 import java.util.HashMap;
 import java.util.Map;
+import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 
 public enum Privacy {
 	
 	/*
-	THIS OVERRIDES ALL VALUES!:
-		-	Accounts with Role.ADMIN can see all resources
-		-	if there is a Relation with Status.BLOCKED between the viewer 
-			Account and the target Account, then the viewer Account can not 
-			view the resource. 
+	-	Accounts with Role.ADMIN can view all resources
+	-	owner Account can always view all its resources
+	-	if there is a Relation with Status.BLOCKED between the viewer 
+		Account and the target Account, then the viewer Account can not 
+		view the resource. 
 	*/
 	
 	ALL,		// the viewer can always see the resource regardless if the 
@@ -44,5 +45,48 @@ public enum Privacy {
 	
 	public static Privacy getPrivacy(String name) {
 		return PRIVACY_MAP.get(name);
+	}
+	
+	public static boolean isAllowedToView(
+			final boolean isViwerLoggedIn, final boolean isViwerAdmin,
+			final boolean isViewerTheOwnerOfTheResource,
+			final Privacy resourcePrivacy,
+			final boolean blockExists, final boolean areMutualFriends)
+			throws NotImplementedException {
+		
+		if (!isViewerTheOwnerOfTheResource) {
+			return resourcePrivacy == Privacy.ALL;
+		}
+		
+		if (isViwerAdmin) {
+			return true;
+		}
+		
+		if (isViewerTheOwnerOfTheResource) {
+			return true;
+		}
+		
+		if (blockExists) {
+			return false;
+		}
+		
+		switch (resourcePrivacy) {
+			case ALL:
+				return true;
+				
+			case SIGNED:
+				return isViewerTheOwnerOfTheResource;
+				
+			case FRIENDS:
+				return areMutualFriends;
+				
+			case PRIVATE:
+				return false;
+			
+			default:
+				throw new NotImplementedException(
+					"Privacy " + resourcePrivacy + " is not yet implemented"
+				);
+		}
 	}
 }

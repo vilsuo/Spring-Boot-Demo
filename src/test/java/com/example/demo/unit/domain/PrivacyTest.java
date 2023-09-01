@@ -6,6 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
+/*
+TODO
+- test method isAllowedToView
+*/
 public class PrivacyTest {
 	
 	@Test

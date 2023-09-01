@@ -32,7 +32,8 @@ public class FileObjectFinderService {
 		return getAccountsFileObjects(owner).stream()
 			.filter(fileObject -> {
 				try {
-					return privacyService.isAllowedToView(viewer, fileObject);
+					return privacyService
+						.isAllowedToViewFileObject(viewer, fileObject);
 				} catch (NotImplementedException ex) {
 					throw new RuntimeException(ex);
 				}
