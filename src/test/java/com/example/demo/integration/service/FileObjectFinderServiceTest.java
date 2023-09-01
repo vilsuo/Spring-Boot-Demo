@@ -100,12 +100,14 @@ public class FileObjectFinderServiceTest {
 
 		@Test
 		public void creatingFileObjectsWithSupportedContentTypeIncrementsTheAccountsFileObjectListSizeTest() {
+			final Privacy privacy = PLACEHOLDER_PRIVACY;
+			
 			accountStream.forEach(account -> {
 				int createdFileObjects = 0;
 				for (final MultipartFile file : supportedFiles) {
 					try {
 						fileObjectCreatorService
-							.create(account, PLACEHOLDER_PRIVACY, file);
+							.create(account, privacy, file);
 						
 						++createdFileObjects;
 
@@ -129,6 +131,8 @@ public class FileObjectFinderServiceTest {
 
 		@Test
 		public void creatingFileObjectsWithUnsupportedContentTypeDoesNotIncrementTheAccountsFileObjectListSizeTest() {
+			final Privacy privacy = PLACEHOLDER_PRIVACY;
+			
 			accountStream.forEach(account -> {
 				int fileObjectCreationAttempts = 0;
 				for (final MultipartFile file : unsupportedFiles) {
@@ -136,7 +140,7 @@ public class FileObjectFinderServiceTest {
 					assertThrows(
 						IllegalFileContentTypeException.class,
 						() -> fileObjectCreatorService
-							.create(account, PLACEHOLDER_PRIVACY, file)
+							.create(account, privacy, file)
 					);
 
 					final int images = fileObjectFinderService
@@ -155,18 +159,21 @@ public class FileObjectFinderServiceTest {
 
 		@Test
 		public void createdFileObjectsCanBeFoundFromTheAccountsFileObjectListTest() {
+			final Privacy privacy = PLACEHOLDER_PRIVACY;
+			
 			accountStream.forEach(account -> {
 				for (final MultipartFile file : supportedFiles) {
 					try {
 						final FileObject fileObject = fileObjectCreatorService
-							.create(account, PLACEHOLDER_PRIVACY, file);
+							.create(account, privacy, file);
 
 						assertTrue(
 							fileObjectFinderService
 								.getAccountsFileObjects(account)
 								.contains(fileObject),
-							fileObjectCreateInfo(account, file) + " can not be "
-							+ "found from the " + account + " FileObject list"
+							fileObjectCreateInfo(account, privacy, file)
+							+ " can not be found from the " + account
+							+ " FileObject list"
 						);
 
 					} catch (IOException ex) {
@@ -178,6 +185,8 @@ public class FileObjectFinderServiceTest {
 		
 		@Test
 		public void notCreatedFileObjectsCanNotBeFoundFromTheAccountsFileObjectListTest() {
+			final Privacy privacy = PLACEHOLDER_PRIVACY;
+			
 			accountStream.forEach(account -> {
 				for (final MultipartFile file : supportedFiles) {
 					try {
@@ -187,7 +196,7 @@ public class FileObjectFinderServiceTest {
 						final FileObject fileObject
 							= new FileObject(
 								account,
-								PLACEHOLDER_PRIVACY,
+								privacy,
 								file,
 								mediaType
 							);
@@ -196,8 +205,9 @@ public class FileObjectFinderServiceTest {
 							fileObjectFinderService
 								.getAccountsFileObjects(account)
 								.contains(fileObject),
-							fileObjectCreateInfo(account, file) + " can be "
-							+ "found from the " + account + " FileObject list"
+							fileObjectCreateInfo(account, privacy, file)
+							+ " can be found from the " + account
+							+ " FileObject list"
 						);
 
 					} catch (IOException ex) {
@@ -236,6 +246,8 @@ public class FileObjectFinderServiceTest {
 		
 		@Test
 		public void createdFileObjectsCanNotBeFoundFromOtherAccountsFileObjectListTest() {
+			final Privacy privacy = PLACEHOLDER_PRIVACY;
+			
 			for (final MultipartFile file : supportedFiles) {
 				for (final Pair<Account, Account> pair : accountPairList) {
 					final Account account1 = pair.getFirst();
@@ -243,7 +255,7 @@ public class FileObjectFinderServiceTest {
 
 					try {
 						final FileObject fileObject = fileObjectCreatorService
-							.create(account1, PLACEHOLDER_PRIVACY, file);
+							.create(account1, privacy, file);
 
 						assertFalse(
 							fileObjectFinderService

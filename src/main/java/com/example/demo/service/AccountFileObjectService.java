@@ -42,9 +42,11 @@ public class AccountFileObjectService {
 	public void createImageToAccount(final String username, 
 			final MultipartFile file) throws IOException {
 		
+		final Privacy privacy = PLACEHOLDER_PRIVACY;
+		
 		fileObjectCreatorService.create(
 			accountFinderService.findByUsername(username),
-			PLACEHOLDER_PRIVACY,
+			privacy,
 			file
 		);
 	}

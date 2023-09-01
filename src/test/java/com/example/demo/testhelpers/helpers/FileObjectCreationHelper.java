@@ -3,6 +3,7 @@ package com.example.demo.testhelpers.helpers;
 
 import com.example.demo.domain.Account;
 import com.example.demo.domain.FileObject;
+import com.example.demo.domain.Privacy;
 import com.example.demo.utility.FileUtility;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,10 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-/*
-TODO
-- implement with Privacy
-*/
 public final class FileObjectCreationHelper {
 	
 	private static final String SUPPORTED_FILES_PATH
@@ -82,15 +79,20 @@ public final class FileObjectCreationHelper {
 		);
 	}
 	
-	// implement with Privacy
 	public static void assertFileObjectIsCreatedFromAccountAndMultipartFile(
 			final FileObject fileObject, final Account account, 
-			final MultipartFile mpFile) {
+			final Privacy privacy, final MultipartFile mpFile) {
 		
 		assertEquals(
 			account, fileObject.getAccount(),
 			"FileObject was created with " + account + ", but it "
 			+ "has " + fileObject.getAccount()
+		);
+		
+		assertEquals(
+			privacy, fileObject.getPrivacy(),
+			"FileObject was created with " + privacy + ", but it has "
+			+ fileObject.getPrivacy()
 		);
 		
 		assertEquals(
@@ -112,12 +114,11 @@ public final class FileObjectCreationHelper {
 		
 	}
 	
-	// implement with Privacy
-	public static String fileObjectCreateInfo(
-			final Account account, final MultipartFile file) {
+	public static String fileObjectCreateInfo(final Account account, 
+			final Privacy privacy, final MultipartFile file) {
 		
-		return "FileObject creation parameters with " + account + " and "
-				+ getMultipartFileInfo(file);
+		return "FileObject creation parameters with " + account + ", "
+				+ privacy + " and " + getMultipartFileInfo(file);
 	}
 	
 	private static String getMultipartFileInfo(final MultipartFile file) {

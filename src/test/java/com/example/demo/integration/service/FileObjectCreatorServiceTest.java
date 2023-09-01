@@ -76,80 +76,93 @@ public class FileObjectCreatorServiceTest {
 	 */
 	@BeforeEach
 	public void initAccounts() {
-			accountStream = accountCreationDtoForOneOfEachRoleStream()
-				.map(accountCreationDtoRolePair -> {
-					return accountCreatorService.create(
-						accountCreationDtoRolePair.getFirst(),
-						accountCreationDtoRolePair.getSecond()
-					).get();
-				});
-		}
+		accountStream = accountCreationDtoForOneOfEachRoleStream()
+			.map(accountCreationDtoRolePair -> {
+				return accountCreatorService.create(
+					accountCreationDtoRolePair.getFirst(),
+					accountCreationDtoRolePair.getSecond()
+				).get();
+			});
+	}
 	
 	@Test
 	public void creatingFileObjectWithNullFileThrowsTest() {
-			accountStream.forEach(account -> {
-				for (final MultipartFile file : supportedFiles) {
-					assertThrows(
-						IllegalArgumentException.class,
-						() -> fileObjectCreatorService
-							.create(account, PLACEHOLDER_PRIVACY, null),
-						fileObjectCreateInfo(account, file) + " does not throw"
-					);
-				}
-			});
-		}
+		final Privacy privacy = PLACEHOLDER_PRIVACY;
+		
+		accountStream.forEach(account -> {
+			for (final MultipartFile file : supportedFiles) {
+				assertThrows(
+					IllegalArgumentException.class,
+					() -> fileObjectCreatorService
+						.create(account, privacy, null),
+					fileObjectCreateInfo(account, privacy, file)
+					+ " does not throw"
+				);
+			}
+		});
+	}
 
 	@Test
 	public void creatingFileObjecstWithSupportedContentTypeDoesNotThrowTest() {
-			accountStream.forEach(account -> {
-				for (final MultipartFile file : supportedFiles) {
-					assertDoesNotThrow(
-						() -> fileObjectCreatorService
-							.create(account, PLACEHOLDER_PRIVACY, file),
-						fileObjectCreateInfo(account, file) + " throws"
-					);
-				}
-			});
-		}
+		final Privacy privacy = PLACEHOLDER_PRIVACY;
+		
+		accountStream.forEach(account -> {
+			for (final MultipartFile file : supportedFiles) {
+				assertDoesNotThrow(
+					() -> fileObjectCreatorService
+						.create(account, privacy, file),
+					fileObjectCreateInfo(account, privacy, file) + " throws"
+				);
+			}
+		});
+	}
 
 	@Test
 	public void creatingFileObjecstWithTrueExtensionAndUnsupportedContentTypeThrowsTest() {
-			accountStream.forEach(account -> {
-				for (final MultipartFile file : unsupportedTrueExtensionFiles) {
-					assertThrows(
-						IllegalFileContentTypeException.class,
-						() -> fileObjectCreatorService
-							.create(account, PLACEHOLDER_PRIVACY, file),
-						fileObjectCreateInfo(account, file) + " does not throw"
-					);
-				}
-			});
-		}
+		final Privacy privacy = PLACEHOLDER_PRIVACY;
+		
+		accountStream.forEach(account -> {
+			for (final MultipartFile file : unsupportedTrueExtensionFiles) {
+				assertThrows(
+					IllegalFileContentTypeException.class,
+					() -> fileObjectCreatorService
+						.create(account, privacy, file),
+					fileObjectCreateInfo(account, privacy, file)
+					+ " does not throw"
+				);
+			}
+		});
+	}
 
 	@Test
 	public void creatingFileObjectsWithFakeExtensionAndUnsupportedContentTypeThrowsTest() {
-			accountStream.forEach(account -> {
-				for (final MultipartFile file : unsupportedFakeExtensionFiles) {
-					assertThrows(
-						IllegalFileContentTypeException.class,
-						() -> fileObjectCreatorService
-							.create(account, PLACEHOLDER_PRIVACY, file),
-						fileObjectCreateInfo(account, file) + " does not throw"
-					);
-				}
-			});
-		}
+		final Privacy privacy = PLACEHOLDER_PRIVACY;
+		
+		accountStream.forEach(account -> {
+			for (final MultipartFile file : unsupportedFakeExtensionFiles) {
+				assertThrows(
+					IllegalFileContentTypeException.class,
+					() -> fileObjectCreatorService
+						.create(account, privacy, file),
+					fileObjectCreateInfo(account, privacy, file)
+					+ " does not throw"
+				);
+			}
+		});
+	}
 
 	@Test
 	public void createMethodsReturnedValueTakesItsValuesFromTheMethodParametersTest() {
+		final Privacy privacy = PLACEHOLDER_PRIVACY;
+		
 		accountStream.forEach(account -> {
 			for (final MultipartFile file : supportedFiles) {
 				try {
 					final FileObject fileObject = fileObjectCreatorService
-						.create(account, PLACEHOLDER_PRIVACY, file);
+						.create(account, privacy, file);
 
 					assertFileObjectIsCreatedFromAccountAndMultipartFile(
-						fileObject, account, file
+						fileObject, account, privacy, file
 					);
 
 				} catch (IOException ex) {
