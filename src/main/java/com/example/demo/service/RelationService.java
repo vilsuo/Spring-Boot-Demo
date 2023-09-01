@@ -2,7 +2,6 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Account;
-import com.example.demo.domain.FileObject;
 import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
 import com.example.demo.service.repository.RelationRepository;
@@ -19,6 +18,8 @@ TODO
 - common relations between accounts?
 
 - make separate relation creator/finder services?
+
+- test mutualRelationExists
 */
 @Service
 public class RelationService {
@@ -48,6 +49,13 @@ public class RelationService {
 			.filter(relation -> relation.getStatus() == status)
 			.findAny()
 			.isPresent();
+	}
+	
+	public boolean mutualRelationExists(final Account first, 
+			final Account second, final Status status) {
+		
+		return relationExists(first, second, status)
+			&& relationExists(second, first, status);
 	}
 	
 	@Transactional

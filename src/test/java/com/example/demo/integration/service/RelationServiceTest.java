@@ -115,12 +115,13 @@ public class RelationServiceTest {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
 			
-			relationService.create(source, target, status);
+			final Relation relation = relationService
+				.create(source, target, status)
+				.get();
 			
 			assertTrue(
-				relationService.relationExists(source, target, status), 
-				getRelationInfo(source, target, status)
-				+ " does not exists after it was created"
+				relationExists(relation), 
+				relation + " does not exists after it was created"
 			);
 		});
 	}
@@ -131,12 +132,20 @@ public class RelationServiceTest {
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
-			relationService.create(source, target, status);
+			final Relation relation = relationService
+				.create(source, target, status)
+				.get();			
 			
 			assertFalse(
 				relationService.relationExists(target, source, status), 
 				getRelationInfo(target, source, status) + " exists when "
-				+ getRelationInfo(source, target, status) + " has been created"
+				+ relation + " has been created"
+			);
+			
+			assertFalse(
+				relationService.mutualRelationExists(source, target, status),
+				"Relation exists mutually, when the Relation was created only "
+				+ "one way: " + relation
 			);
 		});
 	}
@@ -195,7 +204,7 @@ public class RelationServiceTest {
 	}
 	
 	@Test
-	public void optionalIsPresenWhenCreatingMultipleRelationsWithDifferentStatusesTest() {
+	public void optionalIsPresentWhenCreatingMultipleRelationsWithDifferentStatusesTest() {
 		final List<Status> createdStatuses
 			= new ArrayList<>(Status.values().length);
 		
@@ -274,8 +283,7 @@ public class RelationServiceTest {
 				IllegalArgumentException.class,
 				() -> relationService.removeRelation(
 					pair.getFirst(), pair.getSecond(), null
-				),
-				"Trying to remove a Relation with null Status does not throw"
+				)
 			);
 		});
 	}
@@ -337,6 +345,13 @@ public class RelationServiceTest {
 
 			assertTrue(relationExists(relation1));
 			assertTrue(relationExists(relation2));
+			
+			assertTrue(
+				relationService.mutualRelationExists(source, target, status),
+				"Relation does not exist mutually after creating the Relation "
+				+ "both ways. The created Relations: " + relation1 + " and "
+				+ relation2
+			);
 
 			removeRelation(relation1);
 
@@ -346,6 +361,12 @@ public class RelationServiceTest {
 				+ " does not exists after removing "
 				+ getRelationInfo(source, target, status) + " even when it has "
 				+ "not been removed"
+			);
+			
+			assertFalse(
+				relationService.mutualRelationExists(source, target, status),
+				"Relation still exists mutually after " + relation1 + " was "
+				+ "removed"
 			);
 		});
 	}
