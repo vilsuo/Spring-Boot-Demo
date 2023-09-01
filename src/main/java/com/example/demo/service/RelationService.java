@@ -2,6 +2,7 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Account;
+import com.example.demo.domain.FileObject;
 import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
 import com.example.demo.service.repository.RelationRepository;
@@ -42,12 +43,11 @@ public class RelationService {
 			);
 		}
 		
-		return relationRepository
-				.findBySourceAndTarget(source, target)
-					.stream()
-					.filter(relation -> relation.getStatus() == status)
-					.findAny()
-					.isPresent();
+		return getRelationsFromSourceToTarget(source, target)
+			.stream()
+			.filter(relation -> relation.getStatus() == status)
+			.findAny()
+			.isPresent();
 	}
 	
 	@Transactional
@@ -89,5 +89,12 @@ public class RelationService {
 					.filter(relation -> relation.getStatus() == status)
 					.toList()
 		);
+	}
+	
+	public List<Relation> getRelationsFromSourceToTarget(
+			final Account source, final Account target) {
+		
+		return relationRepository
+				.findBySourceAndTarget(source, target);
 	}
 }

@@ -21,12 +21,10 @@ public class StatusTest {
 	
 	@Test
 	public void getStatusTest() {
-		String friend = "FRIEND";
-		String blocked = "BLOCKED";
-		String invalidName = "NONEXISTENT";
+		assertEquals(Status.getStatus("FRIEND"), Status.FRIEND);
+		assertEquals(Status.getStatus("BLOCKED"), Status.BLOCKED);
 		
-		assertEquals(Status.getStatus(friend), Status.FRIEND);
-		assertEquals(Status.getStatus(blocked), Status.BLOCKED);
+		final String invalidName = "NONEXISTENT";
 		assertNull(Status.getStatus(invalidName));
 		assertNull(Status.getStatus(null));
 	}	

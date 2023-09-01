@@ -3,6 +3,7 @@ package com.example.demo.service;
 
 import com.example.demo.domain.Account;
 import com.example.demo.domain.FileObject;
+import com.example.demo.domain.Privacy;
 import com.example.demo.error.validation.IllegalFileContentTypeException;
 import com.example.demo.service.repository.FileObjectRepository;
 import com.example.demo.utility.FileUtility;
@@ -24,7 +25,6 @@ functionality to implement:
 - like system for images
 	- one like/account
 	- can unlike
-
 */
 @Service
 public class FileObjectCreatorService {
@@ -32,8 +32,8 @@ public class FileObjectCreatorService {
 	@Autowired
 	private FileObjectRepository fileObjectRepository;
 	
-	public FileObject create(final Account account, final MultipartFile file)
-			throws IOException {
+	public FileObject create(final Account account, final Privacy privacy, 
+			final MultipartFile file) throws IOException {
 		
 		if (file == null) {
 			throw new IllegalArgumentException(
@@ -58,7 +58,10 @@ public class FileObjectCreatorService {
 		}
 		
 		final FileObject fileObject = new FileObject(
-			account, file, detectedMimeType
+			account,
+			privacy,
+			file,
+			detectedMimeType
 		);
 		
 		return fileObjectRepository.save(fileObject);

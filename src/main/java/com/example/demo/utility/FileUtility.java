@@ -1,6 +1,7 @@
 
 package com.example.demo.utility;
 
+import com.example.demo.domain.Privacy;
 import java.io.IOException;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
@@ -11,6 +12,8 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.springframework.web.multipart.MultipartFile;
 
 public final class FileUtility {
+	
+	public static final Privacy PLACEHOLDER_PRIVACY = Privacy.ALL;
 	
 	/**
 	 * https://chidokun.github.io/2021/10/mime-type-and-upload-file-problem/en/#:~:text=Using%20the%20MIME%20Type%20defined%20by%20the%20User%2Dagent&text=So%20the%20MultipartFile%20class%20in,based%20on%20the%20MIME%20Type.

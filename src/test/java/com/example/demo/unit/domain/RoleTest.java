@@ -21,12 +21,10 @@ public class RoleTest {
 	
 	@Test
 	public void getRoleTest() {
-		String user = "USER";
-		String admin = "ADMIN";
-		String invalidName = "NONEXISTENT";
+		assertEquals(Role.getRole("USER"), Role.USER);
+		assertEquals(Role.getRole("ADMIN"), Role.ADMIN);
 		
-		assertEquals(Role.getRole(user), Role.USER);
-		assertEquals(Role.getRole(admin), Role.ADMIN);
+		final String invalidName = "NONEXISTENT";
 		assertNull(Role.getRole(invalidName));
 		assertNull(Role.getRole(null));
 	}	

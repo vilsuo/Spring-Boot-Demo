@@ -3,6 +3,7 @@ package com.example.demo.integration.service;
 
 import com.example.demo.domain.Account;
 import com.example.demo.domain.FileObject;
+import com.example.demo.domain.Privacy;
 import com.example.demo.error.validation.IllegalFileContentTypeException;
 import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.FileObjectCreatorService;
@@ -10,6 +11,7 @@ import static com.example.demo.testhelpers.helpers.AccountCreationHelper.account
 import com.example.demo.testhelpers.helpers.FileObjectCreationHelper;
 import static com.example.demo.testhelpers.helpers.FileObjectCreationHelper.assertFileObjectIsCreatedFromAccountAndMultipartFile;
 import static com.example.demo.testhelpers.helpers.FileObjectCreationHelper.fileObjectCreateInfo;
+import com.example.demo.utility.FileUtility;
 import jakarta.transaction.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 /*
 TODO
+- remove temporary PLACEHOLDER_PRIVACY value
+
 - if created method returns Optional
 	- test presentness and not presentness
 	- implment the commented test method "canCreateTheSameFileTwiceTest"
@@ -39,6 +43,9 @@ TODO
 @Transactional
 @SpringBootTest
 public class FileObjectCreatorServiceTest {
+	
+	// REMOVE THIS!!
+	private final Privacy PLACEHOLDER_PRIVACY = FileUtility.PLACEHOLDER_PRIVACY;
 	
 	@Autowired
 	private AccountCreatorService accountCreatorService;
@@ -84,7 +91,8 @@ public class FileObjectCreatorServiceTest {
 				for (final MultipartFile file : supportedFiles) {
 					assertThrows(
 						IllegalArgumentException.class,
-						() -> fileObjectCreatorService.create(account, null),
+						() -> fileObjectCreatorService
+							.create(account, PLACEHOLDER_PRIVACY, null),
 						fileObjectCreateInfo(account, file) + " does not throw"
 					);
 				}
@@ -96,7 +104,8 @@ public class FileObjectCreatorServiceTest {
 			accountStream.forEach(account -> {
 				for (final MultipartFile file : supportedFiles) {
 					assertDoesNotThrow(
-						() -> fileObjectCreatorService.create(account, file),
+						() -> fileObjectCreatorService
+							.create(account, PLACEHOLDER_PRIVACY, file),
 						fileObjectCreateInfo(account, file) + " throws"
 					);
 				}
@@ -109,7 +118,8 @@ public class FileObjectCreatorServiceTest {
 				for (final MultipartFile file : unsupportedTrueExtensionFiles) {
 					assertThrows(
 						IllegalFileContentTypeException.class,
-						() -> fileObjectCreatorService.create(account, file),
+						() -> fileObjectCreatorService
+							.create(account, PLACEHOLDER_PRIVACY, file),
 						fileObjectCreateInfo(account, file) + " does not throw"
 					);
 				}
@@ -122,7 +132,8 @@ public class FileObjectCreatorServiceTest {
 				for (final MultipartFile file : unsupportedFakeExtensionFiles) {
 					assertThrows(
 						IllegalFileContentTypeException.class,
-						() -> fileObjectCreatorService.create(account, file),
+						() -> fileObjectCreatorService
+							.create(account, PLACEHOLDER_PRIVACY, file),
 						fileObjectCreateInfo(account, file) + " does not throw"
 					);
 				}
@@ -135,7 +146,7 @@ public class FileObjectCreatorServiceTest {
 			for (final MultipartFile file : supportedFiles) {
 				try {
 					final FileObject fileObject = fileObjectCreatorService
-						.create(account, file);
+						.create(account, PLACEHOLDER_PRIVACY, file);
 
 					assertFileObjectIsCreatedFromAccountAndMultipartFile(
 						fileObject, account, file

@@ -3,6 +3,7 @@ package com.example.demo.integration.service;
 
 import com.example.demo.domain.Account;
 import com.example.demo.domain.FileObject;
+import com.example.demo.domain.Privacy;
 import com.example.demo.error.validation.IllegalFileContentTypeException;
 import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.FileObjectCreatorService;
@@ -36,6 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 /*
 TODO
+- remove temporary PLACEHOLDER_PRIVACY value
+
 - test list method
 */
 @ActiveProfiles("test")
@@ -43,6 +46,9 @@ TODO
 @Transactional
 @SpringBootTest
 public class FileObjectFinderServiceTest {
+	
+	// REMOVE THIS!!
+	private final Privacy PLACEHOLDER_PRIVACY = FileUtility.PLACEHOLDER_PRIVACY;
 	
 	@Autowired
 	private FileObjectFinderService fileObjectFinderService;
@@ -98,7 +104,9 @@ public class FileObjectFinderServiceTest {
 				int createdFileObjects = 0;
 				for (final MultipartFile file : supportedFiles) {
 					try {
-						fileObjectCreatorService.create(account, file);
+						fileObjectCreatorService
+							.create(account, PLACEHOLDER_PRIVACY, file);
+						
 						++createdFileObjects;
 
 					} catch (IOException ex) {
@@ -127,7 +135,8 @@ public class FileObjectFinderServiceTest {
 					++fileObjectCreationAttempts;
 					assertThrows(
 						IllegalFileContentTypeException.class,
-						() -> fileObjectCreatorService.create(account, file)
+						() -> fileObjectCreatorService
+							.create(account, PLACEHOLDER_PRIVACY, file)
 					);
 
 					final int images = fileObjectFinderService
@@ -150,7 +159,7 @@ public class FileObjectFinderServiceTest {
 				for (final MultipartFile file : supportedFiles) {
 					try {
 						final FileObject fileObject = fileObjectCreatorService
-							.create(account, file);
+							.create(account, PLACEHOLDER_PRIVACY, file);
 
 						assertTrue(
 							fileObjectFinderService
@@ -167,7 +176,6 @@ public class FileObjectFinderServiceTest {
 			});
 		}
 		
-		// FileObject Id is null...
 		@Test
 		public void notCreatedFileObjectsCanNotBeFoundFromTheAccountsFileObjectListTest() {
 			accountStream.forEach(account -> {
@@ -177,7 +185,12 @@ public class FileObjectFinderServiceTest {
 							= FileUtility.getRealMimeType(file);
 						
 						final FileObject fileObject
-							= new FileObject(account, file, mediaType);
+							= new FileObject(
+								account,
+								PLACEHOLDER_PRIVACY,
+								file,
+								mediaType
+							);
 
 						assertFalse(
 							fileObjectFinderService
@@ -230,7 +243,7 @@ public class FileObjectFinderServiceTest {
 
 					try {
 						final FileObject fileObject = fileObjectCreatorService
-							.create(account1, file);
+							.create(account1, PLACEHOLDER_PRIVACY, file);
 
 						assertFalse(
 							fileObjectFinderService

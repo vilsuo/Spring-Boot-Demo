@@ -17,6 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+/*
+TODO
+- implement with Privacy
+*/
 public final class FileObjectCreationHelper {
 	
 	private static final String SUPPORTED_FILES_PATH
@@ -78,6 +82,7 @@ public final class FileObjectCreationHelper {
 		);
 	}
 	
+	// implement with Privacy
 	public static void assertFileObjectIsCreatedFromAccountAndMultipartFile(
 			final FileObject fileObject, final Account account, 
 			final MultipartFile mpFile) {
@@ -107,6 +112,7 @@ public final class FileObjectCreationHelper {
 		
 	}
 	
+	// implement with Privacy
 	public static String fileObjectCreateInfo(
 			final Account account, final MultipartFile file) {
 		

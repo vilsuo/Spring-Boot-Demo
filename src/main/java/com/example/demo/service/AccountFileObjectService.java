@@ -2,6 +2,8 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.FileObject;
+import com.example.demo.domain.Privacy;
+import com.example.demo.utility.FileUtility;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,11 @@ import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 
 /*
+TODO
+- remove temporary PLACEHOLDER_PRIVACY value
+
+- is this useless class?
+
 - FileObjectDto?
 
 - remove image
@@ -18,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 */
 @Service
 public class AccountFileObjectService {
+	
+	// REMOVE THIS!!
+	private final Privacy PLACEHOLDER_PRIVACY = FileUtility.PLACEHOLDER_PRIVACY;
 	
 	@Autowired
 	private AccountFinderService accountFinderService;
@@ -33,7 +43,9 @@ public class AccountFileObjectService {
 			final MultipartFile file) throws IOException {
 		
 		fileObjectCreatorService.create(
-			accountFinderService.findByUsername(username), file
+			accountFinderService.findByUsername(username),
+			PLACEHOLDER_PRIVACY,
+			file
 		);
 	}
 	
