@@ -8,21 +8,21 @@ import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 public enum Privacy {
 	
 	/*
-	-	Accounts with Role.ADMIN can view all resources
-	-	owner Account can always view all its resources
-	-	if there is a Relation with Status.BLOCKED between the viewer 
+	THESE RULES APPLY TO ALL VALUES
+	-	Accounts with Role.ADMIN can view all resources unless the viewer 
+		blocks the owner of the resource.
+	-	Account can always view all its own resources.
+	-	If there exists a Relation with Status.BLOCKED between the viewer 
 		Account and the target Account, then the viewer Account can not 
-		view the resource. 
+		view the resources of the target Account. 
 	*/
 	
 	ALL,		// the viewer can always see the resource regardless if the 
 				// viewer is logged in or not
 	
-	SIGNED,		// viewer Account must be signed in to see the resource
-	
-	FRIENDS,	// the viewer Account and the target Account must have a MUTUAL 
-				// Relation with Status.FRIEND for the viewer Account to see
-				// the resource
+	FRIENDS,	// the viewer Account and the owner of the resource Account 
+				// must have a MUTUAL Relation with Status.FRIEND for the 
+				// viewer Account to see the resource
 	
 	PRIVATE;	// only the owner Account can view the resource
 	
@@ -47,46 +47,41 @@ public enum Privacy {
 		return PRIVACY_MAP.get(name);
 	}
 	
-	public static boolean isAllowedToView(
-			final boolean isViwerLoggedIn, final boolean isViwerAdmin,
+	public static boolean isUserAllowedToView(
 			final boolean isViewerTheOwnerOfTheResource,
 			final Privacy resourcePrivacy,
-			final boolean blockExists, final boolean areMutualFriends)
+			final boolean doesBlockExistsBetweenTheViewerAndTheOwner,
+			final boolean areTheViewerAndTheOwnerMutualFriends)
 			throws NotImplementedException {
-		
-		if (!isViewerTheOwnerOfTheResource) {
-			return resourcePrivacy == Privacy.ALL;
-		}
-		
-		if (isViwerAdmin) {
-			return true;
-		}
 		
 		if (isViewerTheOwnerOfTheResource) {
 			return true;
 		}
 		
-		if (blockExists) {
+		if (doesBlockExistsBetweenTheViewerAndTheOwner) {
 			return false;
 		}
 		
 		switch (resourcePrivacy) {
 			case ALL:
 				return true;
-				
-			case SIGNED:
-				return isViewerTheOwnerOfTheResource;
-				
+			
 			case FRIENDS:
-				return areMutualFriends;
+				return areTheViewerAndTheOwnerMutualFriends;
 				
 			case PRIVATE:
 				return false;
 			
 			default:
 				throw new NotImplementedException(
-					"Privacy " + resourcePrivacy + " is not yet implemented"
+					"Privacy " + resourcePrivacy + " is not implemented"
 				);
 		}
+	}
+	
+	public static boolean isAdminAllowedToView(
+			final boolean hasAdminBlockedTheOwnerOfTheResource) {
+		
+		return !hasAdminBlockedTheOwnerOfTheResource;
 	}
 }
