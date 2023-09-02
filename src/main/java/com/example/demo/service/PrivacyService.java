@@ -21,7 +21,7 @@ public class PrivacyService {
 			throws NotImplementedException {
 		
 		final Privacy resourcePrivacy = fileObject.getPrivacy();
-		if (viewer != null) {
+		if (viewer == null) {
 			return resourcePrivacy == Privacy.ALL;
 			
 		} else {
