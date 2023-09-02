@@ -31,10 +31,6 @@ import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAn
 import static com.example.demo.testhelpers.helpers.RelationCreationHelper.getRelationInfo;
 import java.util.ArrayList;
 
-/*
-TODO
-- test method relationExistsAtleastOneWay
-*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -183,6 +179,23 @@ public class RelationServiceTest {
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)
+	public void creatingRelationsToSelfThrowsTest(final Status status) {
+		accountPairStream.forEach(pair -> {
+			final Account account = pair.getFirst();
+			
+			assertThrows(
+				IllegalArgumentException.class,
+				() -> relationService
+					.create(account, account, status),
+				"Creating" + getRelationInfo(account, account, status)
+				+ "does not throw"
+			);
+		});
+	}
+	
+	/*
+	@ParameterizedTest
+	@EnumSource(Status.class)
 	public void optionalIsPresentWhenCreatingRelationToSelfTest(final Status status) {
 		accountPairStream.forEach(pair -> {
 			final Account sourceAndTarget = pair.getFirst();
@@ -202,6 +215,7 @@ public class RelationServiceTest {
 			}
 		});
 	}
+	*/
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)

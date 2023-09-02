@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /*
-Assumes Account parameters are non null
-
 TODO
 - common relations between accounts?
 
@@ -42,11 +40,8 @@ public class RelationService {
 			);
 		}
 		
-		return getRelationsFromSourceToTarget(source, target)
-			.stream()
-			.filter(relation -> relation.getStatus() == status)
-			.findAny()
-			.isPresent();
+		return relationRepository
+			.existsBySourceAndTargetAndStatus(source, target, status);
 	}
 	
 	public boolean relationExistsAtleastOneWay(final Account first, 
@@ -63,6 +58,14 @@ public class RelationService {
 			&& relationExists(second, first, status);
 	}
 	
+	/**
+	 * Can not create {@code Relation Relations} from {@link Account} to itself
+	 * 
+	 * @param source
+	 * @param target
+	 * @param status
+	 * @return 
+	 */
 	@Transactional
 	public Optional<Relation> create(
 			final Account source, final Account target, final Status status) {
@@ -73,13 +76,19 @@ public class RelationService {
 			);
 		}
 		
+		if (source.equals(target)) {
+			throw new IllegalArgumentException(
+				"Can not create Relation from Account to itself"
+			);
+		}
+		
 		if (!relationExists(source, target, status)) {
 			final Relation relation = relationRepository
 				.save(new Relation(source, target, status));
 			
-			// why are these needed? Service Tests does not pass otherwise
-			source.getRelationsTo().add(relation);
-			target.getRelationsFrom().add(relation);
+			// not needed?
+			//source.getRelationsTo().add(relation);
+			//target.getRelationsFrom().add(relation);
 			
 			return Optional.of(relation);
 			
@@ -88,7 +97,14 @@ public class RelationService {
 		}
 	}
 	
-	// Removes all relations with 'status' from source to target
+	/**
+	 * Removes all {@link Relation Relations} from source {@link Account} to 
+	 * target {@code Account} with given {@link Status}
+	 * 
+	 * @param source
+	 * @param target
+	 * @param status 
+	 */
 	@Transactional
 	public void removeRelation(
 			final Account source, final Account target, final Status status) {
@@ -97,11 +113,8 @@ public class RelationService {
 			throw new IllegalArgumentException("Can not remove a null Status");
 		}
 		
-		relationRepository.deleteAll(
-			relationRepository.findBySourceAndTarget(source, target).stream()
-					.filter(relation -> relation.getStatus() == status)
-					.toList()
-		);
+		relationRepository
+			.deleteBySourceAndTargetAndStatus(source, target, status);
 	}
 	
 	public List<Relation> getRelationsFromSourceToTarget(
