@@ -52,7 +52,7 @@ public class PrivacyService {
 
 		final boolean doesBlockExistsBetweenTheViewerAndTheOwner
 			= relationService.relationExistsAtleastOneWay(
-				viewer, owner, Status.FRIEND
+				viewer, owner, Status.BLOCKED
 			);
 		
 		final boolean areTheViewerAndTheOwnerMutualFriends

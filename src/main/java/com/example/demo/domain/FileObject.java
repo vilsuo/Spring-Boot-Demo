@@ -12,11 +12,15 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Data
+@ToString(
+	exclude = { "content" }
+)
 public class FileObject extends AbstractPersistable<Long> {
 	
 	private String name;

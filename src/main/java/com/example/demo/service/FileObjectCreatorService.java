@@ -14,9 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /*
 TODO
-- can not add a fileobject with the same name per account?
-
-- make created method return Optional
+- make created method return Optional?
 
 functionality to implement:
 - remove single image
@@ -42,14 +40,6 @@ public class FileObjectCreatorService {
 		}
 		
 		final String detectedMimeType = FileUtility.getRealMimeType(file);
-		
-		/*
-		System.out.println(
-			"file: '" + file.getName()
-			+ "' has contentType '" + file.getContentType()
-			+ "', detected true type: '" + mimeType + "'"
-		);
-		*/
 		
 		if (!FileObject.isSupportedContentType(detectedMimeType)) {
 			throw new IllegalFileContentTypeException(
