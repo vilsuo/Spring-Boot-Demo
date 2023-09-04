@@ -16,13 +16,66 @@ public class PrivacyService {
 	@Autowired
 	private RelationService relationService;
 	
-	public boolean isAllowedToViewFileObject(
+	/**
+	 * Method does not 
+	 * 
+	 * @param viewer
+	 * @param viewed
+	 * @return	true if the viewer {@link Account} is allowed to view the
+	 *			viewed {@code Account}
+	 * @throws jdk.jshell.spi.ExecutionControl.NotImplementedException 
+	 * 
+	 * @See com.example.demo.domain.Role
+	 * @See com.example.demo.domain.Status
+	 * @See com.example.demo.domain.Relation
+	 */
+	/*
+	public boolean isAllowedToView(final Account viewer, final Account viewed)
+			throws NotImplementedException {
+		
+		if (viewer == null) {
+			return true;
+		}
+		
+		final Role viewerRole = viewer.getRole();
+		switch (viewerRole) {
+			case USER:
+				return !relationService.relationExistsAtleastOneWay(
+					viewer, viewed, Status.BLOCKED
+				);
+				
+			case ADMIN:
+				return relationService.relationExists(
+					viewer, viewed, Status.BLOCKED
+				);
+			
+			default:
+				throw new NotImplementedException(
+					"Role " + viewerRole + " is not implemented"
+				);
+		}
+	}
+	*/
+	
+	/**
+	 * 
+	 * @param viewer
+	 * @param fileObject
+	 * 
+	 * @return	true if {@code Account} is allowed to view the 
+	 *			{@code FileObject}, false otherwise
+	 * 
+	 * @throws jdk.jshell.spi.ExecutionControl.NotImplementedException 
+	 * 
+	 * @See com.example.demo.domain.Privacy
+	 */
+	public boolean isAllowedToView(
 			final Account viewer, final FileObject fileObject)
 			throws NotImplementedException {
 		
 		final Privacy resourcePrivacy = fileObject.getPrivacy();
-		if (viewer == null) {
-			return resourcePrivacy == Privacy.ALL;
+		if (isAnonymous(viewer)) {
+			return handleAnonymous(resourcePrivacy);
 			
 		} else {
 			final Role viewerRole = viewer.getRole();
@@ -41,6 +94,14 @@ public class PrivacyService {
 					);
 			}
 		}
+	}
+	
+	public boolean isAnonymous(final Account account) {
+		return account == null;
+	}
+	
+	private boolean handleAnonymous(final Privacy resourcePrivacy) {
+		return Privacy.isAnonymousAllowedToView(resourcePrivacy);
 	}
 	
 	private boolean handleUser(final Account viewer, final Account owner, 

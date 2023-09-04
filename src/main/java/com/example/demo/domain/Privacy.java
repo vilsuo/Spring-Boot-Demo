@@ -47,6 +47,12 @@ public enum Privacy {
 		return PRIVACY_MAP.get(name);
 	}
 	
+	public static boolean isAnonymousAllowedToView(
+			final Privacy resourcePrivacy){
+		
+		return resourcePrivacy == Privacy.ALL;
+	}
+	
 	public static boolean isUserAllowedToView(
 			final boolean isViewerTheOwnerOfTheResource,
 			final Privacy resourcePrivacy,

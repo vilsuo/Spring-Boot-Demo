@@ -37,10 +37,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-/*
-TODO
-- test also without logged in Account (viewer == null)
-*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
@@ -92,11 +88,22 @@ public class PrivacyServiceTest {
 	@Nested
 	public class NoRelations {
 		
+		private final Account ANONYMOUS_ACCOUNT = null;
+		
+		@Test
+		public void anonymousTest() {
+			assertTrue(
+				privacyService.isAnonymous(ANONYMOUS_ACCOUNT),
+				"Viewer " + ANONYMOUS_ACCOUNT + " is not anonymous"
+			);
+		}
+		
 		@ParameterizedTest
 		@EnumSource(Privacy.class)
-		public void nullViewerCanOnlyViewFileObjectWithPrivacyOptionForAll(final Privacy privacy) {
+		public void anonymousViewerCanOnlyViewFileObjectWithPrivacyOptionForAll(final Privacy privacy) {
+			final Account viewer = ANONYMOUS_ACCOUNT;
+			
 			accountPairStream.forEach(pair -> {
-				final Account viewer = null;
 				final Account owner = pair.getSecond();
 				
 				for (final MultipartFile file : supportedFiles) {
@@ -108,7 +115,7 @@ public class PrivacyServiceTest {
 						
 						assertEquals(
 							privacy == Privacy.ALL,
-							privacyService.isAllowedToViewFileObject(
+							privacyService.isAllowedToView(
 								viewer, fileObject
 							)
 						);
@@ -135,7 +142,7 @@ public class PrivacyServiceTest {
 						
 						assertEquals(
 							hasRoleAdmin(viewer) || (privacy == Privacy.ALL),
-							privacyService.isAllowedToViewFileObject(
+							privacyService.isAllowedToView(
 								viewer, fileObject
 							)
 						);
@@ -168,7 +175,7 @@ public class PrivacyServiceTest {
 								);
 
 							assertFalse(
-								privacyService.isAllowedToViewFileObject(
+								privacyService.isAllowedToView(
 									viewer, fileObject
 								),
 								getErrorMessage(
@@ -201,7 +208,7 @@ public class PrivacyServiceTest {
 								);
 
 							assertTrue(
-								privacyService.isAllowedToViewFileObject(
+								privacyService.isAllowedToView(
 									viewer, fileObject
 								),
 								getErrorMessage(
@@ -240,7 +247,7 @@ public class PrivacyServiceTest {
 								);
 
 							assertFalse(
-								privacyService.isAllowedToViewFileObject(
+								privacyService.isAllowedToView(
 									viewer, fileObject
 								),
 								getErrorMessage(
@@ -302,7 +309,7 @@ public class PrivacyServiceTest {
 							
 							assertEquals(
 								shouldBeAllowed,
-								privacyService.isAllowedToViewFileObject(
+								privacyService.isAllowedToView(
 									viewer, fileObject
 								),
 								getErrorMessage(
@@ -359,7 +366,7 @@ public class PrivacyServiceTest {
 							
 							assertEquals(
 								shouldBeAllowed,
-								privacyService.isAllowedToViewFileObject(
+								privacyService.isAllowedToView(
 									viewer, fileObject
 								),
 								getErrorMessage(

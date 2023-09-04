@@ -27,13 +27,21 @@ public class FileObjectFinderService {
 	}
 	
 	public List<FileObject> viewAccountsFileObjects(
-			final Account viewer, final Account owner) {
+			final Account viewer, final Account owner)
+			throws NotImplementedException {//, IllegalAccessException {
+		
+		/*
+		// throw if can not view?
+		if (!privacyService.isAllowedToView(viewer, owner)) {
+			throw new IllegalAccessException();
+		}
+		*/
 		
 		return getAccountsFileObjects(owner).stream()
 			.filter(fileObject -> {
 				try {
 					return privacyService
-						.isAllowedToViewFileObject(viewer, fileObject);
+						.isAllowedToView(viewer, fileObject);
 				} catch (NotImplementedException ex) {
 					throw new RuntimeException(ex);
 				}
