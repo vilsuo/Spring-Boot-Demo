@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Role {
-	USER, ADMIN;
+	
+	USER,	// Basic role for Account
+	
+	ADMIN;	// role for Account with more permissions
 	
 	private static final Map<String, Role> ROLE_MAP = new HashMap<>();
 	

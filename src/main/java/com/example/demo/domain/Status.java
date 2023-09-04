@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Status {
-	FRIEND, BLOCKED;
+	
+	FRIEND,		// allows viewing more content between Accounts
+	
+	BLOCKED;	// allows hiding content from Account to another
 	
 	private static final Map<String, Status> STATUS_MAP = new HashMap<>();
 	
