@@ -4,12 +4,11 @@ package com.example.demo.integration.service;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
-import com.example.demo.service.RelationService;
+import com.example.demo.service.RelationCreatorService;
 import com.example.demo.service.AccountCreatorService;
+import com.example.demo.service.RelationFinderService;
 import jakarta.transaction.Transactional;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -31,17 +30,24 @@ import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAn
 import static com.example.demo.testhelpers.helpers.RelationCreationHelper.getRelationInfo;
 import java.util.ArrayList;
 
+/*
+TODO
+- test transitive relation removal
+*/
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Transactional
 @SpringBootTest
-public class RelationServiceTest {
+public class RelationCreatorServiceTest {
 	
 	@Autowired
-	private RelationService relationService;
+	private RelationCreatorService relationCreatorService;
 	
 	@Autowired
 	private AccountCreatorService accountCreatorService;
+	
+	@Autowired
+	private RelationFinderService relationFinderService;
 	
 	private Stream<Pair<Account, Account>> accountPairStream;
 	
@@ -67,109 +73,11 @@ public class RelationServiceTest {
 	}
 	
 	@Test
-	public void checkingIfRelationWithNullStatusExistThrowsTest() {
-		accountPairStream.forEach(pair -> {
-			assertThrows(
-				IllegalArgumentException.class,
-				() -> relationService.relationExists(
-					pair.getFirst(), pair.getSecond(), null
-				)
-			);
-		});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void relationsToSelfDoesNotExistTest(final Status status) {
-		accountPairStream.forEach(pair -> {
-			final Account sourceAndTarget = pair.getFirst();
-			assertFalse(
-				relationService.relationExists(
-					sourceAndTarget, sourceAndTarget, status
-				),
-				getRelationInfo(sourceAndTarget, sourceAndTarget, status)
-				+ " exists when no Relations has been created"
-			);
-		});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void relationThatHasNotBeenCreatedDoesNotExistTest(final Status status) {
-		accountPairStream.forEach(pair -> {
-			final Account source = pair.getFirst();
-			final Account target = pair.getSecond();
-			
-			assertFalse(
-				relationService.relationExists(source, target, status),
-				getRelationInfo(source, target, status)
-				+ " exists when no Relations have been created"
-			);
-			
-			assertFalse(
-				relationService
-					.relationExistsAtleastOneWay(source, target, status),
-				getRelationInfo(source, target, status)
-				+ " exists at least one way when no Relations have been created"
-			);
-		});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void relationExistsAfterItHasBeenCreatedTest(final Status status) {
-		accountPairStream.forEach(pair -> {
-			final Account source = pair.getFirst();
-			final Account target = pair.getSecond();
-			
-			final Relation relation = relationService
-				.create(source, target, status)
-				.get();
-			
-			assertTrue(
-				relationExists(relation), 
-				relation + " does not exists after it was created"
-			);
-			
-			assertTrue(
-				relationService
-					.relationExistsAtleastOneWay(source, target, status),
-				getRelationInfo(source, target, status) + " does not exist at "
-				+ "least one way"
-			);
-		});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void afterCreatingARelationTheRelationDoesNotExistTheOtherWayTest(final Status status) {
-		accountPairStream.forEach(pair -> {
-			final Account source = pair.getFirst();
-			final Account target = pair.getSecond();
-			final Relation relation = relationService
-				.create(source, target, status)
-				.get();			
-			
-			assertFalse(
-				relationService.relationExists(target, source, status), 
-				getRelationInfo(target, source, status) + " exists when "
-				+ relation + " has been created"
-			);
-			
-			assertFalse(
-				relationService.relationExistsBothWays(source, target, status),
-				"Relation exists mutually, when the Relation was created only "
-				+ "one way: " + relation
-			);
-		});
-	}
-	
-	@Test
 	public void creatingRelationWithNullStatusThrowsTest() {
 		accountPairStream.forEach(pair -> {
 			assertThrows(
 				IllegalArgumentException.class,
-				() -> relationService.create(
+				() -> relationCreatorService.create(
 					pair.getFirst(), pair.getSecond(), null
 				),
 				"Creating a Relation with null Status does not throw"
@@ -185,7 +93,7 @@ public class RelationServiceTest {
 			
 			assertThrows(
 				IllegalArgumentException.class,
-				() -> relationService
+				() -> relationCreatorService
 					.create(account, account, status),
 				"Creating" + getRelationInfo(account, account, status)
 				+ "does not throw"
@@ -193,37 +101,15 @@ public class RelationServiceTest {
 		});
 	}
 	
-	/*
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void optionalIsPresentWhenCreatingRelationToSelfTest(final Status status) {
-		accountPairStream.forEach(pair -> {
-			final Account sourceAndTarget = pair.getFirst();
-			
-			final boolean relationWasAlreadyCreated = relationService
-				.relationExists(sourceAndTarget, sourceAndTarget, status);
-			
-			if (!relationWasAlreadyCreated) {
-				final Optional<Relation> opt = relationService
-					.create(sourceAndTarget, sourceAndTarget, status);
-
-				assertTrue(
-					opt.isPresent(),
-					"The Optional is not present when creating a "
-					+ getRelationInfo(sourceAndTarget, sourceAndTarget, status)
-				);
-			}
-		});
-	}
-	*/
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void optionalIsPresentAfterCreatingANewRelationTest(final Status status) {
+	public void optionalIsPresentAfterCreatingANewRelationTest(
+			final Status status) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
-			final Optional<Relation> opt = relationService
+			final Optional<Relation> opt = relationCreatorService
 				.create(source, target, status);
 			
 			assertTrue(
@@ -245,7 +131,7 @@ public class RelationServiceTest {
 				final Account source = pair.getFirst();
 				final Account target = pair.getSecond();
 
-				final Optional<Relation> opt = relationService
+				final Optional<Relation> opt = relationCreatorService
 					.create(source, target, status);
 				
 				assertTrue(
@@ -262,13 +148,15 @@ public class RelationServiceTest {
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void optionalIsNotPresentWhenRecreatingExistingRelationTest(final Status status) {
+	public void optionalIsNotPresentWhenRecreatingExistingRelationTest(
+			final Status status) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
-			relationService.create(source, target, status);
+			relationCreatorService.create(source, target, status);
 			
-			final Optional<Relation> opt = relationService
+			final Optional<Relation> opt = relationCreatorService
 				.create(source, target, status);
 			
 			assertTrue(
@@ -282,12 +170,14 @@ public class RelationServiceTest {
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void returnedOptionalRelationHasValuesFromParametersTest(final Status status) {
+	public void returnedOptionalRelationHasValuesFromParametersTest(
+			final Status status) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
 			
-			final Relation relation = relationService
+			final Relation relation = relationCreatorService
 				.create(source, target, status).get();
 			
 			assertEquals(
@@ -313,7 +203,7 @@ public class RelationServiceTest {
 		accountPairStream.forEach(pair -> {
 			assertThrows(
 				IllegalArgumentException.class,
-				() -> relationService.removeRelation(
+				() -> relationCreatorService.removeRelation(
 					pair.getFirst(), pair.getSecond(), null
 				)
 			);
@@ -322,17 +212,16 @@ public class RelationServiceTest {
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void removingARelationThatDoesNotExistDoesNotThrowTest(final Status status) {
+	public void removingARelationThatDoesNotExistDoesNotThrowTest(
+			final Status status) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
 			
-			assertFalse(
-				relationService.relationExists(source, target, status)
-			);
-		
 			assertDoesNotThrow(
-				() -> relationService.removeRelation(source, target, status),
+				() -> relationCreatorService
+					.removeRelation(source, target, status),
 				"The method throws when trying to remove a nonexisting "
 				+ getRelationInfo(source, target, status)
 			);
@@ -341,11 +230,13 @@ public class RelationServiceTest {
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void relationDoesNotExistAfterRemovingItTest(final Status status) {
+	public void relationDoesNotExistAfterItHasBeenRemovedTest(
+			final Status status) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
-			final Relation relation = relationService
+			final Relation relation = relationCreatorService
 				.create(source, target, status)
 				.get();
 
@@ -356,41 +247,28 @@ public class RelationServiceTest {
 				relationExists(relation),
 				relation + " exists even after it has been removed"
 			);
-			
-			assertFalse(
-				relationService
-					.relationExistsAtleastOneWay(source, target, status),
-				getRelationInfo(source, target, status) + " exists atleast one "
-				+ "way even after it has been removed and the other way has "
-				+ "not even been created"
-			);
 		});
 	}
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void removingARelationDoesNotRemoveRelationTheOtherWayTest(final Status status) {
+	public void removingARelationDoesNotRemoveRelationTheOtherWayTest(
+			final Status status) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
 			
-			final Relation relation1 = relationService
+			final Relation relation1 = relationCreatorService
 				.create(source, target, status)
 				.get();
 
-			final Relation relation2 = relationService
+			final Relation relation2 = relationCreatorService
 				.create(target, source, status)
 				.get();
 
 			assertTrue(relationExists(relation1));
 			assertTrue(relationExists(relation2));
-			
-			assertTrue(
-				relationService.relationExistsBothWays(source, target, status),
-				"Relation does not exist mutually after creating the Relation "
-				+ "both ways. The created Relations: " + relation1 + " and "
-				+ relation2
-			);
 
 			removeRelation(relation1);
 
@@ -401,29 +279,25 @@ public class RelationServiceTest {
 				+ getRelationInfo(source, target, status) + " even when it has "
 				+ "not been removed"
 			);
-			
-			assertFalse(
-				relationService.relationExistsBothWays(source, target, status),
-				"Relation still exists mutually after " + relation1 + " was "
-				+ "removed"
-			);
 		});
 	}
 	
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void removingARelationWithOneStatusDoesNotRemoveRelationsWithOtherStatusesTest(final Status statusToBeRemoved) {
+	public void removingARelationWithOneStatusDoesNotRemoveRelationsWithOtherStatusesTest(
+			final Status statusToBeRemoved) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
 			
-			final Relation relation = relationService
+			final Relation relation = relationCreatorService
 				.create(source, target, statusToBeRemoved)
 				.get();
 			
 			for (final Status status : Status.values()) {
 				if (status != statusToBeRemoved) {
-					relationService.create(source, target, status);
+					relationCreatorService.create(source, target, status);
 				}
 			}
 			
@@ -432,7 +306,7 @@ public class RelationServiceTest {
 			for (final Status status : Status.values()) {
 				if (status != statusToBeRemoved) {
 					assertTrue(
-						relationService.relationExists(
+						relationFinderService.relationExists(
 							source, target, status
 						),
 						"Created " + getRelationInfo(source, target, status)
@@ -443,153 +317,39 @@ public class RelationServiceTest {
 		});
 	}
 	
-	@Test
-	public void newAccountIsNotTheSourceOfAnyRelationsTest() {
-		accountPairStream.forEach(pair -> {
-			final Account account = pair.getFirst();
-			assertTrue(
-				relationService.getRelationsFrom(account).isEmpty(),
-				"A new created " + account + " is a source of a Relation"
-			);
-		});
-	}
-	
-	@Test
-	public void newAccountIsNotTheTargetOfAnyRelationsTest() {
-		accountPairStream.forEach(pair -> {
-			final Account account = pair.getFirst();
-			assertTrue(
-				relationService.getRelationsTo(account).isEmpty(),
-				"A new created " + account + " is a target of a Relation"
-			);
-		});
-	}
-	
 	@ParameterizedTest
 	@EnumSource(Status.class)
-	public void createdRelationCanBeFoundFromSourceRelationsTest(final Status status) {
-		final Map<Account, Integer> relationCounts = new HashMap<>();
+	public void creatingDublicateRelationsDoesNotChangeTheSourceAndTargetRelationSizeTest(
+			final Status status) {
+		
 		accountPairStream.forEach(pair -> {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
 			
-			final Relation relation = relationService
+			final Relation relation = relationCreatorService
 				.create(source, target, status)
 				.get();
 			
-			relationCounts.put(
-				source, relationCounts.getOrDefault(source, 0) + 1
-			);
-
-			final List<Relation> relations = relationService
-				.getRelationsFrom(source);
-			
-			final int actual = relationCounts.get(source);
-			final int observed = relations.size();
-			assertEquals(
-				actual, observed,
-				"Expected source Account " + source + " to have " + actual
-				+ " Relation(s), when it has " + observed + " Relation(s)"
-			);
-			
-			assertTrue(
-				relations.contains(relation),
-				"The created Relation " + relation + " can not be found from "
-				+ "the Relations list"
-			);
-		});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void createdRelationCanBeFoundFromTargetRelationsTest(final Status status) {
-		final Map<Account, Integer> relationCounts = new HashMap<>();
-		accountPairStream.forEach(pair -> {
-			final Account source = pair.getFirst();
-			final Account target = pair.getSecond();
-			
-			final Relation relation = relationService
-				.create(source, target, status).get();
-			
-			relationCounts.put(
-				target, relationCounts.getOrDefault(target, 0) + 1
-			);
-			
-			final List<Relation> relations = relationService
-				.getRelationsTo(target);
-			
-			final int actual = relationCounts.get(target);
-			final int observed = relations.size();
-			assertEquals(
-				actual, observed,
-				"Expected target Account " + target + " to have " + actual
-				+ " Relation(s), when it has " + observed + " Relation(s)"
-			);
-
-			assertTrue(
-				relations.contains(relation),
-				"The created Relation " + relation + " can not be found from "
-				+ "the Relations list"
-			);
-		});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void relationToListDoesNotContainRelationSourceAndRelationsFromListDoesNotContainRelationTargetTest(final Status status) {
-		accountPairStream.forEach(pair -> {
-			final Account source = pair.getFirst();
-			final Account target = pair.getSecond();
-			
-			final Relation relation = relationService
-				.create(source, target, status)
-				.get();
-			
-			assertTrue(
-				relationService.getRelationsTo(source).isEmpty(),
-				"The list containing the Relations to " + source + " is not "
-				+ "empty when no Relations are created with this Account as "
-				+ "the target. The last created was " + relation
-			);
-			
-			assertTrue(
-				relationService.getRelationsFrom(target).isEmpty(),
-				"The list containing the Relations from " + target + " is not "
-				+ "empty when no Relations are created with this Account as "
-				+ "the source. The last created was " + relation
-			);
-		});
-	}
-	
-	@ParameterizedTest
-	@EnumSource(Status.class)
-	public void creatingDublicateRelationsDoesNotChangeTheSourceAndTargetRelationSizeTest(final Status status) {
-		accountPairStream.forEach(pair -> {
-			final Account source = pair.getFirst();
-			final Account target = pair.getSecond();
-			
-			final Relation relation = relationService
-				.create(source, target, status)
-				.get();
-			
-			final int relationsFrom = relationService
+			final int relationsFrom = relationFinderService
 				.getRelationsFrom(source)
 				.size();
 			
-			final int relationsTo = relationService
+			final int relationsTo = relationFinderService
 				.getRelationsTo(target)
 				.size();
 			
-			relationService.create(source, target, status);
+			relationCreatorService.create(source, target, status);
 			
 			assertEquals(
-				relationsFrom, relationService.getRelationsFrom(source).size(),
+				relationsFrom,
+				relationFinderService.getRelationsFrom(source).size(),
 				"After creating the " + relation + " for the second time, the "
 				+ "source Accounts Relation count changes"
 			);
 			
 			assertEquals(
-				relationsTo, relationService.getRelationsTo(target).size(),
+				relationsTo,
+				relationFinderService.getRelationsTo(target).size(),
 				"After creating the " + relation + " for the second time, the "
 				+ "target Accounts Relation count changes"
 			);
@@ -603,20 +363,24 @@ public class RelationServiceTest {
 			final Account source = pair.getFirst();
 			final Account target = pair.getSecond();
 			
-			final Relation relation = relationService
+			final Relation relation = relationCreatorService
 				.create(source, target, status)
 				.get();
 			
 			removeRelation(relation);
 			
 			assertFalse(
-				relationService.getRelationsFrom(source).contains(relation),
+				relationFinderService
+					.getRelationsFrom(source)
+					.contains(relation),
 				"Relation " + relation + " can be found from the source "
 				+ "Accounts " + source + " Relation list after removal"
 			);
 			
 			assertFalse(
-				relationService.getRelationsTo(target).contains(relation),
+				relationFinderService
+					.getRelationsTo(target)
+					.contains(relation),
 				"Relation " + relation + " can be found from the target "
 				+ "Accounts " + target + " Relation list after removal"
 			);
@@ -624,13 +388,13 @@ public class RelationServiceTest {
 	}
 	
 	private boolean relationExists(final Relation relation) {
-		return relationService.relationExists(
+		return relationFinderService.relationExists(
 			relation.getSource(), relation.getTarget(), relation.getStatus()
 		);
 	}
 	
 	private void removeRelation(final Relation relation) {
-		relationService.removeRelation(
+		relationCreatorService.removeRelation(
 			relation.getSource(), relation.getTarget(), relation.getStatus()
 		);
 	}

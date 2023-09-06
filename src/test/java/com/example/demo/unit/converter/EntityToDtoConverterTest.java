@@ -8,7 +8,7 @@ import com.example.demo.domain.Account;
 import com.example.demo.domain.Relation;
 import com.example.demo.domain.Status;
 import com.example.demo.service.AccountCreatorService;
-import com.example.demo.service.RelationService;
+import com.example.demo.service.RelationCreatorService;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.accountCreationDtoForOneOfEachRoleStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationPairForAllRoleCombinationsStream;
 import jakarta.transaction.Transactional;
@@ -42,7 +42,7 @@ public class EntityToDtoConverterTest {
 	private AccountCreatorService accountCreatorService;
 	
 	@Autowired
-	private RelationService relationService;
+	private RelationCreatorService relationService;
 
 	@Nested
 	public class Accounts {

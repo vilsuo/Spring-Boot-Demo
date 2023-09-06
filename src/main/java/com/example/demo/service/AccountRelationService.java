@@ -20,16 +20,19 @@ public class AccountRelationService {
 	private AccountFinderService accountFinderService;
 	
 	@Autowired
-	private RelationService relationService;
+	private RelationCreatorService relationCreatorService;
+	
+	@Autowired
+	private RelationFinderService relationFinderService;
 	
 	public List<Relation> getAccountRelations(final String username) {
 		final Account account = accountFinderService.findByUsername(username);
-		return relationService.getRelationsFrom(account);
+		return relationFinderService.getRelationsFrom(account);
 	}
 	
 	public List<Relation> getRelationsToAccount(final String username) {
 		final Account account = accountFinderService.findByUsername(username);
-		return relationService.getRelationsTo(account);
+		return relationFinderService.getRelationsTo(account);
 	}
 	
 	public boolean hasRelationStatus(
@@ -42,7 +45,7 @@ public class AccountRelationService {
 		final Account target = accountFinderService
 			.findByUsername(targetAccountUsername);
 		
-		return relationService.relationExists(source, target, status);
+		return relationFinderService.relationExists(source, target, status);
 	}
 	
 	@Transactional
@@ -56,7 +59,7 @@ public class AccountRelationService {
 		final Account target = accountFinderService
 			.findByUsername(targetAccountUsername);
 		
-		return relationService.create(source, target, status);
+		return relationCreatorService.create(source, target, status);
     }
 	
 	@Transactional
@@ -70,6 +73,6 @@ public class AccountRelationService {
 		final Account target = accountFinderService
 			.findByUsername(targetAccountUsername);
 		
-		relationService.removeRelation(source, target, status);
+		relationCreatorService.removeRelation(source, target, status);
 	}
 }

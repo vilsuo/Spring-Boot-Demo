@@ -5,7 +5,8 @@ import com.example.demo.converter.EntityToDtoConverter;
 import com.example.demo.datatransfer.RelationDto;
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Status;
-import com.example.demo.service.RelationService;
+import com.example.demo.service.RelationCreatorService;
+import com.example.demo.service.RelationFinderService;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,20 +16,23 @@ import org.springframework.stereotype.Service;
 public class RelationDtoService {
 	
 	@Autowired
-	private RelationService relationService;
+	private RelationCreatorService relationCreatorService;
+	
+	@Autowired
+	private RelationFinderService relationFinderService;
 	
 	@Autowired
 	private EntityToDtoConverter entityToDtoConverter;
 	
 	public List<RelationDto> getRelationsFrom(final Account account) {
-		return relationService.getRelationsFrom(account)
+		return relationFinderService.getRelationsFrom(account)
 				.stream()
 				.map(entityToDtoConverter::convertRelation)
 				.toList();
 	}
 	
 	public List<RelationDto> getRelationsTo(final Account account) {
-		return relationService.getRelationsTo(account)
+		return relationFinderService.getRelationsTo(account)
 				.stream()
 				.map(entityToDtoConverter::convertRelation)
 				.toList();
@@ -37,20 +41,20 @@ public class RelationDtoService {
 	public boolean relationExists(
 			final Account source, final Account target, final Status status) {
 		
-		return relationService.relationExists(source, target, status);
+		return relationFinderService.relationExists(source, target, status);
 	}
 	
 	public Optional<RelationDto> create(
 			final Account source, final Account target, final Status status) {
 		
 		return entityToDtoConverter.convertOptionalRelation(
-			relationService.create(source, target, status)
+			relationCreatorService.create(source, target, status)
 		);
 	}
 	
 	public void removeRelation(final Account source, final Account target,
 			final Status status) {
 		
-		relationService.relationExists(source, target, status);
+		relationFinderService.relationExists(source, target, status);
 	}
 }

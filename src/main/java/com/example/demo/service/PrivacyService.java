@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class PrivacyService {
 	
 	@Autowired
-	private RelationService relationService;
+	private RelationFinderService relationFinderService;
 	
 	public boolean isBlockedFromViewingAllResourcesFromAccount(
 			final Account viewer, final Account viewed) 
@@ -27,11 +27,11 @@ public class PrivacyService {
 		final Role viewerRole = viewer.getRole();
 		switch (viewerRole) {
 			case USER:
-				return relationService.relationExistsAtleastOneWay(
+				return relationFinderService.relationExistsAtleastOneWay(
 					viewer, viewed, Status.BLOCKED
 				);
 			case ADMIN:
-				return relationService.relationExists(
+				return relationFinderService.relationExists(
 					viewer, viewed, Status.BLOCKED
 				);
 			default:
@@ -107,7 +107,7 @@ public class PrivacyService {
 		if (resourceOwner.equals(viewer)) { return true; }
 		
 		final boolean doesBlockExistsBetweenTheViewerAndTheOwner
-			= relationService.relationExistsAtleastOneWay(
+			= relationFinderService.relationExistsAtleastOneWay(
 				viewer, resourceOwner, Status.BLOCKED
 			);
 		if (doesBlockExistsBetweenTheViewerAndTheOwner) {
@@ -119,7 +119,7 @@ public class PrivacyService {
 				return true;
 			
 			case FRIENDS:
-				return relationService.relationExistsBothWays(
+				return relationFinderService.relationExistsBothWays(
 					viewer, resourceOwner, Status.FRIEND
 				);
 				
@@ -138,7 +138,7 @@ public class PrivacyService {
 		
 		if (resourceOwner.equals(viewer)) { return true; }
 		
-		return !relationService
+		return !relationFinderService
 			.relationExists(viewer, resourceOwner, Status.BLOCKED);
 	}
 }

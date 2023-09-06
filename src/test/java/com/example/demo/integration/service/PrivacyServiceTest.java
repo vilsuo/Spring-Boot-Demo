@@ -7,7 +7,7 @@ import com.example.demo.domain.Role;
 import com.example.demo.domain.Status;
 import com.example.demo.service.AccountCreatorService;
 import com.example.demo.service.PrivacyService;
-import com.example.demo.service.RelationService;
+import com.example.demo.service.RelationCreatorService;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationPairForAllRoleCombinationsStream;
 import com.example.demo.unit.domain.RoleTest;
 import jakarta.transaction.Transactional;
@@ -46,7 +46,7 @@ public class PrivacyServiceTest {
 	*/
 	
 	@Autowired
-	private RelationService relationService;
+	private RelationCreatorService relationService;
 	
 	//private static List<MockMultipartFile> supportedFiles;
 	
