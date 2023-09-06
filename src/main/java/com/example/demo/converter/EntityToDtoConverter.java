@@ -7,12 +7,14 @@ import com.example.demo.domain.Account;
 import com.example.demo.domain.Relation;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EntityToDtoConverter {
 	
-	private final ModelMapper modelMapper = new ModelMapper();
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	public AccountDto convertAccount(final Account account) {
 		if (account == null) {

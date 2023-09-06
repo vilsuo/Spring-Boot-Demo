@@ -3,12 +3,7 @@ package com.example.demo.domain;
 
 import java.util.HashMap;
 import java.util.Map;
-import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 
-/*
-TODO
-- remove checking methods? (also from tests)
-*/
 public enum Privacy {
 	
 	/*
@@ -50,50 +45,4 @@ public enum Privacy {
 	public static Privacy getPrivacy(String name) {
 		return PRIVACY_MAP.get(name);
 	}
-	
-	/*
-	public static boolean isAnonymousAllowedToViewResource(
-			final Privacy resourcePrivacy){
-		
-		return resourcePrivacy == Privacy.ALL;
-	}
-	
-	public static boolean isUserAllowedToViewResource(
-			final boolean isViewerTheOwnerOfTheResource,
-			final Privacy resourcePrivacy,
-			final boolean doesBlockExistsBetweenTheViewerAndTheOwner,
-			final boolean areTheViewerAndTheOwnerMutualFriends)
-			throws NotImplementedException {
-		
-		if (isViewerTheOwnerOfTheResource) {
-			return true;
-		}
-		
-		if (doesBlockExistsBetweenTheViewerAndTheOwner) {
-			return false;
-		}
-		
-		switch (resourcePrivacy) {
-			case ALL:
-				return true;
-			
-			case FRIENDS:
-				return areTheViewerAndTheOwnerMutualFriends;
-				
-			case PRIVATE:
-				return false;
-			
-			default:
-				throw new NotImplementedException(
-					"Privacy " + resourcePrivacy + " is not implemented"
-				);
-		}
-	}
-	
-	public static boolean isAdminAllowedToViewResource(
-			final boolean hasViewerBlockedTheOwnerOfTheResource) {
-		
-		return !hasViewerBlockedTheOwnerOfTheResource;
-	}
-	*/
 }
