@@ -25,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.uniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoStream;
 import static com.example.demo.testhelpers.helpers.AccountCreationHelper.validAndUniqueAccountCreationDtoPairStream;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ActiveProfiles("test")
@@ -293,6 +294,23 @@ public class AccounCreatorServiceTest {
 					"The returned Optional Account has role "
 					+ account.getRole().getName() + " when it is was created "
 					+ "with role " + role.getName()
+				);
+			});
+	}
+	
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void createdReturnedAccountsAreNotAnonymousTest(final Role role) {
+		validAndUniqueAccountCreationDtoStream()
+			.forEach(accountCreationDto -> {
+				final Account account = accountCreatorService
+					.create(accountCreationDto, role)
+					.get();
+
+				assertFalse(
+					Role.isAnonymous(account),
+					accountCreateInfo(accountCreationDto, role)
+					+ " is not supposed to be anonymous"
 				);
 			});
 	}

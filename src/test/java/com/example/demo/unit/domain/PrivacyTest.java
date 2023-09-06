@@ -2,15 +2,9 @@
 package com.example.demo.unit.domain;
 
 import com.example.demo.domain.Privacy;
-import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.cartesian.CartesianTest;
 
 public class PrivacyTest {
 	
@@ -37,16 +31,17 @@ public class PrivacyTest {
 		assertNull(Privacy.getPrivacy(null));
 	}
 
+	/*
 	@Nested
-	public class Admin {
+	public class Anonymous {
 		
 		@CartesianTest
-		public void adminViewerCanViewTheResourceUnlessTheViewerAdminBlockResourceOwnerTest(
-				@CartesianTest.Values(booleans = {true, false}) boolean hasAdminBlockedTheOwnerOfTheResource) {
+		public void anonymousCanViewTheResourceOnlyIfResourcePrivacyIsForAllTest(
+				@CartesianTest.Enum(Privacy.class) Privacy resourcePrivacy) {
 
-			assertNotEquals(
-				hasAdminBlockedTheOwnerOfTheResource,
-				Privacy.isAdminAllowedToView(hasAdminBlockedTheOwnerOfTheResource)
+			assertEquals(
+				resourcePrivacy == Privacy.ALL,
+				Privacy.isAnonymousAllowedToViewResource(resourcePrivacy)
 			);
 		}
 	}
@@ -62,12 +57,14 @@ public class PrivacyTest {
 			@CartesianTest
 			public void userThatIsTheResourceOwnerCanViewTheResourceTest(
 					@CartesianTest.Enum Privacy resourcePrivacy,
-					@CartesianTest.Values(booleans = {true, false}) boolean doesBlockExistsBetweenTheViewerAndTheOwner,
-					@CartesianTest.Values(booleans = {true, false}) boolean areTheViewerAndTheOwnerMutualFriends)
+					@CartesianTest.Values(booleans = {true, false})
+						boolean doesBlockExistsBetweenTheViewerAndTheOwner,
+					@CartesianTest.Values(booleans = {true, false})
+						boolean areTheViewerAndTheOwnerMutualFriends)
 					throws NotImplementedException {
 
 				assertTrue(
-					Privacy.isUserAllowedToView(
+					Privacy.isUserAllowedToViewResource(
 						viewerIsTheOwnerOfTheResource,
 						resourcePrivacy,
 						doesBlockExistsBetweenTheViewerAndTheOwner,
@@ -89,13 +86,15 @@ public class PrivacyTest {
 				
 				@CartesianTest
 				public void userThatIsNotTheResourceOwnerCanViewResourcesWithPrivacyOptionAllUnlessBlockExistsBetweenTheViewerAndTheOwnerOfTheResourceTest(
-						@CartesianTest.Values(booleans = {true, false}) boolean doesBlockExistsBetweenTheViewerAndTheOwner,
-						@CartesianTest.Values(booleans = {true, false}) boolean areTheViewerAndTheOwnerMutualFriends)
+						@CartesianTest.Values(booleans = {true, false})
+							boolean doesBlockExistsBetweenTheViewerAndTheOwner,
+						@CartesianTest.Values(booleans = {true, false})
+							boolean areTheViewerAndTheOwnerMutualFriends)
 						throws NotImplementedException {
 
 					assertEquals(
 						!doesBlockExistsBetweenTheViewerAndTheOwner,
-						Privacy.isUserAllowedToView(
+						Privacy.isUserAllowedToViewResource(
 							viewerIsNotTheOwnerOfTheResource,
 							allResourcePrivacy,
 							doesBlockExistsBetweenTheViewerAndTheOwner,
@@ -112,14 +111,16 @@ public class PrivacyTest {
 				
 				@CartesianTest
 				public void a(
-						@CartesianTest.Values(booleans = {true, false}) boolean doesBlockExistsBetweenTheViewerAndTheOwner,
-						@CartesianTest.Values(booleans = {true, false}) boolean areTheViewerAndTheOwnerMutualFriends)
+						@CartesianTest.Values(booleans = {true, false})
+							boolean doesBlockExistsBetweenTheViewerAndTheOwner,
+						@CartesianTest.Values(booleans = {true, false})
+							boolean areTheViewerAndTheOwnerMutualFriends)
 						throws NotImplementedException {
 
 					assertEquals(
 						!doesBlockExistsBetweenTheViewerAndTheOwner
 						&& areTheViewerAndTheOwnerMutualFriends,
-						Privacy.isUserAllowedToView(
+						Privacy.isUserAllowedToViewResource(
 							viewerIsNotTheOwnerOfTheResource,
 							friendsResourcePrivacy,
 							doesBlockExistsBetweenTheViewerAndTheOwner,
@@ -136,12 +137,14 @@ public class PrivacyTest {
 				
 				@CartesianTest
 				public void userThatIsNotTheResourceOwnerCanNotViewPrivateResourcesTest(
-						@CartesianTest.Values(booleans = {true, false}) boolean doesBlockExistsBetweenTheViewerAndTheOwner,
-						@CartesianTest.Values(booleans = {true, false}) boolean areTheViewerAndTheOwnerMutualFriends)
+						@CartesianTest.Values(booleans = {true, false})
+							boolean doesBlockExistsBetweenTheViewerAndTheOwner,
+						@CartesianTest.Values(booleans = {true, false})
+							boolean areTheViewerAndTheOwnerMutualFriends)
 						throws NotImplementedException {
 
 					assertFalse(
-						Privacy.isUserAllowedToView(
+						Privacy.isUserAllowedToViewResource(
 							viewerIsNotTheOwnerOfTheResource,
 							privateResourcePrivacy,
 							doesBlockExistsBetweenTheViewerAndTheOwner,
@@ -152,6 +155,24 @@ public class PrivacyTest {
 			}
 		}
 	}
+	
+	@Nested
+	public class Admin {
+		
+		@CartesianTest
+		public void adminViewerCanViewTheResourceUnlessTheViewerAdminBlockResourceOwnerTest(
+				@CartesianTest.Values(booleans = {true, false})
+					boolean hasViewerBlockedTheOwnerOfTheResource) {
+
+			assertNotEquals(
+				hasViewerBlockedTheOwnerOfTheResource,
+				Privacy.isAdminAllowedToViewResource(
+					hasViewerBlockedTheOwnerOfTheResource
+				)
+			);
+		}
+	}
+	*/
 	
 	/*
 	private void assertPermission(

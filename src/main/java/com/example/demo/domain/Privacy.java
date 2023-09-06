@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 
+/*
+TODO
+- remove checking methods? (also from tests)
+*/
 public enum Privacy {
 	
 	/*
@@ -47,13 +51,14 @@ public enum Privacy {
 		return PRIVACY_MAP.get(name);
 	}
 	
-	public static boolean isAnonymousAllowedToView(
+	/*
+	public static boolean isAnonymousAllowedToViewResource(
 			final Privacy resourcePrivacy){
 		
 		return resourcePrivacy == Privacy.ALL;
 	}
 	
-	public static boolean isUserAllowedToView(
+	public static boolean isUserAllowedToViewResource(
 			final boolean isViewerTheOwnerOfTheResource,
 			final Privacy resourcePrivacy,
 			final boolean doesBlockExistsBetweenTheViewerAndTheOwner,
@@ -85,9 +90,10 @@ public enum Privacy {
 		}
 	}
 	
-	public static boolean isAdminAllowedToView(
-			final boolean hasAdminBlockedTheOwnerOfTheResource) {
+	public static boolean isAdminAllowedToViewResource(
+			final boolean hasViewerBlockedTheOwnerOfTheResource) {
 		
-		return !hasAdminBlockedTheOwnerOfTheResource;
+		return !hasViewerBlockedTheOwnerOfTheResource;
 	}
+	*/
 }

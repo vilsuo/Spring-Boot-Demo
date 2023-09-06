@@ -42,6 +42,9 @@ TODO
 - test methods
 	- list
 	- viewAccountsFileObjects
+		-	WITH ANONYMOUS (null) VIEWER ACCOUNT
+			(should not throw, it is a valid value)
+		- test throwing
 */
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)

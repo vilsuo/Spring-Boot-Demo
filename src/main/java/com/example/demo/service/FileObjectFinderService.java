@@ -26,25 +26,43 @@ public class FileObjectFinderService {
 		return fileObjectRepository.findAll();
 	}
 	
+	/**
+	 * 
+	 * @param viewer
+	 * @param owner
+	 * @return
+	 * @throws jdk.jshell.spi.ExecutionControl.NotImplementedException
+	 * @throws IllegalAccessException 
+	 */
 	public List<FileObject> viewAccountsFileObjects(
 			final Account viewer, final Account owner)
-			throws NotImplementedException {//, IllegalAccessException {
+			throws NotImplementedException, IllegalAccessException {
 		
-		/*
-		// throw if can not view?
-		if (!privacyService.isAllowedToView(viewer, owner)) {
+		// throw if not allowed to view
+		if (!privacyService.isBlockedFromViewingAllResourcesFromAccount(viewer, owner)) {
 			throw new IllegalAccessException();
 		}
-		*/
 		
-		return getAccountsFileObjects(owner).stream()
+		return getFileObjectsAllowedToView(
+			viewer, getAccountsFileObjects(owner)
+		);
+	}
+	
+	private List<FileObject> getFileObjectsAllowedToView(
+			final Account viewer, final List<FileObject> fileObjects) {
+		
+		return fileObjects
+			.stream()
 			.filter(fileObject -> {
 				try {
-					return privacyService
-						.isAllowedToView(viewer, fileObject);
+					return privacyService.isViewerAllowedToViewFileObject(
+						viewer, fileObject
+					);
+					
 				} catch (NotImplementedException ex) {
 					throw new RuntimeException(ex);
 				}
 			}).toList();
 	}
+	
 }

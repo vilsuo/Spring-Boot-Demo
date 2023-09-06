@@ -5,6 +5,8 @@ import com.example.demo.domain.Account;
 import com.example.demo.domain.FileObject;
 import com.example.demo.domain.Privacy;
 import com.example.demo.domain.Role;
+import static com.example.demo.domain.Role.ADMIN;
+import static com.example.demo.domain.Role.USER;
 import com.example.demo.domain.Status;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,78 +18,74 @@ public class PrivacyService {
 	@Autowired
 	private RelationService relationService;
 	
-	/**
-	 * Method does not 
-	 * 
-	 * @param viewer
-	 * @param viewed
-	 * @return	true if the viewer {@link Account} is allowed to view the
-	 *			viewed {@code Account}
-	 * @throws jdk.jshell.spi.ExecutionControl.NotImplementedException 
-	 * 
-	 * @See com.example.demo.domain.Role
-	 * @See com.example.demo.domain.Status
-	 * @See com.example.demo.domain.Relation
-	 */
-	/*
-	public boolean isAllowedToView(final Account viewer, final Account viewed)
+	public boolean isBlockedFromViewingAllResourcesFromAccount(
+			final Account viewer, final Account viewed) 
 			throws NotImplementedException {
 		
-		if (viewer == null) {
-			return true;
-		}
+		if (Role.isAnonymous(viewer)) { return false; }
 		
 		final Role viewerRole = viewer.getRole();
 		switch (viewerRole) {
 			case USER:
-				return !relationService.relationExistsAtleastOneWay(
+				return relationService.relationExistsAtleastOneWay(
 					viewer, viewed, Status.BLOCKED
 				);
-				
 			case ADMIN:
 				return relationService.relationExists(
 					viewer, viewed, Status.BLOCKED
 				);
-			
 			default:
 				throw new NotImplementedException(
 					"Role " + viewerRole + " is not implemented"
 				);
 		}
 	}
-	*/
 	
 	/**
 	 * 
 	 * @param viewer
 	 * @param fileObject
-	 * 
-	 * @return	true if {@code Account} is allowed to view the 
+	 * @return	true if the viewer {@code Account} is allowed to view the 
 	 *			{@code FileObject}, false otherwise
-	 * 
-	 * @throws jdk.jshell.spi.ExecutionControl.NotImplementedException 
+	 * @throws	jdk.jshell.spi.ExecutionControl.NotImplementedException if the
+	 *			{@link Role} of the viewer {@code Account} it not implemented
 	 * 
 	 * @See com.example.demo.domain.Privacy
+	 * @See com.example.demo.domain.Relation
 	 */
-	public boolean isAllowedToView(
+	public boolean isViewerAllowedToViewFileObject(
 			final Account viewer, final FileObject fileObject)
 			throws NotImplementedException {
+
+		return isViewerAllowedToViewResource(
+			viewer, fileObject.getAccount(), fileObject.getPrivacy()
+		);
+	}
+	
+	public boolean isViewerAllowedToViewResource(final Account viewer, 
+			final Account resourceOwner, final Privacy resourcePrivacy)
+			throws NotImplementedException {
 		
-		final Privacy resourcePrivacy = fileObject.getPrivacy();
-		if (isAnonymous(viewer)) {
-			return handleAnonymous(resourcePrivacy);
+		if (Role.isAnonymous(viewer)) {
+			return isAnonymousAllowedToViewResource(resourcePrivacy);
 			
 		} else {
+			if (viewer == null) {
+				throw new IllegalStateException(
+					"Viewer is not anonymous but viewer is null!"
+				);
+			}
 			final Role viewerRole = viewer.getRole();
-			final Account owner = fileObject.getAccount();
 			
 			switch (viewerRole) {
 				case USER:
-					return handleUser(viewer, owner, resourcePrivacy);
+					return isUserAllowedToViewResource(
+						viewer, resourceOwner, resourcePrivacy
+					);
 					
 				case ADMIN:
-					return handleAdmin(viewer, owner);
-				
+					return isAdminAllowedToViewResource(viewer, resourceOwner);
+					
 				default:
 					throw new NotImplementedException(
 						"Role " + viewerRole + " is not implemented"
@@ -96,46 +94,51 @@ public class PrivacyService {
 		}
 	}
 	
-	public boolean isAnonymous(final Account account) {
-		return account == null;
+	private boolean isAnonymousAllowedToViewResource(
+			final Privacy resourcePrivacy) {
+		
+		return resourcePrivacy == Privacy.ALL;
 	}
 	
-	private boolean handleAnonymous(final Privacy resourcePrivacy) {
-		return Privacy.isAnonymousAllowedToView(resourcePrivacy);
-	}
-	
-	private boolean handleUser(final Account viewer, final Account owner, 
-			final Privacy resourcePrivacy) 
+	private boolean isUserAllowedToViewResource(final Account viewer,
+			final Account resourceOwner, final Privacy resourcePrivacy)
 			throws NotImplementedException {
 		
-		final boolean isViewerTheOwnerOfTheResource
-			= viewer.equals(owner);
-
+		if (resourceOwner.equals(viewer)) { return true; }
+		
 		final boolean doesBlockExistsBetweenTheViewerAndTheOwner
 			= relationService.relationExistsAtleastOneWay(
-				viewer, owner, Status.BLOCKED
+				viewer, resourceOwner, Status.BLOCKED
 			);
+		if (doesBlockExistsBetweenTheViewerAndTheOwner) {
+			return false;
+		}
 		
-		final boolean areTheViewerAndTheOwnerMutualFriends
-			= relationService.relationExistsBothWays(
-				viewer, owner, Status.FRIEND
-			);
+		switch (resourcePrivacy) {
+			case ALL:
+				return true;
 			
-		return Privacy.isUserAllowedToView(
-			isViewerTheOwnerOfTheResource,
-			resourcePrivacy,
-			doesBlockExistsBetweenTheViewerAndTheOwner,
-			areTheViewerAndTheOwnerMutualFriends
-		);
+			case FRIENDS:
+				return relationService.relationExistsBothWays(
+					viewer, resourceOwner, Status.FRIEND
+				);
+				
+			case PRIVATE:
+				return false;
+			
+			default:
+				throw new NotImplementedException(
+					"Privacy " + resourcePrivacy + " is not implemented"
+				);
+		}
 	}
 	
-	private boolean handleAdmin(final Account viewer, final Account owner) {
-		final boolean hasAdminBlockedTheOwnerOfTheResource
-			= relationService
-				.relationExists(viewer, owner, Status.BLOCKED);
+	private boolean isAdminAllowedToViewResource(
+			final Account viewer, final Account resourceOwner) {
 		
-		return Privacy.isAdminAllowedToView(
-			hasAdminBlockedTheOwnerOfTheResource
-		);
+		if (resourceOwner.equals(viewer)) { return true; }
+		
+		return !relationService
+			.relationExists(viewer, resourceOwner, Status.BLOCKED);
 	}
 }

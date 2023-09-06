@@ -31,4 +31,7 @@ public enum Role {
 		return ROLE_MAP.get(name);
 	}
 	
+	public static boolean isAnonymous(final Account account) {
+		return account == null;
+	}
 }
