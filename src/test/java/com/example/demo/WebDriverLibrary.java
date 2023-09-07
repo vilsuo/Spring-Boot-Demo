@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WebDriverLibrary {
 	
+	/*
     @Bean
     public WebDriver getChromeDriver() {
         WebDriverManager.chromedriver().setup();
@@ -27,4 +28,5 @@ public class WebDriverLibrary {
 	public static WebDriver newWebDriver() {
 		return new ChromeDriver();
 	}
+	*/
 }

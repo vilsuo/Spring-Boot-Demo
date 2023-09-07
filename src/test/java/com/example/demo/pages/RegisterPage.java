@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RegisterPage extends LoadableComponent<RegisterPage> {
+public class RegisterPage {/*extends LoadableComponent<RegisterPage> {
 	
 	@Autowired
 	private WebDriver driver;
@@ -29,29 +29,24 @@ public class RegisterPage extends LoadableComponent<RegisterPage> {
 	@FindBy(how = How.ID, using = "submit-button")
 	public WebElement submitButton;
 	
-	/*
-	The method contains the code that is executed to navigate to the page
-	*/
+	//The method contains the code that is executed to navigate to the page
 	@Override
 	protected void load() {
 		System.out.println("load()");
 		//driver.get(url);
 	}
 	
-	/*
-	The method is used to evaluate whether we are on the correct page and 
-	whether page loading has finished successfully
-	*/
+	//The method is used to evaluate whether we are on the correct page and 
+	//whether page loading has finished successfully
 	@Override
 	protected void isLoaded() throws Error {
 		System.out.println("isLoaded()");
 		final String currentUrl = driver.getCurrentUrl();
-		/*
-		assertEquals(
-			url, currentUrl,
-			"Url is supposed to be " + url + ", but it was " + currentUrl
-		);
-		*/
+	
+		//assertEquals(
+		//	url, currentUrl,
+		//	"Url is supposed to be " + url + ", but it was " + currentUrl
+		//);
 	}
 	/*
 	public LoginPage registerAs(String username, String password) {

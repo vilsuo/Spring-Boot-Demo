@@ -15,7 +15,7 @@ public class LoginPage {//extends BasePage<LoginPage> {
 		super(driver, "/login");
 	}
 	*/
-	
+	/*
 	@FindBy(how = How.ID, using = "username-input")
 	public WebElement usernameElement;
 	
@@ -36,7 +36,7 @@ public class LoginPage {//extends BasePage<LoginPage> {
 		
 		submitButton.click();
     }
-    
+    */
 	/*
     public LoginPage loginAsExpectingError(String username, String password) {
         //  ... failed login here, maybe because one or both of the username 

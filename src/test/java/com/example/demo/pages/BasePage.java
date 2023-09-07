@@ -8,9 +8,9 @@ import org.openqa.selenium.support.ui.LoadableComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 
-public abstract class BasePage<T extends LoadableComponent<T> >
+public abstract class BasePage {/*<T extends LoadableComponent<T> >
 		extends LoadableComponent<T> {
-	
+	/*
 	@Autowired
 	protected WebDriver driver;
 	
@@ -29,19 +29,15 @@ public abstract class BasePage<T extends LoadableComponent<T> >
 		PageFactory.initElements(driver, this);
 	}
 	
-	/*
-	The method contains the code that is executed to navigate to the page
-	*/
+	//The method contains the code that is executed to navigate to the page
 	@Override
 	protected void load() {
 		System.out.println("load()");
 		driver.get(url);
 	}
 	
-	/*
-	The method is used to evaluate whether we are on the correct page and 
-	whether page loading has finished successfully
-	*/
+	// The method is used to evaluate whether we are on the correct page and 
+	// whether page loading has finished successfully
 	@Override
 	protected void isLoaded() throws Error {
 		System.out.println("isLoaded()");
@@ -51,4 +47,5 @@ public abstract class BasePage<T extends LoadableComponent<T> >
 			"Url is supposed to be " + url + ", but it was " + currentUrl
 		);
 	}
+	*/
 }
