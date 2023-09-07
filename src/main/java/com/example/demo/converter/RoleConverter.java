@@ -2,12 +2,18 @@
 package com.example.demo.converter;
 
 import com.example.demo.domain.Role;
-import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 @Converter(autoApply = true)
-public class RoleConverter implements AttributeConverter<Role, String> {
+public class RoleConverter extends AbstractEnumConverter<Role, String> {
+	//implements AttributeConverter<Role, String> {
 
+	public RoleConverter() {
+		super(Role.class);
+	}
+	/*
 	@Override
 	public String convertToDatabaseColumn(Role role) {
 		if (role == null) {
@@ -24,4 +30,5 @@ public class RoleConverter implements AttributeConverter<Role, String> {
 		}
 		return role;
 	}
+	*/
 }

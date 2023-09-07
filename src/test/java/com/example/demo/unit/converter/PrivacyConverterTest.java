@@ -1,8 +1,8 @@
 
 package com.example.demo.unit.converter;
 
-import com.example.demo.converter.StatusConverter;
-import com.example.demo.domain.Status;
+import com.example.demo.converter.PrivacyConverter;
+import com.example.demo.domain.Privacy;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,30 +17,34 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class StatusConverterTest {
+public class PrivacyConverterTest {
 	
 	@Autowired
-	private StatusConverter statusConverter;
+	private PrivacyConverter privacyConverter;
 	
-	private final List<String> INVALID_STATUS_FIELD_VALUES = Arrays.asList(
-		"", "-", "Employee", "Child", "friend", "FRIEND"
+	private final List<String> INVALID_PRIVACY_FIELD_VALUES = Arrays.asList(
+		"", "-", "Hidden", "Admins", "PRIVATE", "all"
 	);
 	
 	@Test
 	public void convertingNullEnumToDatabaseColumnReturnsNullTest() {
 		assertEquals(
-			null, statusConverter.convertToDatabaseColumn(null)
+			null, privacyConverter.convertToDatabaseColumn(null)
 		);
 	}
 	
 	@Test
 	public void convertingNonNullEnumToDatabaseColumnReturnsEnumFieldValueTest() {
 		assertEquals(
-			"Friend", statusConverter.convertToDatabaseColumn(Status.FRIEND)
+			"All", privacyConverter.convertToDatabaseColumn(Privacy.ALL)
 		);
 		
 		assertEquals(
-			"Blocked", statusConverter.convertToDatabaseColumn(Status.BLOCKED)
+			"Friends", privacyConverter.convertToDatabaseColumn(Privacy.FRIENDS)
+		);
+		
+		assertEquals(
+			"Private", privacyConverter.convertToDatabaseColumn(Privacy.PRIVATE)
 		);
 	}
 	
@@ -48,27 +52,33 @@ public class StatusConverterTest {
 	public void convertingNullToEntityAttributeThrowsTest() {
 		assertThrows(
 			UnsupportedOperationException.class,
-			() -> statusConverter.convertToEntityAttribute(null)
+			() -> privacyConverter.convertToEntityAttribute(null)
 		);
 	}
 	
 	@Test
 	public void convertingValidEnumFieldValueToEntityAttributeReturnsTheEnumTest() {
 		assertEquals(
-			Status.FRIEND, statusConverter.convertToEntityAttribute("Friend")
+			Privacy.ALL, privacyConverter.convertToEntityAttribute("All")
 		);
 		
 		assertEquals(
-			Status.BLOCKED, statusConverter.convertToEntityAttribute("Blocked")
+			Privacy.FRIENDS,
+			privacyConverter.convertToEntityAttribute("Friends")
+		);
+		
+		assertEquals(
+			Privacy.PRIVATE,
+			privacyConverter.convertToEntityAttribute("Private")
 		);
 	}
 	
 	@Test
 	public void convertingInValidEnumFieldValueToEntityAttributeThrowsTest() {
-		for (final String value : INVALID_STATUS_FIELD_VALUES) {
+		for (final String value : INVALID_PRIVACY_FIELD_VALUES) {
 			assertThrows(
 				UnsupportedOperationException.class, 
-				() -> statusConverter.convertToEntityAttribute(value),
+				() -> privacyConverter.convertToEntityAttribute(value),
 				"Converting value '" + value + "' should throw"
 			);
 		}

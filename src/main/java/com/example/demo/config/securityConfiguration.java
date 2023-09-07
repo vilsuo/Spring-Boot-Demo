@@ -73,7 +73,7 @@ public class SecurityConfiguration {
 				//.requestMatchers(HttpMethod.POST, "/accounts/ /follow").hasAuthority(Role.USER.getName())
 					
 				// allow admins to view and edit all admin pages
-				.requestMatchers("/admin", "/admin/**").hasAuthority(Role.ADMIN.getName())
+				.requestMatchers("/admin", "/admin/**").hasAuthority(Role.ADMIN.getValue())
 				
 				.anyRequest().authenticated()
 			)

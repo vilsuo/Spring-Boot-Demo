@@ -53,7 +53,7 @@ public final class AccountCreationHelper {
 		return IntStream.range(0, Math.min(nUsernames, nPasswords))
 			.mapToObj(i -> {
 				final String username = setValidUsernames
-						? VALID_USERNAMES.get(i) : INVALID_USERNAMES.get(i);
+					? VALID_USERNAMES.get(i) : INVALID_USERNAMES.get(i);
 				
 				final String password = setValidPasswords
 					? VALID_PASSWORDS.get(i) : INVALID_PASSWORDS.get(i);

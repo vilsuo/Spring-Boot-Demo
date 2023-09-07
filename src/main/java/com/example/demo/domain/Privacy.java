@@ -1,10 +1,7 @@
 
 package com.example.demo.domain;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public enum Privacy {
+public enum Privacy implements PersistableEnum<String> {
 	
 	/*
 	THESE RULES APPLY TO ALL VALUES
@@ -16,26 +13,37 @@ public enum Privacy {
 		view the resources of the target Account. 
 	*/
 	
-	ALL,		// the viewer can always see the resource regardless if the 
-				// viewer is logged in or not
+	ALL("All"),			// the viewer can always see the resource regardless 
+						// if the viewer is logged in or not
 	
-	FRIENDS,	// the viewer Account and the owner of the resource Account 
-				// must have a MUTUAL Relation with Status.FRIEND for the 
-				// viewer Account to see the resource
+	FRIENDS("Friends"),	// the viewer Account and the owner of the resource 
+						// Account must have a MUTUAL Relation with 
+						// Status.FRIEND for the viewer Account to see the 
+						// resource
 	
-	PRIVATE;	// only the owner Account can view the resource
+	PRIVATE("Private");	// only the owner Account can view the resource
 	
+	private final String value;
+
+    @Override
+    public String getValue() {
+        return value;
+    }
+
+    private Privacy(String value) {
+        this.value = value;
+    }
+	
+	/*
 	private static final Map<String, Privacy> PRIVACY_MAP = new HashMap<>();
 	
 	public String getName() {
 		return this.name();
 	}
 	
-	/*
-	Static initialization occurs top to bottom. Enums constants are 
-	implicitly final static and are declared before the static initializer 
-	block
-	*/
+	//Static initialization occurs top to bottom. Enums constants are 
+	//implicitly final static and are declared before the static initializer 
+	//block
 	static {
         for (Privacy instance : Privacy.values()) {
 			PRIVACY_MAP.put(instance.getName(), instance);
@@ -45,4 +53,5 @@ public enum Privacy {
 	public static Privacy getPrivacy(String name) {
 		return PRIVACY_MAP.get(name);
 	}
+	*/
 }

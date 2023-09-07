@@ -3,29 +3,18 @@ package com.example.demo.unit.domain;
 
 import com.example.demo.domain.Status;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
 public class StatusTest {
 	
 	@Test
-	public void hasTwoStatuOptionsTest() {
-		assertEquals(Status.values().length, 2);
+	public void hasTwoStatusOptionsTest() {
+		assertEquals(2, Status.values().length);
 	}
 	
 	@Test
-	public void getNameTest() {
-		assertEquals(Status.FRIEND.getName(), "FRIEND");
-		assertEquals(Status.BLOCKED.getName(), "BLOCKED");
+	public void getValueTest() {
+		assertEquals("Friend", Status.FRIEND.getValue());
+		assertEquals("Blocked", Status.BLOCKED.getValue());
 	}
-	
-	@Test
-	public void getStatusTest() {
-		assertEquals(Status.getStatus("FRIEND"), Status.FRIEND);
-		assertEquals(Status.getStatus("BLOCKED"), Status.BLOCKED);
-		
-		final String invalidName = "NONEXISTENT";
-		assertNull(Status.getStatus(invalidName));
-		assertNull(Status.getStatus(null));
-	}	
 }

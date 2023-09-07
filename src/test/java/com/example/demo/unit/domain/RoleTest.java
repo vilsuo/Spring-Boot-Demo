@@ -3,9 +3,8 @@ package com.example.demo.unit.domain;
 
 import com.example.demo.domain.Account;
 import com.example.demo.domain.Role;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RoleTest {
@@ -14,9 +13,28 @@ public class RoleTest {
 	
 	@Test
 	public void hasTwoRoleOptionsTest() {
-		assertEquals(Role.values().length, 2);
+		assertEquals(2, Role.values().length);
 	}
 	
+	@Test
+	public void getValueTest() {
+		assertEquals("User", Role.USER.getValue());
+		assertEquals("Admin", Role.ADMIN.getValue());
+	}
+	
+	/**
+	 * Created Accounts are tested to not be anonymous in
+	 * {@link com.example.demo.integration.service.AccounCreatorServiceTest#createdReturnedAccountsAreNotAnonymousTest}
+	 */
+	@Test
+	public void anonymousTest() {
+		assertTrue(
+			Role.isAnonymous(ANONYMOUS_ACCOUNT),
+			ANONYMOUS_ACCOUNT + " is not anonymous Account"
+		);
+	}
+	
+	/*
 	@Test
 	public void getNameTest() {
 		assertEquals(Role.USER.getName(), "USER");
@@ -32,16 +50,5 @@ public class RoleTest {
 		assertNull(Role.getRole(invalidName));
 		assertNull(Role.getRole(null));
 	}
-	
-	/**
-	 * Created Accounts are tested to not be anonymous in
-	 * {@link com.example.demo.integration.service.AccounCreatorServiceTest#createdReturnedAccountsAreNotAnonymousTest}
-	 */
-	@Test
-	public void anonymousTest() {
-		assertTrue(
-			Role.isAnonymous(ANONYMOUS_ACCOUNT),
-			ANONYMOUS_ACCOUNT + " is not anonymous Account"
-		);
-	}
+	*/
 }

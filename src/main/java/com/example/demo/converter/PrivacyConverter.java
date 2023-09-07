@@ -2,12 +2,19 @@
 package com.example.demo.converter;
 
 import com.example.demo.domain.Privacy;
-import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 @Converter(autoApply = true)
-public class PrivacyConverter implements AttributeConverter<Privacy, String> {
+public class PrivacyConverter extends AbstractEnumConverter<Privacy, String> {
+	// implements AttributeConverter<Privacy, String> {
 
+	public PrivacyConverter() {
+		super(Privacy.class);
+	}
+
+	/*
 	@Override
 	public String convertToDatabaseColumn(Privacy privacy) {
 		if (privacy == null) {
@@ -24,5 +31,5 @@ public class PrivacyConverter implements AttributeConverter<Privacy, String> {
 		}
 		return privacy;
 	}
-	
+	*/
 }

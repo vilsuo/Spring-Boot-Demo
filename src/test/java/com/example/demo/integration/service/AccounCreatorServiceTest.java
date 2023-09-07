@@ -292,8 +292,8 @@ public class AccounCreatorServiceTest {
 				assertTrue(
 					account.getRole() == role,
 					"The returned Optional Account has role "
-					+ account.getRole().getName() + " when it is was created "
-					+ "with role " + role.getName()
+					+ account.getRole() + " when it is was created "
+					+ "with role " + role
 				);
 			});
 	}
