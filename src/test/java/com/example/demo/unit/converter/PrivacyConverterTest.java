@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,18 +35,14 @@ public class PrivacyConverterTest {
 		);
 	}
 	
-	@Test
-	public void convertingNonNullEnumToDatabaseColumnReturnsEnumFieldValueTest() {
-		assertEquals(
-			"All", privacyConverter.convertToDatabaseColumn(Privacy.ALL)
-		);
+	@ParameterizedTest
+	@EnumSource(Privacy.class)
+	public void convertingNonNullEnumToDatabaseColumnReturnsEnumFieldValueTest(
+			final Privacy privacy) {
 		
 		assertEquals(
-			"Friends", privacyConverter.convertToDatabaseColumn(Privacy.FRIENDS)
-		);
-		
-		assertEquals(
-			"Private", privacyConverter.convertToDatabaseColumn(Privacy.PRIVATE)
+			privacy.getValue(),
+			privacyConverter.convertToDatabaseColumn(privacy)
 		);
 	}
 	
@@ -56,20 +54,14 @@ public class PrivacyConverterTest {
 		);
 	}
 	
-	@Test
-	public void convertingValidEnumFieldValueToEntityAttributeReturnsTheEnumTest() {
-		assertEquals(
-			Privacy.ALL, privacyConverter.convertToEntityAttribute("All")
-		);
+	@ParameterizedTest
+	@EnumSource(Privacy.class)
+	public void convertingValidEnumFieldValueToEntityAttributeReturnsTheEnumTest(
+			final Privacy privacy) {
 		
 		assertEquals(
-			Privacy.FRIENDS,
-			privacyConverter.convertToEntityAttribute("Friends")
-		);
-		
-		assertEquals(
-			Privacy.PRIVATE,
-			privacyConverter.convertToEntityAttribute("Private")
+			privacy,
+			privacyConverter.convertToEntityAttribute(privacy.getValue())
 		);
 	}
 	

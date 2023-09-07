@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,14 +35,14 @@ public class RoleConverterTest {
 		);
 	}
 	
-	@Test
-	public void convertingNonNullEnumToDatabaseColumnReturnsEnumFieldValueTest() {
-		assertEquals(
-			"User", roleConverter.convertToDatabaseColumn(Role.USER)
-		);
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void convertingNonNullEnumToDatabaseColumnReturnsEnumFieldValueTest(
+			final Role role) {
 		
 		assertEquals(
-			"Admin", roleConverter.convertToDatabaseColumn(Role.ADMIN)
+			role.getValue(),
+			roleConverter.convertToDatabaseColumn(role)
 		);
 	}
 	
@@ -52,14 +54,14 @@ public class RoleConverterTest {
 		);
 	}
 	
-	@Test
-	public void convertingValidEnumFieldValueToEntityAttributeReturnsTheEnumTest() {
-		assertEquals(
-			Role.USER, roleConverter.convertToEntityAttribute("User")
-		);
+	@ParameterizedTest
+	@EnumSource(Role.class)
+	public void convertingValidEnumFieldValueToEntityAttributeReturnsTheEnumTest(
+			final Role role) {
 		
 		assertEquals(
-			Role.ADMIN, roleConverter.convertToEntityAttribute("Admin")
+			role,
+			roleConverter.convertToEntityAttribute(role.getValue())
 		);
 	}
 	
@@ -73,35 +75,4 @@ public class RoleConverterTest {
 			);
 		}
 	}
-	
-	/*
-	@Test
-	public void convertToDatabaseColumnTest() {
-		assertEquals(roleConverter.convertToDatabaseColumn(Role.USER), "USER");
-		assertEquals(roleConverter.convertToDatabaseColumn(Role.ADMIN), "ADMIN");
-		
-		assertEquals(roleConverter.convertToDatabaseColumn(null), null);
-	}
-	
-	@Test
-	public void convertToEntityAttributeTest() {
-		assertEquals(roleConverter.convertToEntityAttribute("USER"), Role.USER);
-		assertEquals(roleConverter.convertToEntityAttribute("ADMIN"), Role.ADMIN);
-	}
-	
-	@Test
-	public void convertToEntityAttributeThrowsExceptionTest() {
-		List<String> values = Arrays.asList(
-			null, "", "NONEXISTENT", "User", "user", "admin", "Admin"
-		);
-		
-		for (final String value : values) {
-			assertThrows(
-				IllegalArgumentException.class, 
-				() -> roleConverter.convertToEntityAttribute(value),
-				"Converting String '" + value + "' to Role should throw"
-			);
-		}
-	}
-	*/
 }
