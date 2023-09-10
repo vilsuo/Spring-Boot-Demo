@@ -22,7 +22,8 @@ realize and exclude annotated abstract classes, but it doesn't, so you should
 remove the annotation from the abstract class and add it to the base classes
 
 */
-public abstract class AbstractEnumConverter<T extends Enum<T> & PersistableEnum<E>, E>
+public abstract class AbstractEnumConverter
+		<T extends Enum<T> & PersistableEnum<E>, E>
 		implements AttributeConverter<T, E> {
 	
     private final Class<T> clazz;
@@ -30,6 +31,10 @@ public abstract class AbstractEnumConverter<T extends Enum<T> & PersistableEnum<
     public AbstractEnumConverter(Class<T> clazz) {
         this.clazz = clazz;
     }
+	
+	public Class<T> getClazz() {
+		return clazz;
+	}
 
     @Override
     public E convertToDatabaseColumn(T attribute) {
